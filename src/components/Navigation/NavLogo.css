@@ -1,0 +1,12 @@
+.nav-logo {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-16px, 16px) var(--spacing-8px, 8px) var(--spacing-8px, 8px);
+  flex-shrink: 0;
+}
+
+.nav-logo svg {
+  display: block;
+  width: 111px;
+  height: 32px;
+}

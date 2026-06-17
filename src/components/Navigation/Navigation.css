@@ -1,0 +1,171 @@
+/* ============================================
+   Mailgun Navigation Component
+   All colors and spacing use design tokens
+   ============================================ */
+
+.nav-panel {
+  width: 248px;
+  background: var(--color-surface-default);
+  padding: var(--spacing-8px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ── Top-level item ── */
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 48px;
+  padding: var(--spacing-8px) var(--spacing-12px);
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  font-family: var(--font-family-base, 'DM Sans', sans-serif);
+  font-size: var(--font-size-16);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  background: transparent;
+  box-sizing: border-box;
+  transition: background 0.12s ease;
+  user-select: none;
+}
+
+.nav-item:hover                       { background: var(--color-surface-hover); }
+.nav-item.has-active-child            { background: transparent; }
+.nav-item.has-active-child:hover      { background: var(--color-surface-hover); }
+.nav-item.is-active                   { background: var(--color-raspberry-100); }
+.nav-item.is-active:hover             { background: var(--color-raspberry-200); }
+
+.nav-item__left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12px);
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+
+.nav-item__icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-neutral-600);
+}
+.nav-item__icon svg { width: 24px; height: 24px; }
+
+.nav-item.has-active-child .nav-item__icon,
+.nav-item.is-active .nav-item__icon   { color: var(--color-cta-brand-default); }
+
+.nav-item__label {
+  font-size: var(--font-size-16);
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-item__chevron {
+  width: var(--spacing-16px);
+  height: var(--spacing-16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+}
+
+/* ── Children container ── */
+.nav-children {
+  display: flex;
+  flex-direction: column;
+}
+.nav-children.is-hidden { display: none; }
+
+/* ── Section label ── */
+.nav-section-label {
+  width: 100%;
+  padding: var(--spacing-8px) var(--spacing-32px);
+  font-family: var(--font-family-base, 'DM Sans', sans-serif);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  box-sizing: border-box;
+}
+
+/* ── Child item ── */
+.nav-child {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.12s ease;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+.nav-child:hover               { background: var(--color-surface-hover); }
+.nav-child.is-active           { background: var(--color-raspberry-100); }
+.nav-child.is-active:hover     { background: var(--color-raspberry-200); }
+
+/* The inner link — matches live app CSS exactly */
+.nav-child__link {
+  display: flex;
+  align-items: center;
+  background-color: unset;
+  border: none;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base, 'DM Sans', sans-serif);
+  font-size: var(--font-size-14);
+  font-weight: 400;
+  gap: var(--spacing-12px);
+  height: 36px;
+  padding: 0 var(--spacing-12px) 0 var(--spacing-48px);
+  text-decoration: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+.nav-child.is-active .nav-child__link { font-weight: 500; }
+
+/* Active bar — inline flex, pulled left via negative margin */
+.nav-child__bar {
+  background-color: var(--color-cta-brand-default);
+  border-radius: 10px;
+  height: 24px;
+  margin-left: calc(var(--spacing-16px) * -1);
+  width: var(--spacing-4px);
+  flex-shrink: 0;
+}
+
+.nav-child__label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Tags ── */
+.nav-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--spacing-4px);
+  border-radius: 3px;
+  font-family: var(--font-family-base, 'DM Sans', sans-serif);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--color-text-inverse);
+  flex-shrink: 0;
+}
+.nav-tag--beta { background: var(--color-tag-beta); }
+.nav-tag--new  { background: var(--color-tag-new); }
