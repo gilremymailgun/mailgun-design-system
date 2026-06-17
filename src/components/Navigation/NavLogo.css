@@ -1,8 +1,11 @@
 .nav-logo {
   display: flex;
-  align-items: center;
-  padding: var(--spacing-16px, 16px) var(--spacing-8px, 8px) var(--spacing-8px, 8px);
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 62px;
+  padding-left: 10px;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .nav-logo svg {
@@ -10,3 +13,4 @@
   width: 111px;
   height: 32px;
 }
+
