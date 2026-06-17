@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { SplitButton } from './SplitButton';
 
 const meta: Meta<typeof SplitButton> = {
-  title: 'Components/Split Button',
+  title: 'Navigation/Split Button',
   component: SplitButton,
   tags: ['autodocs'],
   argTypes: {
