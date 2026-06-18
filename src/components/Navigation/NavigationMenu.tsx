@@ -93,11 +93,18 @@ export const NavigationMenu = ({
   const handleActivate = (id: ActiveId) => {
     setActiveId(id);
     onActiveChange?.(id);
+    // Keep only the parent section of the activated child open
+    if (id.includes(':')) {
+      const section = id.split(':')[0] as SectionId;
+      setOpenSections([section]);
+    } else {
+      setOpenSections([]);
+    }
   };
 
   const toggleSection = (id: SectionId) => {
     setOpenSections((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+      prev.includes(id) ? [] : [id]
     );
   };
 
