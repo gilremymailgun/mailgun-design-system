@@ -1,0 +1,78 @@
+/* Giddyup Design System — Avatar */
+
+.mg-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-medium);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.12px;
+  text-align: center;
+}
+
+/* ── Sizes ─────────────────────────────────────────────────────────────── */
+
+.mg-avatar--small {
+  width: 24px;
+  height: 24px;
+}
+
+.mg-avatar--large {
+  width: 32px;
+  height: 32px;
+}
+
+/* ── Filled ────────────────────────────────────────────────────────────── */
+
+.mg-avatar--filled {
+  background: var(--comp-avatar-color-filled-background-initial);
+  color: var(--comp-avatar-color-filled-text-initial);
+}
+
+.mg-avatar--filled .mg-avatar__icon {
+  color: var(--comp-avatar-color-filled-icon-initial);
+}
+
+/* ── Outlined ──────────────────────────────────────────────────────────── */
+
+.mg-avatar--outlined {
+  background: transparent;
+  border: var(--ref-border-width-s) solid var(--comp-avatar-color-outline-border-initial);
+  color: var(--comp-avatar-color-outline-text-initial);
+}
+
+.mg-avatar--outlined .mg-avatar__icon {
+  color: var(--comp-avatar-color-outline-icon-initial);
+}
+
+/* ── Content ───────────────────────────────────────────────────────────── */
+
+.mg-avatar__label {
+  display: block;
+}
+
+.mg-avatar__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 66.67%;
+  height: 66.67%;
+}
+
+.mg-avatar__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mg-avatar__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
