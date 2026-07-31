@@ -1,0 +1,7 @@
+/* Giddyup Design System — Breadcrumb */
+
+.mg-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+}

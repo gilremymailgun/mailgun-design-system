@@ -1,0 +1,86 @@
+/* Giddyup Design System — BreadcrumbItem */
+
+.mg-breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ref-spacing-8px);
+}
+
+.mg-breadcrumb-item__button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ref-spacing-8px);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-regular);
+  font-size: var(--ref-font-size-14);
+  line-height: 22px;
+  letter-spacing: -0.14px;
+}
+
+.mg-breadcrumb-item__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.mg-breadcrumb-item__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mg-breadcrumb-item__text {
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-regular);
+  font-size: var(--ref-font-size-14);
+  line-height: 22px;
+  letter-spacing: -0.14px;
+  white-space: nowrap;
+}
+
+.mg-breadcrumb-item__separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--comp-breadcrumb-color-default-icon-initial);
+}
+
+.mg-breadcrumb-item__separator svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Default (Parent, clickable) ─────────────────────────────────────────── */
+
+.mg-breadcrumb-item--default .mg-breadcrumb-item__icon,
+.mg-breadcrumb-item--default .mg-breadcrumb-item__button {
+  color: var(--comp-breadcrumb-color-default-icon-initial);
+}
+.mg-breadcrumb-item--default .mg-breadcrumb-item__text {
+  color: var(--comp-breadcrumb-color-default-text-initial);
+}
+.mg-breadcrumb-item--default .mg-breadcrumb-item__button:hover .mg-breadcrumb-item__icon,
+.mg-breadcrumb-item--default .mg-breadcrumb-item__button:hover {
+  color: var(--comp-breadcrumb-color-default-icon-hover);
+}
+.mg-breadcrumb-item--default .mg-breadcrumb-item__button:hover .mg-breadcrumb-item__text {
+  color: var(--comp-breadcrumb-color-default-text-hover);
+}
+
+/* ── Current (Selected, final page) ───────────────────────────────────────── */
+
+.mg-breadcrumb-item--current .mg-breadcrumb-item__icon {
+  color: var(--comp-breadcrumb-color-selected-icon-initial);
+}
+.mg-breadcrumb-item--current .mg-breadcrumb-item__text {
+  color: var(--comp-breadcrumb-color-selected-text-initial);
+}
