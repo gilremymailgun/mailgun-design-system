@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Button';
+import { Icon } from '../icons/Icon';
 
 const meta: Meta<typeof Button> = {
   title: 'Components/Button',
@@ -38,6 +39,39 @@ export const Small: Story = { args: { children: 'Button', hierarchy: 'primary', 
 export const Disabled: Story = { args: { children: 'Button', hierarchy: 'primary', size: 'default', disabled: true } };
 export const Loading: Story = { args: { children: 'Saving...', hierarchy: 'primary', size: 'default', loading: true } };
 
+export const WithLeadingIcon: Story = {
+  name: 'With leading icon',
+  args: {
+    children: 'Undo',
+    hierarchy: 'primary',
+    size: 'default',
+    iconPosition: 'leading',
+    icon: <Icon name="arrows/undo-gen1" />,
+  },
+};
+
+export const WithTrailingIcon: Story = {
+  name: 'With trailing icon',
+  args: {
+    children: 'Next',
+    hierarchy: 'secondary',
+    size: 'default',
+    iconPosition: 'trailing',
+    icon: <Icon name="arrows/arrow-right-gen1" />,
+  },
+};
+
+export const IconOnly: Story = {
+  name: 'Icon only',
+  args: {
+    hierarchy: 'tertiary',
+    size: 'default',
+    iconPosition: 'only',
+    icon: <Icon name="arrows/restart-gen1" />,
+    'aria-label': 'Restart',
+  },
+};
+
 export const AllHierarchies: Story = {
   name: 'All hierarchies',
   render: () => (
@@ -69,6 +103,21 @@ export const AllHierarchies: Story = {
           <Button hierarchy={hierarchy} size="default" loading>
             Loading
           </Button>
+          <Button
+            hierarchy={hierarchy}
+            size="default"
+            iconPosition="leading"
+            icon={<Icon name="arrows/undo-gen1" />}
+          >
+            Undo
+          </Button>
+          <Button
+            hierarchy={hierarchy}
+            size="default"
+            iconPosition="only"
+            icon={<Icon name="arrows/restart-gen1" />}
+            aria-label="Restart"
+          />
         </div>
       ))}
     </div>
