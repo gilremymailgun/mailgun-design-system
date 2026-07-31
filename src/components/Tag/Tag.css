@@ -17,7 +17,7 @@
   letter-spacing: -0.14px;
   white-space: nowrap;
   width: fit-content;
-  box-sizing: content-box;
+  box-sizing: border-box;
 }
 
 .mg-tag__icon {
