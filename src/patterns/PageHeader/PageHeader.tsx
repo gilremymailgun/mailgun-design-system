@@ -1,5 +1,6 @@
 import React from 'react';
-import { Breadcrumb, BreadcrumbItemData } from '../../components/Breadcrumb/Breadcrumb';
+import { Breadcrumb } from '../../components/Breadcrumb/Breadcrumb';
+import type { BreadcrumbItemData } from '../../components/Breadcrumb/Breadcrumb';
 import { Button } from '../../components/Button/Button';
 import { Field } from '../../components/Field/Field';
 import { Icon } from '../../icons/Icon';
