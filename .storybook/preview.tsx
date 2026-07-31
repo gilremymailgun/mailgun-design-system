@@ -22,7 +22,8 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       const theme = context.globals.theme || 'mailgun';
-      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-brand', theme);
+document.documentElement.setAttribute('data-theme', 'light');
       return <Story />;
     },
   ],

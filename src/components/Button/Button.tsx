@@ -1,64 +1,80 @@
 import React from 'react';
 import './Button.css';
 
-export type ButtonHierarchy = 'primary' | 'secondary' | 'destructive' | 'neutral';
-export type ButtonSize = 'sm' | 'md' | 'lg';
-export type ButtonIcon = 'none' | 'leading' | 'trailing' | 'only';
+export type ButtonHierarchy =
+  | 'primary'
+  | 'secondary'
+  | 'secondary-dark'
+  | 'secondary-neutral'
+  | 'tertiary'
+  | 'destructive'
+  | 'brand';
+
+export type ButtonSize = 'small' | 'default';
+
+export type ButtonIconPosition = 'leading' | 'trailing' | 'only';
 
 export interface ButtonProps {
-  label?: string;
+  children?: React.ReactNode;
   hierarchy?: ButtonHierarchy;
   size?: ButtonSize;
-  icon?: ButtonIcon;
-  iconElement?: React.ReactNode;
+  /** Omit for no icon. Set to control where the icon renders. */
+  iconPosition?: ButtonIconPosition;
+  icon?: React.ReactNode;
   disabled?: boolean;
   loading?: boolean;
   onClick?: () => void;
+  className?: string;
+  type?: 'button' | 'submit' | 'reset';
+  'aria-label'?: string;
 }
 
 export const Button = ({
-  label = 'Button',
+  children,
   hierarchy = 'primary',
-  size = 'md',
-  icon = 'none',
-  iconElement,
+  size = 'default',
+  iconPosition,
+  icon,
   disabled = false,
   loading = false,
   onClick,
+  className,
+  type = 'button',
+  'aria-label': ariaLabel,
 }: ButtonProps) => {
+  const isIconOnly = iconPosition === 'only';
+
   const classes = [
     'mg-button',
     `mg-button--${hierarchy}`,
     `mg-button--${size}`,
-    icon !== 'none' ? `mg-button--icon-${icon}` : '',
-    disabled ? 'mg-button--disabled' : '',
+    isIconOnly ? 'mg-button--icon-only' : '',
     loading ? 'mg-button--loading' : '',
+    className || '',
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
     <button
+      type={type}
       className={classes}
       disabled={disabled || loading}
       onClick={onClick}
-      type="button"
+      aria-label={isIconOnly ? ariaLabel : undefined}
+      aria-busy={loading || undefined}
     >
       {loading && <span className="mg-button__spinner" aria-hidden="true" />}
-      {!loading && icon === 'leading' && iconElement && (
-        <span className="mg-button__icon">{iconElement}</span>
+      {!loading && icon && iconPosition === 'leading' && (
+        <span className="mg-button__icon">{icon}</span>
       )}
-      {icon !== 'only' && !loading && (
-        <span className="mg-button__label">{label}</span>
+      {!loading && !isIconOnly && children && (
+        <span className="mg-button__label">{children}</span>
       )}
-      {!loading && icon === 'trailing' && iconElement && (
-        <span className="mg-button__icon">{iconElement}</span>
-      )}
-      {!loading && icon === 'only' && iconElement && (
-        <span className="mg-button__icon" aria-label={label}>{iconElement}</span>
+      {!loading && icon && isIconOnly && <span className="mg-button__icon">{icon}</span>}
+      {!loading && icon && iconPosition === 'trailing' && (
+        <span className="mg-button__icon">{icon}</span>
       )}
     </button>
   );
 };
-
-export default Button;
