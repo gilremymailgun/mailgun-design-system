@@ -39,7 +39,9 @@
   right: 0;
   width: 8px;
   height: 8px;
-  display: block;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
 }
 
 /* ── Filled ────────────────────────────────────────────────────────────── */
