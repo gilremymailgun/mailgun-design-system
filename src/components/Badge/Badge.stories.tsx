@@ -24,7 +24,7 @@ export const WithIconAndDot: Story = {
   args: {
     configuration: 'filled',
     children: 'Badge',
-    icon: <Icon name="navigate/home-gen2" />,
+    icon: <Icon name="ui/lock-locked-gen2" />,
     dotStatus: 'success',
   },
 };
@@ -51,7 +51,7 @@ export const AllVariants: Story = {
           <Badge configuration={configuration} dotStatus="success">
             Badge
           </Badge>
-          <Badge configuration={configuration} icon={<Icon name="navigate/home-gen2" />}>
+          <Badge configuration={configuration} icon={<Icon name="ui/lock-locked-gen2" />}>
             Badge
           </Badge>
           <Badge configuration={configuration} notificationStatus="error">
