@@ -10,6 +10,10 @@ import './PageHeader.css';
 export interface PageHeaderProps {
   title: string;
   breadcrumbItems?: BreadcrumbItemData[];
+  /** "default" shows a list of items; "back" shows a single back-navigation link. */
+  breadcrumbType?: 'default' | 'back';
+  backLabel?: string;
+  onBack?: () => void;
   description?: string;
   domain?: string;
   onDomainChange?: (value: string) => void;
@@ -31,6 +35,9 @@ export interface PageHeaderProps {
 export const PageHeader = ({
   title,
   breadcrumbItems,
+  breadcrumbType = 'default',
+  backLabel,
+  onBack,
   description,
   domain,
   onDomainChange,
@@ -51,7 +58,11 @@ export const PageHeader = ({
   return (
     <div className={classes}>
       <div className="mg-page-header__left">
-        {breadcrumbItems && <Breadcrumb type="default" items={breadcrumbItems} />}
+        {breadcrumbType === 'back' ? (
+          <Breadcrumb type="back" backLabel={backLabel} onBack={onBack} />
+        ) : (
+          breadcrumbItems && <Breadcrumb type="default" items={breadcrumbItems} />
+        )}
         <div className="mg-page-header__title-row">
           <h1 className="mg-page-header__title">{title}</h1>
           {domain !== undefined && (
