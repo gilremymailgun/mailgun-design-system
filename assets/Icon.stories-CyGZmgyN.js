@@ -1,0 +1,37 @@
+import{i as e}from"./preload-helper-xPQekRTU.js";import{t}from"./iframe-PUNenTkn.js";var n,r=e((()=>{n={"arrows/arrow-left-gen1":{paths:[`m7.95508 6.18164-1.18164 1.2666h4.42676v1.10449H6.77344l1.18164 1.26661-.72852.78126L4.7998 8l2.42676-2.59961z`]},"arrows/arrow-right-gen1":{paths:[`m11.2002 8-2.42676 2.6006-.72949-.78126 1.18261-1.26661H4.7998V7.44824h4.42676l-1.18261-1.2666.72949-.78125z`]},"arrows/arrow-up-gen1":{paths:[`m10.5996 7.22656-.78124.72852-1.2666-1.18164v4.42676H7.44727V6.77344L6.18066 7.95508l-.78125-.72852L7.99902 4.7998z`]},"arrows/arrow-down-gen1":{paths:[`m8.55176 9.22656 1.2666-1.18261.78124.72949-2.60058 2.42676-2.59961-2.42676.78125-.72949 1.26661 1.18261V4.7998h1.10449z`]},"arrows/expand-horizontal-gen1":{paths:[`m14.2002 8-2.8926 3-.8691-.9014 1.4092-1.4609H3.75293l1.40918 1.4609L4.29297 11 1.40039 8l2.89258-3 .86914.90137L3.75293 7.3623h8.09477l-1.4092-1.46093L11.3076 5z`]},"arrows/expand-vertical-gen1":{paths:[`m10.7998 4.49219-.90136.86914L8.4375 3.95215v8.09475l1.46094-1.4092.90136.8691-3 2.8926-3-2.8926.90137-.8691 1.46094 1.4092V3.95215L5.70117 5.36133l-.90137-.86914 3-2.89258z`]},"arrows/loader-gen1":{paths:[`M8 2c3.309 0 6 2.69251 6 6 0 3.309-2.691 6-6 6-.78828.0023-1.56956-.1515-2.29785-.4531a5.961 5.961 0 0 1-1.94531-1.3037l1.07324-1.0479c.41636.4154.91122.7438 1.45508.9678.5439.2239 1.12664.3387 1.71484.3369 2.4817 0 4.5-2.0183 4.5-4.5 0-2.48099-2.0182-4.5-4.5-4.5-2.48175 0-4.5 2.01826-4.5 4.5H2c0-3.30899 2.691-6 6-6`]},"arrows/redo-gen1":{paths:[`M7.19824 2.40039c2.51037.0002 4.64006 1.66271 5.34766 3.94336l.8848-1.53223.9697.55957-1.959 3.39453-3.39355-1.95996.55957-.9707 1.94138 1.12207c-.4713-1.96714-2.24093-3.43632-4.35056-3.43652C4.72925 3.5206 2.71994 5.53008 2.71973 8c.0002 2.4699 2.00951 4.4804 4.47851 4.4805v1.1201C4.1118 13.6005 1.60078 11.0882 1.60059 8c.00021-3.0876 2.51122-5.59951 5.59765-5.59961`]},"arrows/restart-gen1":{paths:[`M8.00098 1.59961C11.5294 1.60009 14.4002 4.47086 14.4004 8c-.0002 3.5291-2.871 6.3989-6.39942 6.3994-3.52883 0-6.40018-2.87-6.40039-6.3994h1.28027c.00021 2.8229 2.29721 5.1191 5.12012 5.1191C10.8235 13.1187 13.1199 10.8226 13.1201 8c-.0002-2.82258-2.2966-5.11964-5.11912-5.12012-1.38987 0-2.67353.55697-3.61621 1.50391l1.69628 1.69629H2.24023V2.23926l1.24024 1.24023c1.1782-1.1831 2.78312-1.87988 4.52051-1.87988`]},"arrows/sort-arrow-double-gen1":{paths:[`M11 11.0068 8 14l-3-2.9932.63184-.6308L8 12.7383l2.3682-2.3623zm0-6.01364-.6318.63086L8 3.2627 5.63184 5.62402 5 4.99316 8 2z`]},"arrows/transfer-gen1":{paths:[`M5.90039 8.48633 4.44043 10.0645h7.37987v1.3837H4.44043l1.45996 1.5791L5 14l-3-3.2432 3-3.24313zM14 5.24316l-3 3.24317-.9004-.97266 1.46-1.57812H4.17969V4.55176h7.37991l-1.46-1.5791L11 2z`]},"arrows/undo-gen1":{paths:[`M8.80273 2.40039C11.889 2.40066 14.4002 4.9125 14.4004 8c-.0002 3.0881-2.5114 5.6003-5.59767 5.6006v-1.1201C11.2716 12.4802 13.2811 10.4698 13.2812 8c-.0002-2.46982-2.0096-4.47923-4.47847-4.47949-2.10981.00001-3.87827 1.46925-4.34961 3.43652l1.94043-1.12207.56055.9707-3.39453 1.95996-1.95898-3.39453.96972-.55957.88477 1.53223c.7076-2.28081 2.83708-3.94335 5.34765-3.94336`]}}})),i,a,o=e((()=>{r(),i=t(),a=({name:e,size:t=16,className:r,title:a})=>{let o=n[e];return o?(0,i.jsx)(`svg`,{width:t,height:t,viewBox:o.viewBox||`0 0 16 16`,xmlns:`http://www.w3.org/2000/svg`,className:r,role:a?`img`:void 0,"aria-hidden":a?void 0:!0,"aria-label":a,children:o.paths.map((e,t)=>(0,i.jsx)(`path`,{fill:`currentColor`,d:e},t))}):null},a.__docgenInfo={description:``,methods:[],displayName:`Icon`,props:{name:{required:!0,tsType:{name:`string`},description:`Icon name, e.g. "arrows/arrow-left-gen1"`},size:{required:!1,tsType:{name:`number`},description:``,defaultValue:{value:`16`,computed:!1}},className:{required:!1,tsType:{name:`string`},description:``},title:{required:!1,tsType:{name:`string`},description:`Accessible label. Omit to hide from screen readers (decorative icon).`}}}})),s,c,l,u,d;e((()=>{o(),r(),s=t(),c={title:`Foundations/Icons`,component:a,argTypes:{name:{control:`select`,options:Object.keys(n)},size:{control:`number`}}},l={args:{name:`arrows/arrow-left-gen1`,size:16}},u={name:`All icons`,render:()=>(0,s.jsx)(`div`,{style:{display:`grid`,gridTemplateColumns:`repeat(auto-fill, minmax(120px, 1fr))`,gap:`16px`,padding:`24px`},children:Object.keys(n).sort().map(e=>(0,s.jsxs)(`div`,{style:{display:`flex`,flexDirection:`column`,alignItems:`center`,gap:`8px`,padding:`12px`,border:`1px solid var(--sys-color-border-subtle)`,borderRadius:`var(--ref-radius-s)`},children:[(0,s.jsx)(a,{name:e,size:24}),(0,s.jsx)(`span`,{style:{fontSize:`10px`,color:`var(--sys-color-text-muted)`,textAlign:`center`,wordBreak:`break-word`},children:e})]},e))})},l.parameters={...l.parameters,docs:{...l.parameters?.docs,source:{originalSource:`{
+  args: {
+    name: 'arrows/arrow-left-gen1',
+    size: 16
+  }
+}`,...l.parameters?.docs?.source}}},u.parameters={...u.parameters,docs:{...u.parameters?.docs,source:{originalSource:`{
+  name: 'All icons',
+  render: () => {
+    const names = Object.keys(iconRegistry).sort();
+    return <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+      gap: '16px',
+      padding: '24px'
+    }}>
+        {names.map(name => <div key={name} style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '12px',
+        border: '1px solid var(--sys-color-border-subtle)',
+        borderRadius: 'var(--ref-radius-s)'
+      }}>
+            <Icon name={name} size={24} />
+            <span style={{
+          fontSize: '10px',
+          color: 'var(--sys-color-text-muted)',
+          textAlign: 'center',
+          wordBreak: 'break-word'
+        }}>
+              {name}
+            </span>
+          </div>)}
+      </div>;
+  }
+}`,...u.parameters?.docs?.source}}},d=[`SingleIcon`,`AllIcons`]}))();export{u as AllIcons,l as SingleIcon,d as __namedExportsOrder,c as default};
