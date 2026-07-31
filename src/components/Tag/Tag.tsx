@@ -1,5 +1,6 @@
 import React from 'react';
-import { StatusDot, StatusDotType } from '../StatusDot/StatusDot';
+import { StatusDot } from '../StatusDot/StatusDot';
+import type { StatusDotType } from '../StatusDot/StatusDot';
 import { Icon } from '../../icons/Icon';
 import './Tag.css';
 
