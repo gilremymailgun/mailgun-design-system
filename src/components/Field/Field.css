@@ -1,0 +1,170 @@
+/* Giddyup Design System — Field (Forms/Input/Text) */
+
+.mg-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ref-spacing-8px);
+  align-items: flex-start;
+  width: 254px;
+}
+
+.mg-field__label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ref-spacing-8px);
+  width: 100%;
+}
+
+.mg-field__label {
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-medium);
+  font-size: var(--ref-font-size-14);
+  line-height: 20px;
+  color: var(--comp-input-color-default-label-initial);
+  white-space: nowrap;
+}
+
+.mg-field__label-option,
+.mg-field__custom-text,
+.mg-field__help-text,
+.mg-field__counter {
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-regular);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.12px;
+  color: var(--comp-input-color-default-text-initial);
+  white-space: nowrap;
+}
+
+.mg-field__label-tooltip-icon,
+.mg-field__help-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--comp-input-color-default-icon-initial);
+  flex-shrink: 0;
+}
+.mg-field__label-tooltip-icon svg,
+.mg-field__help-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mg-field__custom-text {
+  width: 100%;
+}
+
+.mg-field__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ref-spacing-8px);
+  width: 100%;
+}
+
+.mg-field__box {
+  display: flex;
+  align-items: center;
+  gap: var(--ref-spacing-8px);
+  flex: 1 0 0;
+  min-width: 0;
+  box-sizing: border-box;
+  background: var(--comp-input-color-default-background-initial);
+  border: var(--ref-border-width-s) solid var(--comp-input-color-default-border-initial);
+  border-radius: var(--ref-radius-s);
+}
+
+.mg-field--normal .mg-field__box {
+  padding: var(--ref-spacing-8px) var(--ref-spacing-16px);
+}
+
+.mg-field--small .mg-field__box {
+  height: 30px;
+  padding: 4px var(--ref-spacing-8px);
+}
+
+.mg-field__box:hover {
+  border-color: var(--sys-color-border-strong);
+}
+
+.mg-field__box:focus-within {
+  border-color: var(--sys-color-primary-default);
+}
+
+.mg-field__input {
+  flex: 1 0 0;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-regular);
+  font-size: var(--ref-font-size-14);
+  line-height: 22px;
+  letter-spacing: -0.14px;
+  color: var(--comp-input-color-default-text-initial);
+}
+
+.mg-field__input::placeholder {
+  color: var(--comp-input-color-default-placeholder-initial);
+}
+
+.mg-field__input:focus {
+  outline: none;
+}
+
+.mg-field__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--comp-input-color-default-icon-initial);
+  flex-shrink: 0;
+}
+.mg-field__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mg-field__helper {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+}
+
+.mg-field__help-text {
+  flex: 1 0 0;
+}
+
+.mg-field__counter {
+  text-align: right;
+}
+
+/* ── Error ─────────────────────────────────────────────────────────────── */
+
+.mg-field--error .mg-field__box {
+  border-color: var(--comp-input-color-invalid-border-initial);
+}
+.mg-field--error .mg-field__icon,
+.mg-field--error .mg-field__help-icon {
+  color: var(--comp-input-color-invalid-icon-initial);
+}
+.mg-field--error .mg-field__help-text {
+  color: var(--comp-input-color-invalid-text-initial);
+}
+
+/* ── Disabled ──────────────────────────────────────────────────────────── */
+
+.mg-field--disabled .mg-field__label,
+.mg-field--disabled .mg-field__box,
+.mg-field--disabled .mg-field__icon,
+.mg-field--disabled .mg-field__input {
+  opacity: 0.5;
+}
+.mg-field--disabled .mg-field__input {
+  cursor: not-allowed;
+}
