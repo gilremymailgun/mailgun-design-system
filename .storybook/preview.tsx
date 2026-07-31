@@ -6,7 +6,7 @@ const preview: Preview = {
     theme: {
       description: 'Brand theme',
       toolbar: {
-        title: 'Theme',
+        title: 'Brand',
         icon: 'paintbrush',
         items: [
           { value: 'mailgun', title: 'Mailgun', icon: 'circlehollow' },
@@ -15,15 +15,29 @@ const preview: Preview = {
         dynamicTitle: true,
       },
     },
+    appearance: {
+      description: 'Light or dark mode',
+      toolbar: {
+        title: 'Theme',
+        icon: 'mirror',
+        items: [
+          { value: 'light', title: 'Light', icon: 'sun' },
+          { value: 'dark', title: 'Dark', icon: 'moon' },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
   initialGlobals: {
     theme: 'mailgun',
+    appearance: 'light',
   },
   decorators: [
     (Story, context) => {
       const theme = context.globals.theme || 'mailgun';
+      const appearance = context.globals.appearance || 'light';
       document.documentElement.setAttribute('data-brand', theme);
-document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.setAttribute('data-theme', appearance);
       return <Story />;
     },
   ],
