@@ -5,6 +5,7 @@ import { Icon } from '../../icons/Icon';
 const meta: Meta<typeof Button> = {
   title: 'Components/Button',
   component: Button,
+  tags: ['autodocs'],
   argTypes: {
     hierarchy: {
       control: 'select',

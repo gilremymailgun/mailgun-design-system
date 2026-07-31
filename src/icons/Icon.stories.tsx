@@ -5,6 +5,7 @@ import { iconRegistry } from './icons';
 const meta: Meta<typeof Icon> = {
   title: 'Foundations/Icons',
   component: Icon,
+  tags: ['autodocs'],
   argTypes: {
     name: { control: 'select', options: Object.keys(iconRegistry) },
     size: { control: 'number' },
