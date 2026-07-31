@@ -1,0 +1,61 @@
+/* Giddyup Design System — Badge */
+
+.mg-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ref-spacing-4px);
+  height: 24px;
+  padding: 4px var(--ref-spacing-8px);
+  border-radius: var(--ref-radius-l);
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-medium);
+  font-size: var(--ref-font-size-14);
+  line-height: 24px;
+  letter-spacing: -0.14px;
+  white-space: nowrap;
+  width: fit-content;
+  box-sizing: content-box;
+}
+
+.mg-badge__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.mg-badge__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mg-badge__notification {
+  position: absolute;
+  top: -1px;
+  right: -8px;
+}
+
+/* ── Filled ────────────────────────────────────────────────────────────── */
+
+.mg-badge--filled {
+  background: var(--comp-badge-color-filled-background-initial);
+  color: var(--comp-badge-color-filled-text-initial);
+}
+.mg-badge--filled .mg-badge__icon {
+  color: var(--comp-badge-color-filled-icon-initial);
+}
+
+/* ── Outline ───────────────────────────────────────────────────────────── */
+
+.mg-badge--outline {
+  background: var(--comp-badge-color-outline-background-initial);
+  border: var(--ref-border-width-s) solid var(--comp-badge-color-outline-border-initial);
+  color: var(--comp-badge-color-outline-text-initial);
+}
+.mg-badge--outline .mg-badge__icon {
+  color: var(--comp-badge-color-outline-icon-initial);
+}

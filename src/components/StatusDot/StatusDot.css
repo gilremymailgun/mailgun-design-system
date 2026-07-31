@@ -1,0 +1,22 @@
+/* Giddyup Design System — StatusDot (shared by Tag and Badge) */
+
+.mg-status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mg-status-dot--info {
+  background: var(--sys-color-feedback-info-default);
+}
+.mg-status-dot--success {
+  background: var(--sys-color-feedback-success-default);
+}
+.mg-status-dot--error {
+  background: var(--sys-color-feedback-danger-default);
+}
+.mg-status-dot--warning {
+  background: var(--sys-color-feedback-warning-default);
+}

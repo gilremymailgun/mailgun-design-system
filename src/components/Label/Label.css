@@ -1,0 +1,34 @@
+/* Giddyup Design System — Label */
+
+.mg-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ref-spacing-4px);
+  padding: 4px var(--ref-spacing-8px);
+  border-radius: var(--ref-radius-s);
+  background: var(--comp-label-color-enabled-background-initial);
+  color: var(--comp-label-color-enabled-text-initial);
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-regular);
+  font-size: var(--ref-font-size-14);
+  line-height: 22px;
+  letter-spacing: -0.14px;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.mg-label__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--comp-label-color-enabled-icon-initial);
+  flex-shrink: 0;
+}
+
+.mg-label__icon svg {
+  width: 100%;
+  height: 100%;
+}
