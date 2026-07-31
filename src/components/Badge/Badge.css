@@ -37,6 +37,7 @@
   position: absolute;
   top: -1px;
   right: -8px;
+  align-self: flex-start;
 }
 
 /* ── Filled ────────────────────────────────────────────────────────────── */
