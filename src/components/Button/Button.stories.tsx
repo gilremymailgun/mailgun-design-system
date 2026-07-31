@@ -54,7 +54,7 @@ export const WithTrailingIcon: Story = {
   name: 'With trailing icon',
   args: {
     children: 'Next',
-    hierarchy: 'secondary',
+    hierarchy: 'primary',
     size: 'default',
     iconPosition: 'trailing',
     icon: <Icon name="arrows/arrow-right-gen1" />,
@@ -64,7 +64,7 @@ export const WithTrailingIcon: Story = {
 export const IconOnly: Story = {
   name: 'Icon only',
   args: {
-    hierarchy: 'tertiary',
+    hierarchy: 'primary',
     size: 'default',
     iconPosition: 'only',
     icon: <Icon name="arrows/restart-gen1" />,
