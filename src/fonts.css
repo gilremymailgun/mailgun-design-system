@@ -1,0 +1,7 @@
+/**
+ * Giddyup Design System — fonts.css
+ * Loads DM Sans (used throughout tokens.css as --ref-font-family-font)
+ * Weights: 400 (regular), 500 (medium), 600 (semibold), 700 (bold) — matching --ref-font-weight-* tokens
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
