@@ -46,7 +46,7 @@ export const WithLeadingIcon: Story = {
     hierarchy: 'primary',
     size: 'default',
     iconPosition: 'leading',
-    icon: <Icon name="arrows/undo-gen1" />,
+    icon: <Icon name="navigate/point-down-gen2" />,
   },
 };
 
@@ -57,7 +57,7 @@ export const WithTrailingIcon: Story = {
     hierarchy: 'primary',
     size: 'default',
     iconPosition: 'trailing',
-    icon: <Icon name="arrows/arrow-right-gen1" />,
+    icon: <Icon name="navigate/point-down-gen2" />,
   },
 };
 
@@ -67,7 +67,7 @@ export const IconOnly: Story = {
     hierarchy: 'primary',
     size: 'default',
     iconPosition: 'only',
-    icon: <Icon name="arrows/restart-gen1" />,
+    icon: <Icon name="navigate/point-down-gen2" />,
     'aria-label': 'Restart',
   },
 };
@@ -107,7 +107,7 @@ export const AllHierarchies: Story = {
             hierarchy={hierarchy}
             size="default"
             iconPosition="leading"
-            icon={<Icon name="arrows/undo-gen1" />}
+            icon={<Icon name="navigate/point-down-gen2" />}
           >
             Undo
           </Button>
@@ -115,7 +115,7 @@ export const AllHierarchies: Story = {
             hierarchy={hierarchy}
             size="default"
             iconPosition="only"
-            icon={<Icon name="arrows/restart-gen1" />}
+            icon={<Icon name="navigate/point-down-gen2" />}
             aria-label="Restart"
           />
         </div>
