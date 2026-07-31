@@ -3,7 +3,7 @@ import { NavIcon } from './NavIcons';
 import type { NavIconName } from './NavIcons';
 
 const meta: Meta = {
-  title: 'Icons/NavIcons',
+  title: 'Foundations/Icons/NavIcons',
   tags: ['autodocs'],
   parameters: { layout: 'centered' },
 };
