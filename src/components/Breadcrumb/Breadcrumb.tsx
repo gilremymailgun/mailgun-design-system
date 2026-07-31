@@ -1,5 +1,5 @@
 import React from 'react';
-import { BreadcrumbItem } from './BreadcrumbItem';
+import { BreadcrumbItem } from '../BreadcrumbItem/BreadcrumbItem';
 import { Icon } from '../../icons/Icon';
 import './Breadcrumb.css';
 
