@@ -150,6 +150,7 @@ export const NavigationMenu = ({
           <GetStartedItem
             progress={getStartedProgress}
             collapsed={collapsed}
+            isActive={activeId === 'get-started'}
             onClick={() => {
               handleActivate('get-started' as ActiveId);
               onGetStartedClick?.();

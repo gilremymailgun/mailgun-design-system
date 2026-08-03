@@ -6,10 +6,23 @@
   justify-content: space-between;
   padding: 8px 12px;
   border-radius: 8px;
-  background: #ffe5e3;
+  background: transparent;
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
+  transition: background 0.12s ease;
+}
+
+.nav-get-started:hover {
+  background: var(--comp-navigation-color-default-background-hover);
+}
+
+.nav-get-started--active {
+  background: #ffe5e3;
+}
+
+.nav-get-started--active:hover {
+  background: #ffd8d6;
 }
 
 .nav-get-started--collapsed {

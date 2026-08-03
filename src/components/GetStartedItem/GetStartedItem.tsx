@@ -7,6 +7,7 @@ export interface GetStartedItemProps {
   /** 0–100 */
   progress?: number;
   collapsed?: boolean;
+  isActive?: boolean;
   onClick?: () => void;
 }
 
@@ -14,6 +15,7 @@ export const GetStartedItem = ({
   label = 'Get started',
   progress = 12,
   collapsed = false,
+  isActive = false,
   onClick,
 }: GetStartedItemProps) => {
   const radius = 12;
@@ -22,7 +24,7 @@ export const GetStartedItem = ({
 
   return (
     <div
-      className={`nav-get-started${collapsed ? ' nav-get-started--collapsed' : ''}`}
+      className={`nav-get-started${collapsed ? ' nav-get-started--collapsed' : ''}${isActive ? ' nav-get-started--active' : ''}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
