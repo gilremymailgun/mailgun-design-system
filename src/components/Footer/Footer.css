@@ -1,0 +1,48 @@
+/* Giddyup Design System — Footer */
+
+.mg-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  padding-bottom: 24px;
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-regular);
+  font-size: var(--ref-font-size-14);
+  line-height: 22px;
+  letter-spacing: -0.14px;
+  white-space: nowrap;
+}
+
+.mg-footer__copyright-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.mg-footer__copyright {
+  color: var(--sys-color-text-default);
+}
+
+.mg-footer__links {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.mg-footer__link {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--sys-color-text-interactive);
+  cursor: pointer;
+}
+
+.mg-footer__link:hover {
+  text-decoration: underline;
+}
