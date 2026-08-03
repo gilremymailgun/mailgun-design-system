@@ -88,6 +88,18 @@
   height: 100%;
 }
 
+.mg-header-bar__account-wrapper {
+  position: relative;
+  height: 56px;
+}
+
+.mg-header-bar__account-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 20;
+}
+
 .mg-header-bar__account {
   display: flex;
   align-items: center;
