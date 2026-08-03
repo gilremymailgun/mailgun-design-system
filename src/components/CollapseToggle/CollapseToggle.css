@@ -1,0 +1,21 @@
+/* Giddyup Design System — CollapseToggle (navC/icon/panel-expanded, simplified) */
+
+.nav-collapse-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--ref-color-neutral-00);
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 2, 0.2);
+  color: var(--sys-color-text-default);
+  cursor: pointer;
+}
+
+.nav-collapse-toggle svg {
+  width: 16px;
+  height: 16px;
+}

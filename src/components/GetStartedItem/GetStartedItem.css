@@ -1,0 +1,65 @@
+/* Giddyup Design System — GetStartedItem (Navigation/MainNav sub-element) */
+
+.nav-get-started {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #ffe5e3;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.nav-get-started--collapsed {
+  justify-content: center;
+  padding: 8px;
+  width: 40px;
+}
+
+.nav-get-started__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.nav-get-started--collapsed .nav-get-started__left {
+  flex: none;
+}
+
+.nav-get-started__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #272f36;
+}
+
+.nav-get-started__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.nav-get-started__label {
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-medium);
+  font-size: var(--ref-font-size-16);
+  line-height: 24px;
+  letter-spacing: -0.16px;
+  color: #272f36;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-get-started__progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}

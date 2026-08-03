@@ -179,3 +179,45 @@
 }
 .nav-tag--beta { background: var(--color-tag-beta); }
 .nav-tag--new  { background: var(--color-tag-new); }
+
+/* ── Added: collapsed mode + new layout wrappers ─────────────────────────── */
+
+.nav-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+.nav-panel--collapsed .nav-panel__header {
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.nav-panel__scroll {
+  flex: 1 0 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-panel__footer {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+}
+
+.nav-panel--collapsed {
+  width: 64px;
+}
+
+.nav-item.is-collapsed {
+  justify-content: center;
+  padding: 8px;
+}
+
+.nav-item.is-collapsed .nav-item__left {
+  gap: 0;
+}
