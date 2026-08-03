@@ -1,0 +1,150 @@
+/* Giddyup Design System — HeaderBar (top app header) */
+
+.mg-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 56px;
+  padding: 0 14px 0 20px;
+  background: var(--sys-color-surface-elevated-default);
+  border-bottom: 1px solid var(--sys-color-border-subtle);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.mg-header-bar__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 8px;
+  padding: 8px;
+  border: none;
+  border-radius: var(--ref-radius-s);
+  background: transparent;
+  color: var(--sys-color-text-default);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.mg-header-bar__icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mg-header-bar__icon-btn:hover {
+  background: var(--sys-color-surface-tertiary-hover);
+}
+
+.mg-header-bar__icon-btn--bordered {
+  border-left: 1px solid var(--sys-color-border-subtle);
+  border-radius: 0;
+  margin-left: 0;
+  padding-left: 16px;
+}
+
+.mg-header-bar__region {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  padding: 8px 16px;
+  border: none;
+  border-left: 1px solid var(--sys-color-border-subtle);
+  background: transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.mg-header-bar__region:hover {
+  background: var(--sys-color-surface-tertiary-hover);
+}
+
+.mg-header-bar__flag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.mg-header-bar__region-label {
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-regular);
+  font-size: var(--ref-font-size-14);
+  line-height: 22px;
+  letter-spacing: -0.14px;
+  color: var(--sys-color-text-default);
+}
+
+.mg-header-bar__region-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  height: 8px;
+  color: var(--sys-color-text-default);
+}
+.mg-header-bar__region-chevron svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mg-header-bar__account {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  padding: 7px 16px;
+  border: none;
+  border-left: 1px solid var(--sys-color-border-subtle);
+  border-right: 1px solid var(--sys-color-border-subtle);
+  background: transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.mg-header-bar__account:hover {
+  background: var(--sys-color-surface-tertiary-hover);
+}
+
+.mg-header-bar__account-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.mg-header-bar__account-name {
+  font-family: 'Roboto', var(--ref-font-family-font);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--sys-color-text-default);
+  white-space: nowrap;
+}
+
+.mg-header-bar__account-sub {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mg-header-bar__account-company {
+  font-family: 'Roboto', var(--ref-font-family-font);
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--sys-color-text-muted);
+  white-space: nowrap;
+}
+
+.mg-header-bar__account-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--sys-color-text-default);
+  flex-shrink: 0;
+}
+.mg-header-bar__account-chevron svg {
+  width: 100%;
+  height: 100%;
+}
