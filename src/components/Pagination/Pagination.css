@@ -1,13 +1,14 @@
 /* ============================================
    Mailgun Pagination Component
    Matches Figma: Pagination (Complete, Mirrored, No Toggle)
+   Uses real Giddyup design tokens (comp/pagination/*)
    ============================================ */
 
 .mg-pagination {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-16px, 16px);
+  gap: var(--ref-spacing-16px);
   width: 100%;
 }
 
@@ -32,18 +33,18 @@
   padding: 4px 10px;
   background: transparent;
   border: none;
-  border-radius: var(--radius-s, 4px);
-  color: var(--color-text-interactive, #1454a8);
+  border-radius: var(--ref-radius-s);
+  color: var(--comp-pagination-color-default-icon-initial);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .mg-pagination__nav-btn:hover:not(:disabled) {
-  background-color: var(--color-surface-hover, #f7f9fa);
+  background-color: var(--comp-pagination-color-default-background-hover);
 }
 
 .mg-pagination__nav-btn:disabled {
-  color: var(--color-text-disabled, #9ea9b0);
+  color: var(--sys-color-text-disabled);
   cursor: not-allowed;
 }
 
@@ -57,24 +58,24 @@
   padding: 4px 10px;
   background: transparent;
   border: none;
-  border-radius: var(--radius-s, 4px);
-  font-family: var(--font-family-base, 'DM Sans', sans-serif);
+  border-radius: var(--ref-radius-s);
+  font-family: var(--ref-font-family-font);
   font-size: 12px;
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: var(--ref-font-weight-medium);
   line-height: 16px;
-  letter-spacing: -0.01em;
-  color: var(--color-text-interactive, #1454a8);
+  letter-spacing: -0.12px;
+  color: var(--comp-pagination-color-default-text-initial);
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
 
 .mg-pagination__page-btn:hover:not(.mg-pagination__page-btn--active) {
-  background-color: var(--color-surface-hover, #f7f9fa);
+  background-color: var(--comp-pagination-color-default-background-hover);
 }
 
 .mg-pagination__page-btn--active {
-  background-color: var(--color-surface-highlight, #e0f1ff);
-  color: var(--color-cta-label-on-outlined, #1454a8);
+  background-color: var(--comp-pagination-color-default-background-hover);
+  color: var(--comp-pagination-color-default-text-initial);
   cursor: default;
 }
 
@@ -85,7 +86,7 @@
   width: 27px;
   height: 27px;
   font-size: 12px;
-  color: var(--color-text-secondary, #808a91);
+  color: var(--sys-color-text-muted);
   pointer-events: none;
 }
 
@@ -99,38 +100,40 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-8px, 8px) var(--spacing-16px, 16px);
+  padding: var(--ref-spacing-8px) var(--ref-spacing-16px);
   height: 36px;
   background: transparent;
-  border: 1px solid var(--color-border-strong, #808a91);
+  border: var(--ref-border-width-s) solid var(--comp-pagination-color-default-border-initial);
   margin-right: -1px;
-  font-family: var(--font-family-base, 'DM Sans', sans-serif);
-  font-size: var(--font-size-14, 14px);
-  font-weight: var(--font-weight-medium, 500);
-  line-height: 24px;
-  color: var(--color-text-primary, #14181c);
+  font-family: var(--ref-font-family-font);
+  font-size: var(--ref-font-size-14);
+  font-weight: var(--ref-font-weight-regular);
+  line-height: 22px;
+  letter-spacing: -0.14px;
+  color: var(--comp-pagination-color-default-text-initial);
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   position: relative;
 }
 
 .mg-pagination__sizer-btn--first {
-  border-radius: var(--radius-s, 4px) 0 0 var(--radius-s, 4px);
+  border-radius: var(--ref-radius-m) 0 0 var(--ref-radius-m);
 }
 
 .mg-pagination__sizer-btn--last {
-  border-radius: 0 var(--radius-s, 4px) var(--radius-s, 4px) 0;
+  border-radius: 0 var(--ref-radius-m) var(--ref-radius-m) 0;
   margin-right: 0;
 }
 
 .mg-pagination__sizer-btn:hover:not(.mg-pagination__sizer-btn--selected) {
-  background-color: var(--color-surface-hover, #f7f9fa);
+  background-color: var(--comp-pagination-color-default-background-hover);
+  border-color: var(--comp-pagination-color-default-border-hover);
   z-index: 1;
 }
 
 .mg-pagination__sizer-btn--selected {
-  background-color: var(--color-surface-highlight, #e0f1ff);
-  border-color: var(--color-border-active, #1454a8);
-  color: var(--color-cta-label-on-outlined, #1454a8);
+  background-color: var(--comp-pagination-color-default-background-active);
+  border-color: var(--comp-pagination-color-default-border-active);
+  color: var(--comp-pagination-color-default-text-initial);
   z-index: 2;
 }
