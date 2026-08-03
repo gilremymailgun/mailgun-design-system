@@ -1,12 +1,12 @@
 /* ============================================
    Mailgun Navigation Component
-   All colors and spacing use design tokens
+   All colors and spacing use real Giddyup design tokens
    ============================================ */
 
 .nav-panel {
   width: 248px;
-  background: var(--color-surface-default);
-  padding: var(--spacing-16px, 16px) var(--spacing-8px, 8px) 0;
+  background: var(--comp-navigation-color-default-background-initial);
+  padding: var(--ref-spacing-16px) var(--ref-spacing-8px) 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -19,29 +19,29 @@
   justify-content: space-between;
   width: 100%;
   height: 48px;
-  padding: var(--spacing-8px) var(--spacing-12px);
-  border-radius: var(--radius-m);
+  padding: var(--ref-spacing-8px) var(--ref-spacing-12px);
+  border-radius: 8px;
   cursor: pointer;
-  font-family: var(--font-family-base, 'DM Sans', sans-serif);
-  font-size: var(--font-size-16);
-  font-weight: 500;
-  color: var(--color-text-primary);
+  font-family: var(--ref-font-family-font);
+  font-size: var(--ref-font-size-16);
+  font-weight: var(--ref-font-weight-medium);
+  color: var(--comp-navigation-color-default-text-initial);
   background: transparent;
   box-sizing: border-box;
   transition: background 0.12s ease;
   user-select: none;
 }
 
-.nav-item:hover                       { background: var(--color-surface-hover); }
+.nav-item:hover                       { background: var(--comp-navigation-color-default-background-hover); }
 .nav-item.has-active-child            { background: transparent; }
-.nav-item.has-active-child:hover      { background: var(--color-surface-hover); }
-.nav-item.is-active                   { background: var(--color-raspberry-100); }
-.nav-item.is-active:hover             { background: var(--color-raspberry-200); }
+.nav-item.has-active-child:hover      { background: var(--comp-navigation-color-default-background-hover); }
+.nav-item.is-active                   { background: var(--comp-navigation-color-selected-background-initial); }
+.nav-item.is-active:hover             { background: var(--comp-navigation-color-selected-background-hover); }
 
 .nav-item__left {
   display: flex;
   align-items: center;
-  gap: var(--spacing-12px);
+  gap: var(--ref-spacing-12px);
   flex: 1;
   min-width: 0;
   height: 100%;
@@ -54,31 +54,31 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--color-icon-default);
+  color: var(--comp-navigation-color-default-icon-initial);
 }
 .nav-item__icon svg { width: 24px; height: 24px; }
 
 .nav-item.has-active-child .nav-item__icon,
-.nav-item.is-active .nav-item__icon   { color: var(--color-cta-brand-default); }
+.nav-item.is-active .nav-item__icon   { color: var(--comp-navigation-color-selected-icon-initial); }
 
 .nav-item__label {
-  font-size: var(--font-size-16);
-  font-weight: 500;
+  font-size: var(--ref-font-size-16);
+  font-weight: var(--ref-font-weight-medium);
   line-height: 24px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.16px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .nav-item__chevron {
-  width: var(--spacing-16px);
-  height: var(--spacing-16px);
+  width: var(--ref-spacing-16px);
+  height: var(--ref-spacing-16px);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--color-icon-default);
+  color: var(--comp-navigation-color-default-icon-initial);
 }
 
 .nav-chevron-icon {
@@ -102,13 +102,13 @@
 /* ── Section label ── */
 .nav-section-label {
   width: 100%;
-  padding: var(--spacing-8px) var(--spacing-32px);
-  font-family: var(--font-family-base, 'DM Sans', sans-serif);
+  padding: var(--ref-spacing-8px) var(--ref-spacing-32px);
+  font-family: var(--ref-font-family-font);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: var(--ref-font-weight-medium);
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--color-text-secondary);
+  color: var(--sys-color-text-muted);
   box-sizing: border-box;
 }
 
@@ -116,16 +116,16 @@
 .nav-child {
   display: block;
   width: 100%;
-  border-radius: var(--radius-m);
+  border-radius: 8px;
   cursor: pointer;
   background: transparent;
   transition: background 0.12s ease;
   box-sizing: border-box;
   text-decoration: none;
 }
-.nav-child:hover               { background: var(--color-surface-hover); }
-.nav-child.is-active           { background: var(--color-raspberry-100); }
-.nav-child.is-active:hover     { background: var(--color-raspberry-200); }
+.nav-child:hover               { background: var(--comp-navigation-color-default-background-hover); }
+.nav-child.is-active           { background: var(--comp-navigation-color-selected-background-initial); }
+.nav-child.is-active:hover     { background: var(--comp-navigation-color-selected-background-hover); }
 
 /* The inner link — matches live app CSS exactly */
 .nav-child__link {
@@ -133,26 +133,26 @@
   align-items: center;
   background-color: unset;
   border: none;
-  color: var(--color-text-primary);
-  font-family: var(--font-family-base, 'DM Sans', sans-serif);
-  font-size: var(--font-size-14);
-  font-weight: 400;
-  gap: var(--spacing-12px);
+  color: var(--comp-navigation-color-default-text-initial);
+  font-family: var(--ref-font-family-font);
+  font-size: var(--ref-font-size-14);
+  font-weight: var(--ref-font-weight-regular);
+  gap: var(--ref-spacing-12px);
   height: 36px;
-  padding: 0 var(--spacing-12px) 0 var(--spacing-48px);
+  padding: 0 var(--ref-spacing-12px) 0 var(--ref-spacing-48px);
   text-decoration: none;
   width: 100%;
   box-sizing: border-box;
 }
-.nav-child.is-active .nav-child__link { font-weight: 500; }
+.nav-child.is-active .nav-child__link { font-weight: var(--ref-font-weight-medium); color: var(--comp-navigation-color-selected-text-initial); }
 
 /* Active bar — inline flex, pulled left via negative margin */
 .nav-child__bar {
-  background-color: var(--color-cta-brand-default);
+  background-color: var(--sys-color-surface-brand-default);
   border-radius: 10px;
   height: 24px;
-  margin-left: calc(var(--spacing-16px) * -1);
-  width: var(--spacing-4px);
+  margin-left: calc(var(--ref-spacing-16px) * -1);
+  width: var(--ref-spacing-4px);
   flex-shrink: 0;
 }
 
@@ -162,23 +162,24 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: inherit;
 }
 
 /* ── Tags ── */
 .nav-tag {
   display: inline-flex;
   align-items: center;
-  padding: 0 var(--spacing-4px);
+  padding: 0 var(--ref-spacing-4px);
   border-radius: 3px;
-  font-family: var(--font-family-base, 'DM Sans', sans-serif);
+  font-family: var(--ref-font-family-font);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: var(--ref-font-weight-medium);
   line-height: 20px;
-  color: var(--color-text-inverse);
+  color: var(--sys-color-basic-pure);
   flex-shrink: 0;
 }
-.nav-tag--beta { background: var(--color-tag-beta); }
-.nav-tag--new  { background: var(--color-tag-new); }
+.nav-tag--beta { background: var(--comp-tag-beta); }
+.nav-tag--new  { background: var(--comp-tag-new); }
 
 /* ── Added: collapsed mode + new layout wrappers ─────────────────────────── */
 
@@ -186,13 +187,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 8px;
+  padding: 0 var(--ref-spacing-8px);
 }
 
 .nav-panel--collapsed .nav-panel__header {
   flex-direction: column;
-  gap: 8px;
-  padding: 8px 0;
+  gap: var(--ref-spacing-8px);
+  padding: var(--ref-spacing-8px) 0;
 }
 
 .nav-panel__scroll {
@@ -200,13 +201,13 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--ref-spacing-4px);
 }
 
 .nav-panel__footer {
   display: flex;
   justify-content: center;
-  padding: 12px;
+  padding: var(--ref-spacing-12px);
 }
 
 .nav-panel--collapsed {
@@ -215,7 +216,7 @@
 
 .nav-item.is-collapsed {
   justify-content: center;
-  padding: 8px;
+  padding: var(--ref-spacing-8px);
 }
 
 .nav-item.is-collapsed .nav-item__left {
