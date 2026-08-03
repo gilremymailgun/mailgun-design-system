@@ -115,7 +115,7 @@
 }
 
 .mg-header-bar__account:hover {
-  background: var(--sys-color-surface-tertiary-hover);
+  background: transparent;
 }
 
 .mg-header-bar__account-text {
@@ -153,8 +153,16 @@
   justify-content: center;
   width: 16px;
   height: 16px;
+  padding: 8px;
+  border-radius: var(--ref-radius-s);
   color: var(--sys-color-text-default);
   flex-shrink: 0;
+  box-sizing: content-box;
+  cursor: pointer;
+}
+
+.mg-header-bar__account-chevron:hover {
+  background: var(--sys-color-surface-tertiary-hover);
 }
 .mg-header-bar__account-chevron svg {
   width: 100%;

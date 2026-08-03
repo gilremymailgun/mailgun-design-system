@@ -91,7 +91,7 @@ export const HeaderBar = ({
             {hasSubAccountTag && <Badge configuration="filled">Subaccount</Badge>}
           </div>
         </div>
-        <span className="mg-header-bar__account-chevron">
+        <span className="mg-header-bar__account-chevron" role="button" aria-label="Account menu">
           <Icon name="navigate/chevron-down-gen2" />
         </span>
       </button>
