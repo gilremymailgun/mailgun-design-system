@@ -1,98 +1,49 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useState } from 'react';
 import { Toggle } from './Toggle';
+import { Icon } from '../../icons/Icon';
 
 const meta: Meta<typeof Toggle> = {
-  title: 'Navigation/Toggle',
+  title: 'Components/Toggle',
   component: Toggle,
   tags: ['autodocs'],
 };
 export default meta;
 type Story = StoryObj<typeof Toggle>;
 
-const IconPlaceholder = () => (
-  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5"/>
-    <circle cx="6" cy="6" r="2" fill="currentColor"/>
-  </svg>
-);
-
 export const TwoItems: Story = {
   name: '2 items',
-  args: {
-    items: [
-      { value: 'a', label: 'Toggle' },
-      { value: 'b', label: 'Toggle' },
-    ],
-    defaultValue: 'b',
-  },
-};
-
-export const ThreeItems: Story = {
-  name: '3 items',
-  args: {
-    items: [
-      { value: 'a', label: 'Toggle' },
-      { value: 'b', label: 'Toggle' },
-      { value: 'c', label: 'Toggle' },
-    ],
-    defaultValue: 'c',
-  },
-};
-
-export const FourItems: Story = {
-  name: '4 items',
-  args: {
-    items: [
-      { value: 'a', label: 'Toggle' },
-      { value: 'b', label: 'Toggle' },
-      { value: 'c', label: 'Toggle' },
-      { value: 'd', label: 'Toggle' },
-    ],
-    defaultValue: 'd',
+  render: () => {
+    const [value, setValue] = useState('a');
+    return (
+      <Toggle
+        value={value}
+        onChange={setValue}
+        options={[
+          { value: 'a', label: 'Toggle', icon: <Icon name="ui/gear-gen2" /> },
+          { value: 'b', label: 'Toggle', icon: <Icon name="ui/gear-gen2" /> },
+        ]}
+      />
+    );
   },
 };
 
 export const FiveItems: Story = {
   name: '5 items',
-  args: {
-    items: [
-      { value: 'a', label: 'Toggle' },
-      { value: 'b', label: 'Toggle' },
-      { value: 'c', label: 'Toggle' },
-      { value: 'd', label: 'Toggle' },
-      { value: 'e', label: 'Toggle' },
-    ],
-    defaultValue: 'e',
+  render: () => {
+    const [value, setValue] = useState('a');
+    return (
+      <Toggle
+        value={value}
+        onChange={setValue}
+        options={[
+          { value: 'a', label: 'A' },
+          { value: 'b', label: 'B' },
+          { value: 'c', label: 'C' },
+          { value: 'd', label: 'D' },
+          { value: 'e', label: 'E' },
+        ]}
+      />
+    );
   },
-};
-
-export const WithIcons: Story = {
-  name: 'With icons',
-  args: {
-    items: [
-      { value: 'a', label: 'Toggle', icon: <IconPlaceholder /> },
-      { value: 'b', label: 'Toggle', icon: <IconPlaceholder /> },
-      { value: 'c', label: 'Toggle', icon: <IconPlaceholder /> },
-    ],
-    defaultValue: 'c',
-  },
-};
-
-export const AllSizes: Story = {
-  name: 'All sizes',
-  render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '24px' }}>
-      {[2, 3, 4, 5].map((n) => (
-        <Toggle
-          key={n}
-          defaultValue={String.fromCharCode(96 + n)}
-          items={Array.from({ length: n }, (_, i) => ({
-            value: String.fromCharCode(97 + i),
-            label: 'Toggle',
-            icon: <IconPlaceholder />,
-          }))}
-        />
-      ))}
-    </div>
-  ),
 };

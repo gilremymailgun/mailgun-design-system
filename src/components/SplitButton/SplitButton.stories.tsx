@@ -1,38 +1,30 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SplitButton } from './SplitButton';
 
 const meta: Meta<typeof SplitButton> = {
-  title: 'Navigation/Split Button',
+  title: 'Components/SplitButton',
   component: SplitButton,
   tags: ['autodocs'],
-  argTypes: {
-    label: { control: 'text' },
-    disabled: { control: 'boolean' },
-    loading: { control: 'boolean' },
-  },
 };
 export default meta;
 type Story = StoryObj<typeof SplitButton>;
 
 export const Default: Story = {
-  args: { label: 'Split' },
-};
-
-export const Disabled: Story = {
-  args: { label: 'Split', disabled: true },
+  args: {
+    label: 'Split',
+    onClick: () => alert('main action'),
+    options: [
+      { label: 'Option 1', onClick: () => alert('Option 1') },
+      { label: 'Option 2', onClick: () => alert('Option 2') },
+      { label: 'Option 3', onClick: () => alert('Option 3') },
+    ],
+  },
 };
 
 export const Loading: Story = {
-  args: { label: 'Split', loading: true },
+  args: { ...Default.args, loading: true },
 };
 
-export const AllStates: Story = {
-  name: 'All states',
-  render: () => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '24px' }}>
-      <SplitButton label="Split" />
-      <SplitButton label="Split" disabled />
-      <SplitButton label="Split" loading />
-    </div>
-  ),
+export const Disabled: Story = {
+  args: { ...Default.args, disabled: true },
 };

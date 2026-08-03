@@ -1,71 +1,68 @@
 import React, { useState } from 'react';
+import { Icon } from '../../icons/Icon';
 import './SplitButton.css';
 
+export interface SplitButtonOption {
+  label: string;
+  onClick: () => void;
+}
+
 export interface SplitButtonProps {
-  label?: string;
+  label: string;
+  onClick?: () => void;
+  options?: SplitButtonOption[];
   disabled?: boolean;
   loading?: boolean;
-  onActionClick?: () => void;
-  onDropdownClick?: () => void;
 }
 
 export const SplitButton = ({
-  label = 'Split',
+  label,
+  onClick,
+  options = [],
   disabled = false,
   loading = false,
-  onActionClick,
-  onDropdownClick,
 }: SplitButtonProps) => {
-  const [dropdownHovered, setDropdownHovered] = useState(false);
-
-  const rootClass = [
-    'mg-split-button',
-    disabled ? 'mg-split-button--disabled' : '',
-    loading ? 'mg-split-button--loading' : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className={rootClass}>
+    <div className="mg-split-button">
       <button
-        className="mg-split-button__action"
-        disabled={disabled || loading}
-        onClick={onActionClick}
         type="button"
+        className="mg-split-button__main"
+        onClick={onClick}
+        disabled={disabled || loading}
       >
-        {loading ? (
-          <span className="mg-split-button__spinner" aria-hidden="true" />
-        ) : (
-          <span className="mg-split-button__label">{label}</span>
-        )}
+        {loading ? <span className="mg-split-button__spinner" aria-hidden="true" /> : label}
       </button>
       <button
-        className="mg-split-button__chevron"
-        disabled={disabled || loading}
-        onClick={onDropdownClick}
-        onMouseEnter={() => setDropdownHovered(true)}
-        onMouseLeave={() => setDropdownHovered(false)}
-        aria-label="More options"
         type="button"
+        className="mg-split-button__trigger"
+        onClick={() => setOpen((o) => !o)}
+        disabled={disabled || loading}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={`${label} options`}
       >
-        <svg
-          width="10"
-          height="6"
-          viewBox="0 0 10 6"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <path
-            d="M1 1L5 5L9 1"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <Icon name="navigate/chevron-down-gen2" />
       </button>
+      {open && options.length > 0 && (
+        <div className="mg-split-button__menu" role="menu">
+          {options.map((option, i) => (
+            <button
+              key={i}
+              type="button"
+              role="menuitem"
+              className="mg-split-button__menu-item"
+              onClick={() => {
+                option.onClick();
+                setOpen(false);
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
