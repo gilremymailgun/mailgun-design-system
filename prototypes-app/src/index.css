@@ -1,0 +1,18 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--ref-font-family-font);
+  background: var(--sys-color-surface-canvas-default);
+  color: var(--sys-color-text-default);
+}

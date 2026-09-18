@@ -1,0 +1,16 @@
+/* Same technique as the design system's Button loading spinner (mg-button__spinner),
+   scaled up as a standalone component — there's no dedicated Spinner export yet. */
+
+.proto-spinner {
+  display: inline-block;
+  border-radius: var(--ref-radius-full);
+  border: 3px solid var(--sys-color-border-subtle);
+  border-top-color: var(--sys-color-primary-default);
+  animation: proto-spinner-spin 0.7s linear infinite;
+}
+
+@keyframes proto-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

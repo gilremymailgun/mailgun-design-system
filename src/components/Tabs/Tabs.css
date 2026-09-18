@@ -1,0 +1,72 @@
+/* ============================================
+   Mailgun Tabs Component
+   All colors and spacing use design tokens
+   ============================================ */
+
+.tabs {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  border-bottom: 1px solid var(--color-border-subtle, #dce2e5);
+  background: var(--color-surface-default, #ffffff);
+  box-sizing: border-box;
+}
+
+/* ── Tab button ── */
+.tabs__tab {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4px, 4px);
+  padding: var(--spacing-8px, 8px) var(--spacing-12px, 12px);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-family: var(--font-family-base, 'DM Sans', sans-serif);
+  font-size: var(--font-size-14, 14px);
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary, #272f36);
+  white-space: nowrap;
+  transition: background 0.12s ease, color 0.12s ease;
+  margin-bottom: -1px;
+  box-sizing: border-box;
+}
+
+/* Default hover */
+.tabs__tab:hover:not(.tabs__tab--selected):not(.tabs__tab--disabled) {
+  background: var(--color-surface-hover, #f7f9fa);
+  border-bottom-color: var(--color-border-subtle, #dce2e5);
+}
+
+/* Selected */
+.tabs__tab--selected {
+  color: var(--color-cta-label-on-outlined, #1454a8);
+  border-bottom-color: var(--color-cta-label-on-outlined, #1454a8);
+  background: transparent;
+}
+
+/* Disabled */
+.tabs__tab--disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ── Tab label ── */
+.tabs__tab-label {
+  display: block;
+}
+
+/* ── Supporting text ── */
+.tabs__tab-supporting {
+  font-size: var(--font-size-12, 12px);
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+.tabs__tab--selected .tabs__tab-supporting {
+  color: var(--color-cta-label-on-outlined, #1454a8);
+}

@@ -1,0 +1,42 @@
+.signup-transition {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sys-color-surface-canvas-default);
+  padding: var(--ref-spacing-24px);
+}
+
+.signup-transition__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ref-spacing-24px);
+  max-width: 360px;
+  text-align: center;
+}
+
+.signup-transition__target {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ref-spacing-8px);
+}
+
+.signup-transition__heading {
+  margin: 0;
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-medium);
+  font-size: var(--ref-font-size-16);
+  color: var(--sys-color-text-default);
+}
+
+.signup-transition__copy {
+  margin: 0;
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-regular);
+  font-size: var(--ref-font-size-14);
+  line-height: 22px;
+  letter-spacing: -0.14px;
+  color: var(--sys-color-text-muted);
+}
