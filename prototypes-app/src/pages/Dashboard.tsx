@@ -1,7 +1,11 @@
 import { Page } from '@ds/patterns/Page/Page';
 import { GetStartedGuideContent } from './GetStartedGuide';
 
-export const Dashboard = () => (
+interface DashboardProps {
+  scoreMode?: 'reveal' | 'guess';
+}
+
+export const Dashboard = ({ scoreMode = 'reveal' }: DashboardProps) => (
   <Page
     navigationProps={{ defaultActive: 'dashboard' }}
     headerProps={{ accountName: 'Bob', accountCompany: 'Acme, Inc.', hasSubAccountTag: false }}
@@ -9,7 +13,7 @@ export const Dashboard = () => (
       title: 'Good morning, Bob!',
     }}
   >
-    <GetStartedGuideContent />
+    <GetStartedGuideContent emailHealthScoreMode={scoreMode} />
   </Page>
 );
 

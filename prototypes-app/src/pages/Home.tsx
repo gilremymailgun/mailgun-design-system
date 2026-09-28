@@ -14,6 +14,11 @@ const prototypes: PrototypeLink[] = [
     description: 'Email performance, domain health, and recent sending activity.',
   },
   {
+    href: '/dashboard-guess',
+    title: 'Mailgun dashboard: guess your score',
+    description: 'A dashboard variant that invites users to guess their email health score.',
+  },
+  {
     href: '/get-started-guide',
     title: 'Get started guide',
     description: 'Onboarding page walking new users through initial account setup.',

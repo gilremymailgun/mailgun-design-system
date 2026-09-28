@@ -67,6 +67,29 @@ body {
   animation: email-health-spin 0.9s linear infinite;
 }
 
+.email-health-guess-control {
+  width: min(100%, 300px);
+  display: grid;
+  grid-template-columns: auto minmax(70px, 1fr) 30px;
+  align-items: center;
+  gap: 10px;
+  color: var(--ref-color-neutral-700);
+  font-size: var(--ref-font-size-12);
+  white-space: nowrap;
+}
+
+.email-health-guess-control input {
+  width: 100%;
+  accent-color: var(--ref-color-ocean-700);
+}
+
+.email-health-guess-control output {
+  color: var(--ref-color-neutral-950);
+  font-size: var(--ref-font-size-16);
+  font-weight: var(--ref-font-weight-semibold);
+  text-align: right;
+}
+
 @keyframes email-health-spin {
   to {
     transform: rotate(360deg);

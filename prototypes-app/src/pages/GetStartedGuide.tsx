@@ -164,10 +164,11 @@ const ScoreGauge = ({ score, color }: { score: number; color: string }) => (
   </div>
 );
 
-const EmailHealthScore = () => {
+const EmailHealthScore = ({ mode = 'reveal' }: { mode?: 'reveal' | 'guess' }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [state, setState] = useState<'ready' | 'loading' | 'revealed'>('ready');
   const [score, setScore] = useState(0);
+  const [guess, setGuess] = useState(50);
   const [hasInteracted, setHasInteracted] = useState(false);
   const frameRef = useRef<number | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -220,11 +221,24 @@ const EmailHealthScore = () => {
               </svg>
             </div>
             <div style={{ minWidth: 0, flex: '1 1 0%' }}>
-              <h2 style={{ margin: '0 0 3px', color: '#272F36', fontSize: '16px', fontWeight: 500, lineHeight: '24px' }}>Your email health score is ready!</h2>
-              <p style={{ margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>Monitors your email, domain, and IP reputation to help you identify and fix deliverability issues.</p>
+              <h2 style={{ margin: '0 0 3px', color: '#272F36', fontSize: '16px', fontWeight: 500, lineHeight: '24px' }}>
+                {mode === 'guess' ? 'What do you think your email health score is?' : 'Your email health score is ready!'}
+              </h2>
+              <p style={{ margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>
+                {mode === 'guess' ? 'Make a guess, then reveal your score to see how close you were.' : 'Monitors your email, domain, and IP reputation to help you identify and fix deliverability issues.'}
+              </p>
             </div>
           </div>
-          <button type="button" onClick={revealScore} style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: 0, borderRadius: '4px', background: '#1454A8', color: 'white', fontSize: '14px', lineHeight: '22px', cursor: 'pointer' }}>See my score</button>
+          {mode === 'guess' && (
+            <label className="email-health-guess-control">
+              <span>Your guess</span>
+              <input type="range" min="0" max="100" value={guess} onChange={(event) => setGuess(Number(event.currentTarget.value))} aria-label="Guess your email health score" />
+              <output>{guess}</output>
+            </label>
+          )}
+          <button type="button" onClick={revealScore} style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: 0, borderRadius: '4px', background: '#1454A8', color: 'white', fontSize: '14px', lineHeight: '22px', cursor: 'pointer' }}>
+            {mode === 'guess' ? 'Reveal my score' : 'See my score'}
+          </button>
         </>
       )}
 
@@ -247,7 +261,9 @@ const EmailHealthScore = () => {
             <ScoreGauge score={score} color={zone.color} />
             <div style={{ minWidth: 0, flex: '1 1 300px' }}>
               <p style={{ margin: '0 0 3px', color: zone.textColor, fontSize: '16px', fontWeight: 600, lineHeight: '24px' }}>{score}/100: {zone.name}</p>
-              <p style={{ margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>{zone.caption}</p>
+              <p style={{ margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>
+                {mode === 'guess' ? `Your guess was ${guess}. You were ${Math.abs(score - guess)} points away. ` : ''}{zone.caption}
+              </p>
             </div>
             <button type="button" style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: '1px solid #1454A8', borderRadius: '4px', background: '#fff', color: '#1454A8', fontSize: '14px', lineHeight: '22px', cursor: 'default' }}>See full report</button>
           </>
@@ -261,9 +277,15 @@ const EmailHealthScore = () => {
   );
 };
 
-export const GetStartedGuideContent = ({ showEmailHealthScore = true }: { showEmailHealthScore?: boolean }) => (
+export const GetStartedGuideContent = ({
+  showEmailHealthScore = true,
+  emailHealthScoreMode = 'reveal',
+}: {
+  showEmailHealthScore?: boolean;
+  emailHealthScoreMode?: 'reveal' | 'guess';
+}) => (
   <>
-    {showEmailHealthScore && <EmailHealthScore />}
+    {showEmailHealthScore && <EmailHealthScore mode={emailHealthScoreMode} />}
     <div style={{ marginTop: '12px' }}>
       <Tabs tabs={tabs} defaultActiveId="send" />
     </div>
