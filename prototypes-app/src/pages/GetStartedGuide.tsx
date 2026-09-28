@@ -275,7 +275,7 @@ const EmailHealthScore = ({ mode = 'reveal' }: { mode?: 'reveal' | 'guess' }) =>
               </p>
               {mode === 'guess' && (
                 <p style={{ margin: '4px 0 0', color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>
-                  You guessed {guess} — {Math.abs(score - guess)} points off.
+                  You guessed {guess} - {Math.abs(score - guess)} points off.
                 </p>
               )}
             </div>
