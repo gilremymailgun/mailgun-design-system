@@ -113,42 +113,50 @@ const cards = [
   },
 ];
 
-const scoreGaugeLength = 210.5;
-const targetScore = 76;
-
 const scoreZone = (score: number) => {
-  if (score < 70) return 'var(--ref-color-raspberry-600)';
-  if (score <= 85) return 'var(--ref-color-honey-400)';
-  return 'var(--ref-color-tropical-500)';
+  if (score < 70) {
+    return {
+      name: 'BAD',
+      color: '#DD4040',
+      textColor: '#8F2C1F',
+      caption: 'Significant issues are hurting your deliverability - action needed.',
+    };
+  }
+  if (score <= 85) {
+    return {
+      name: 'MEDIUM',
+      color: 'var(--ref-color-honey-400)',
+      textColor: '#8F3D1F',
+      caption: 'Solid standing but a few signals are worth cleaning up.',
+    };
+  }
+  return {
+    name: 'GOOD',
+    color: '#189269',
+    textColor: '#1F6B3D',
+    caption: 'Excellent standing - keep up the good work.',
+  };
 };
 
 const ScoreGauge = ({ score, color }: { score: number; color: string }) => (
-  <div style={{ position: 'relative', width: '150px', height: '75px', flex: '0 0 auto', overflow: 'hidden' }}>
-    <svg width="150" height="75" viewBox="0 0 150 75" aria-hidden="true">
-      <path d="M8,75 A67,67 0 0,1 142,75" fill="none" stroke="var(--ref-color-neutral-300)" strokeWidth="14" strokeLinecap="round" />
-      <line x1="110.27" y1="26.46" x2="118.5" y2="15.13" stroke="white" strokeWidth="2.5" />
-      <line x1="128.46" y1="47.76" x2="141.93" y2="41.41" stroke="white" strokeWidth="2.5" />
-      <path
-        d="M8,75 A67,67 0 0,1 142,75"
-        fill="none"
-        stroke={color}
-        strokeWidth="14"
-        strokeLinecap="round"
-        strokeDasharray={scoreGaugeLength}
-        strokeDashoffset={scoreGaugeLength * (1 - score / 100)}
-      />
+  <div style={{ position: 'relative', width: '48px', height: '48px', flex: '0 0 auto' }}>
+    <svg viewBox="0 0 48 48" aria-hidden="true" style={{ width: '48px', height: '48px', transform: 'rotate(-90deg)' }}>
+      <circle cx="24" cy="24" r="20" fill="none" stroke="var(--ref-color-neutral-100)" strokeWidth="4" />
+      <circle cx="24" cy="24" r="20" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeDasharray="125.7" strokeDashoffset={125.7 * (1 - score / 100)} />
     </svg>
     <div
+      className="email-health-ring-num"
       style={{
         position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         textAlign: 'center',
-        fontSize: 'var(--ref-font-size-24)',
+        fontSize: '20px',
         fontWeight: 700,
-        lineHeight: 'var(--ref-line-height-32)',
-        color: 'var(--ref-color-neutral-950)',
+        lineHeight: '24px',
+        color: '#14181C',
       }}
     >
       {Math.round(score)}
@@ -160,6 +168,7 @@ const EmailHealthScore = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [state, setState] = useState<'ready' | 'loading' | 'revealed'>('ready');
   const [score, setScore] = useState(0);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const frameRef = useRef<number | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -169,9 +178,12 @@ const EmailHealthScore = () => {
   }, []);
 
   const revealScore = () => {
-    if (state !== 'ready') return;
+    if (state === 'loading') return;
+    setHasInteracted(true);
     setState('loading');
     setScore(0);
+    // Demo-only randomization keeps Bad, Medium, and Good reachable in the prototype.
+    const targetScore = Math.floor(Math.random() * 101);
     const startedAt = performance.now();
 
     const animate = (now: number) => {
@@ -191,74 +203,67 @@ const EmailHealthScore = () => {
     frameRef.current = requestAnimationFrame(animate);
   };
 
-  const cardStyle = {
-    background: 'var(--sys-color-surface-elevated-default)',
-    border: '1px solid var(--sys-color-border-subtle)',
-    borderRadius: '8px',
-    overflow: 'hidden',
-  };
-
   if (!isVisible) return null;
 
   return (
-    <section style={cardStyle}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid var(--sys-color-border-subtle)' }}>
-        <span style={{ fontSize: 'var(--ref-font-size-16)', lineHeight: 'var(--ref-line-height-24)', color: 'var(--ref-color-neutral-800)' }}>
-          Email health score
-        </span>
-        <button
-          type="button"
-          onClick={() => setIsVisible(false)}
-          aria-label="Close email health score"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', padding: 0, border: 0, background: 'transparent', color: 'var(--sys-color-text-muted)', cursor: 'pointer' }}
-        >
-          <Icon name="navigate/close-small-gen2" size={16} />
-        </button>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '16px', minHeight: '221px', padding: '16px 24px', boxSizing: 'border-box' }}>
-        {state === 'ready' && (
-          <>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', height: '75px', flexShrink: 0, width: '100%' }}>
-              <div className="email-health-check-badge" style={{ width: '50px', height: '50px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: 'var(--ref-color-tropical-400)' }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path className="email-health-check-path" d="M4 12l5 5L20 6" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <h4 style={{ margin: 0, fontSize: 'var(--ref-font-size-20)', fontWeight: 700, lineHeight: 'var(--ref-line-height-24)', color: 'var(--ref-color-neutral-800)' }}>Your score is ready!</h4>
+    <section
+      aria-label="Email health score"
+      style={{ display: 'flex', alignItems: 'center', gap: '20px', minHeight: '88px', marginBottom: '20px', padding: '16px 24px', border: '1px solid var(--ref-color-neutral-200)', borderRadius: '3px', background: 'var(--sys-color-surface-elevated-default)' }}
+    >
+      {state === 'ready' && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 400px', minWidth: 0 }}>
+            <div className={`email-health-check-badge${hasInteracted ? ' has-interacted' : ''}`} style={{ width: '48px', height: '48px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: 'var(--ref-color-grass-400)' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M6 10a6 6 0 0 1 12 0c0 4.2 1.6 5.8 1.6 5.8H4.4S6 14.2 6 10Z" />
+                <path d="M10.3 18.5a1.8 1.8 0 0 0 3.4 0" />
+              </svg>
             </div>
-            <p style={{ width: '100%', minHeight: '44px', margin: 0, fontSize: 'var(--ref-font-size-14)', lineHeight: 'var(--ref-line-height-20)', color: 'var(--ref-color-neutral-800)' }}>Monitors your email, domain, and IP reputation to help you identify and fix deliverability issues.</p>
-            <button type="button" onClick={revealScore} style={{ height: '38px', padding: '8px 16px', border: 0, borderRadius: '4px', background: 'var(--ref-color-ocean-700)', color: 'white', fontSize: 'var(--ref-font-size-14)', lineHeight: '22px', cursor: 'pointer' }}>See my score</button>
-          </>
-        )}
-
-        {state === 'loading' && (
-          <>
-            <div style={{ display: 'flex', alignItems: 'center', height: '75px', flexShrink: 0, width: '100%' }}><ScoreGauge score={score} color={scoreZone(score)} /></div>
-            <p style={{ width: '100%', minHeight: '44px', margin: 0, fontSize: 'var(--ref-font-size-14)', lineHeight: 'var(--ref-line-height-20)', color: 'var(--ref-color-neutral-600)' }}>Calculating your score...</p>
-          </>
-        )}
-
-        {state === 'revealed' && (
-          <>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', height: '75px', flexShrink: 0, width: '100%' }}>
-              <ScoreGauge score={targetScore} color={scoreZone(targetScore)} />
-              <span style={{ fontSize: 'var(--ref-font-size-24)', fontWeight: 500, lineHeight: 'var(--ref-line-height-32)', letterSpacing: '-0.48px', color: 'var(--ref-color-honey-600)' }}>MEDIUM</span>
+            <div style={{ minWidth: 0, flex: '1 1 0%' }}>
+              <h2 style={{ margin: '0 0 3px', color: '#272F36', fontSize: '16px', fontWeight: 500, lineHeight: '24px' }}>Your email health score is ready!</h2>
+              <p style={{ margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>Monitors your email, domain, and IP reputation to help you identify and fix deliverability issues.</p>
             </div>
-            <p style={{ width: '100%', minHeight: '44px', margin: 0, fontSize: 'var(--ref-font-size-14)', lineHeight: 'var(--ref-line-height-20)', color: 'var(--ref-color-neutral-800)' }}><strong style={{ fontWeight: 500, lineHeight: '24px' }}>76/100</strong>: Solid standing but a few signals are worth cleaning up.</p>
-            <button type="button" style={{ height: '38px', padding: '8px 16px', border: '1px solid var(--ref-color-ocean-700)', borderRadius: '4px', background: 'var(--sys-color-surface-elevated-default)', color: 'var(--ref-color-ocean-700)', fontSize: 'var(--ref-font-size-14)', lineHeight: '22px', cursor: 'pointer' }}>See full report</button>
+          </div>
+          <button type="button" onClick={revealScore} style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: 0, borderRadius: '4px', background: '#1454A8', color: 'white', fontSize: '14px', lineHeight: '22px', cursor: 'pointer' }}>See my score</button>
+        </>
+      )}
+
+      {state === 'loading' && (
+        <>
+          <div className="email-health-loading-ring" style={{ width: '48px', height: '48px', flex: '0 0 auto' }}>
+            <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
+              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--ref-color-neutral-100)" strokeWidth="4" />
+              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--ref-color-ocean-500)" strokeWidth="4" strokeLinecap="round" strokeDasharray="31 126" />
+            </svg>
+          </div>
+          <p style={{ flex: '1 1 auto', margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>Calculating your score...</p>
+        </>
+      )}
+
+      {state === 'revealed' && (() => {
+        const zone = scoreZone(score);
+        return (
+          <>
+            <ScoreGauge score={score} color={zone.color} />
+            <div style={{ minWidth: 0, flex: '1 1 300px' }}>
+              <p style={{ margin: '0 0 3px', color: zone.textColor, fontSize: '16px', fontWeight: 600, lineHeight: '24px' }}>{score}/100: {zone.name}</p>
+              <p style={{ margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>{zone.caption}</p>
+            </div>
+            <button type="button" style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: '1px solid #1454A8', borderRadius: '4px', background: '#fff', color: '#1454A8', fontSize: '14px', lineHeight: '22px', cursor: 'default' }}>See full report</button>
           </>
-        )}
-      </div>
+        );
+      })()}
+
+      <button type="button" onClick={() => setIsVisible(false)} aria-label="Dismiss email health score" style={{ width: '24px', height: '24px', display: 'flex', flex: '0 0 auto', alignItems: 'center', justifyContent: 'center', padding: 0, border: 0, background: 'transparent', color: '#131B20', cursor: 'pointer' }}>
+        <Icon name="navigate/close-small-gen2" size={16} />
+      </button>
     </section>
   );
 };
 
-export const GetStartedGuide = () => (
-  <Page
-    pageHeaderProps={{
-      title: 'Good morning, Bob!',
-    }}
-  >
+export const GetStartedGuideContent = ({ showEmailHealthScore = true }: { showEmailHealthScore?: boolean }) => (
+  <>
+    {showEmailHealthScore && <EmailHealthScore />}
     <div style={{ marginTop: '12px' }}>
       <Tabs tabs={tabs} defaultActiveId="send" />
     </div>
@@ -552,7 +557,6 @@ export const GetStartedGuide = () => (
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <EmailHealthScore />
         <section
           style={{
             background: 'var(--sys-color-surface-elevated-default)',
@@ -596,6 +600,12 @@ export const GetStartedGuide = () => (
         </section>
       </div>
     </div>
+  </>
+);
+
+export const GetStartedGuide = () => (
+  <Page pageHeaderProps={{ title: 'Good morning, Bob!' }}>
+    <GetStartedGuideContent />
   </Page>
 );
 

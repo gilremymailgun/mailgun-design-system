@@ -1,11 +1,16 @@
 import { Home } from './pages/Home';
 import { SignupTransition } from './pages/SignupTransition';
 import { GetStartedGuide } from './pages/GetStartedGuide';
+import { Dashboard } from './pages/Dashboard';
 
-// Plain pathname switch, no router — links are regular <a> tags (full page loads).
-// Fine for a handful of prototype pages; add a router if this grows past that.
+// Hash routes keep the prototype refresh-safe under GitHub Pages subpaths.
 export const App = () => {
-  switch (window.location.pathname) {
+  const hashPath = window.location.hash.slice(1);
+  const pathname = hashPath || window.location.pathname.replace(import.meta.env.BASE_URL, '/') || '/';
+
+  switch (pathname) {
+    case '/dashboard':
+      return <Dashboard />;
     case '/signup-transition':
       return <SignupTransition />;
     case '/get-started-guide':
