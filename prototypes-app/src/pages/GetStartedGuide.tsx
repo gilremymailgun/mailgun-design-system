@@ -168,7 +168,7 @@ const EmailHealthScore = ({ mode = 'reveal' }: { mode?: 'reveal' | 'guess' }) =>
   const [isVisible, setIsVisible] = useState(true);
   const [state, setState] = useState<'ready' | 'loading' | 'revealed'>('ready');
   const [score, setScore] = useState(0);
-  const [guess, setGuess] = useState(50);
+  const [guess, setGuess] = useState(0);
   const [hasInteracted, setHasInteracted] = useState(false);
   const frameRef = useRef<number | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -214,30 +214,39 @@ const EmailHealthScore = ({ mode = 'reveal' }: { mode?: 'reveal' | 'guess' }) =>
       {state === 'ready' && (
         <>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 400px', minWidth: 0 }}>
-            <div className={`email-health-check-badge${hasInteracted ? ' has-interacted' : ''}`} style={{ width: '48px', height: '48px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: 'var(--ref-color-grass-400)' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M6 10a6 6 0 0 1 12 0c0 4.2 1.6 5.8 1.6 5.8H4.4S6 14.2 6 10Z" />
-                <path d="M10.3 18.5a1.8 1.8 0 0 0 3.4 0" />
-              </svg>
-            </div>
+            {mode === 'guess' ? (
+              <ScoreGauge score={guess} color={scoreZone(guess).color} />
+            ) : (
+              <div className={`email-health-check-badge${hasInteracted ? ' has-interacted' : ''}`} style={{ width: '48px', height: '48px', flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: 'var(--ref-color-grass-400)' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M6 10a6 6 0 0 1 12 0c0 4.2 1.6 5.8 1.6 5.8H4.4S6 14.2 6 10Z" />
+                  <path d="M10.3 18.5a1.8 1.8 0 0 0 3.4 0" />
+                </svg>
+              </div>
+            )}
             <div style={{ minWidth: 0, flex: '1 1 0%' }}>
               <h2 style={{ margin: '0 0 3px', color: '#272F36', fontSize: '16px', fontWeight: 500, lineHeight: '24px' }}>
-                {mode === 'guess' ? 'What do you think your email health score is?' : 'Your email health score is ready!'}
+                {mode === 'guess' ? 'Estimate your sender reputation score' : 'Your email health score is ready!'}
               </h2>
               <p style={{ margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>
-                {mode === 'guess' ? 'Make a guess, then reveal your score to see how close you were.' : 'Monitors your email, domain, and IP reputation to help you identify and fix deliverability issues.'}
+                {mode === 'guess' ? 'Drag the slider to benchmark your estimate against your current score.' : 'Monitors your email, domain, and IP reputation to help you identify and fix deliverability issues.'}
               </p>
+              {mode === 'guess' && (
+                <div className="email-health-score-legend" aria-label="Score categories">
+                  <span><i className="is-bad" />Bad &lt;70</span>
+                  <span><i className="is-medium" />Medium 70-85</span>
+                  <span><i className="is-good" />Good &gt;85</span>
+                </div>
+              )}
             </div>
           </div>
           {mode === 'guess' && (
-            <label className="email-health-guess-control">
-              <span>Your guess</span>
+            <div className="email-health-guess-control">
               <input type="range" min="0" max="100" value={guess} onChange={(event) => setGuess(Number(event.currentTarget.value))} aria-label="Guess your email health score" />
-              <output>{guess}</output>
-            </label>
+            </div>
           )}
           <button type="button" onClick={revealScore} style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: 0, borderRadius: '4px', background: '#1454A8', color: 'white', fontSize: '14px', lineHeight: '22px', cursor: 'pointer' }}>
-            {mode === 'guess' ? 'Reveal my score' : 'See my score'}
+            {mode === 'guess' ? 'See actual score' : 'See my score'}
           </button>
         </>
       )}
@@ -262,8 +271,13 @@ const EmailHealthScore = ({ mode = 'reveal' }: { mode?: 'reveal' | 'guess' }) =>
             <div style={{ minWidth: 0, flex: '1 1 300px' }}>
               <p style={{ margin: '0 0 3px', color: zone.textColor, fontSize: '16px', fontWeight: 600, lineHeight: '24px' }}>{score}/100: {zone.name}</p>
               <p style={{ margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>
-                {mode === 'guess' ? `Your guess was ${guess}. You were ${Math.abs(score - guess)} points away. ` : ''}{zone.caption}
+                {zone.caption}
               </p>
+              {mode === 'guess' && (
+                <p style={{ margin: '4px 0 0', color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>
+                  You guessed {guess} — {Math.abs(score - guess)} points off.
+                </p>
+              )}
             </div>
             <button type="button" style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: '1px solid #1454A8', borderRadius: '4px', background: '#fff', color: '#1454A8', fontSize: '14px', lineHeight: '22px', cursor: 'default' }}>See full report</button>
           </>

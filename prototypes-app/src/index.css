@@ -68,26 +68,52 @@ body {
 }
 
 .email-health-guess-control {
-  width: min(100%, 300px);
-  display: grid;
-  grid-template-columns: auto minmax(70px, 1fr) 30px;
+  width: min(100%, 190px);
+  flex: 0 1 190px;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  color: var(--ref-color-neutral-700);
-  font-size: var(--ref-font-size-12);
-  white-space: nowrap;
+  min-width: 100px;
 }
 
 .email-health-guess-control input {
   width: 100%;
+  margin: 0;
   accent-color: var(--ref-color-ocean-700);
 }
 
-.email-health-guess-control output {
-  color: var(--ref-color-neutral-950);
-  font-size: var(--ref-font-size-16);
-  font-weight: var(--ref-font-weight-semibold);
-  text-align: right;
+.email-health-score-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 9px;
+  color: var(--ref-color-neutral-800);
+  font-size: var(--ref-font-size-12);
+  line-height: var(--ref-line-height-16);
+}
+
+.email-health-score-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.email-health-score-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.email-health-score-legend .is-bad {
+  background: #DD4040;
+}
+
+.email-health-score-legend .is-medium {
+  background: var(--ref-color-honey-400);
+}
+
+.email-health-score-legend .is-good {
+  background: #189269;
 }
 
 @keyframes email-health-spin {
