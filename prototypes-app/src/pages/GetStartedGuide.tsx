@@ -293,7 +293,7 @@ const EmailHealthScore = ({ mode = 'reveal' }: { mode?: 'reveal' | 'guess' }) =>
         );
       })()}
 
-      <button type="button" onClick={() => setIsVisible(false)} aria-label="Dismiss email health score" className={mode === 'guess' ? 'email-health-score-banner__dismiss' : undefined} style={{ width: '24px', height: '24px', display: 'flex', flex: '0 0 auto', alignItems: 'center', justifyContent: 'center', padding: 0, border: 0, background: 'transparent', color: '#131B20', cursor: 'pointer' }}>
+      <button type="button" onClick={() => setIsVisible(false)} aria-label="Dismiss email health score" className="email-health-score-banner__dismiss" style={{ width: '24px', height: '24px', display: 'flex', flex: '0 0 auto', alignItems: 'center', justifyContent: 'center', padding: 0, border: 0, background: 'transparent', color: '#131B20', cursor: 'pointer' }}>
         <Icon name="navigate/close-small-gen2" size={16} />
       </button>
     </section>
