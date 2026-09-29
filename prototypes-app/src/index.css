@@ -17,6 +17,103 @@ body {
   color: var(--sys-color-text-default);
 }
 
+.email-health-score-banner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.email-health-score-banner__actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 20px;
+}
+
+.email-health-score-banner--guess {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) 24px;
+  gap: clamp(16px, 2vw, 28px);
+}
+
+.email-health-score-banner--guess .email-health-score-banner__copy {
+  width: 100%;
+  max-width: 560px;
+}
+
+.email-health-score-banner--guess .email-health-score-banner__actions {
+  min-width: 0;
+  width: 100%;
+  gap: clamp(16px, 2vw, 28px);
+}
+
+.email-health-score-banner--guess .email-health-guess-control {
+  min-width: 0;
+  width: auto;
+  flex: 1 1 auto;
+}
+
+.email-health-score-banner--guess .email-health-guess-control input {
+  max-width: 360px;
+}
+
+.email-health-score-banner--guess > button[aria-label="Dismiss email health score"] {
+  grid-column: 3;
+}
+
+@media (max-width: 1080px) {
+  .email-health-score-banner--guess {
+    grid-template-columns: minmax(0, 1fr) 24px;
+    row-gap: 16px;
+  }
+
+  .email-health-score-banner--guess .email-health-score-banner__copy {
+    grid-column: 1;
+    max-width: none;
+  }
+
+  .email-health-score-banner--guess .email-health-score-banner__actions {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: 520px;
+  }
+
+  .email-health-score-banner--guess > button[aria-label="Dismiss email health score"] {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  .email-health-score-banner--guess {
+    gap: 12px;
+    padding: 14px 16px !important;
+  }
+
+  .email-health-score-banner--guess .email-health-score-banner__copy {
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .email-health-score-banner--guess .email-health-score-legend {
+    gap: 8px 12px;
+  }
+
+  .email-health-score-banner--guess .email-health-score-banner__actions {
+    gap: 12px;
+  }
+
+  .email-health-score-banner--guess .email-health-guess-control {
+    min-width: 80px;
+  }
+
+  .email-health-score-banner--guess .email-health-score-banner__actions > button {
+    padding-right: 10px !important;
+    padding-left: 10px !important;
+    white-space: nowrap;
+  }
+}
+
 @keyframes email-health-badge-pop {
   0% {
     opacity: 0;

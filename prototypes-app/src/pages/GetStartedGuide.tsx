@@ -208,12 +208,13 @@ const EmailHealthScore = ({ mode = 'reveal' }: { mode?: 'reveal' | 'guess' }) =>
 
   return (
     <section
+      className={mode === 'guess' ? 'email-health-score-banner email-health-score-banner--guess' : 'email-health-score-banner'}
       aria-label="Email health score"
-      style={{ display: 'flex', alignItems: 'center', gap: '20px', minHeight: '88px', marginBottom: '20px', padding: '16px 24px', border: '1px solid var(--ref-color-neutral-200)', borderRadius: '3px', background: 'var(--sys-color-surface-elevated-default)' }}
+      style={{ minHeight: '88px', marginBottom: '20px', padding: '16px 24px', border: '1px solid var(--ref-color-neutral-200)', borderRadius: '3px', background: 'var(--sys-color-surface-elevated-default)' }}
     >
       {state === 'ready' && (
         <>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 400px', minWidth: 0 }}>
+          <div className="email-health-score-banner__copy" style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: '1 1 400px', minWidth: 0 }}>
             {mode === 'guess' ? (
               <ScoreGauge score={guess} color={scoreZone(guess).color} />
             ) : (
@@ -240,26 +241,30 @@ const EmailHealthScore = ({ mode = 'reveal' }: { mode?: 'reveal' | 'guess' }) =>
               )}
             </div>
           </div>
-          {mode === 'guess' && (
-            <div className="email-health-guess-control">
-              <input type="range" min="0" max="100" value={guess} onChange={(event) => setGuess(Number(event.currentTarget.value))} aria-label="Guess your email health score" />
-            </div>
-          )}
-          <button type="button" onClick={revealScore} style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: 0, borderRadius: '4px', background: '#1454A8', color: 'white', fontSize: '14px', lineHeight: '22px', cursor: 'pointer' }}>
-            {mode === 'guess' ? 'See actual score' : 'See my score'}
-          </button>
+          <div className="email-health-score-banner__actions">
+            {mode === 'guess' && (
+              <div className="email-health-guess-control">
+                <input type="range" min="0" max="100" value={guess} onChange={(event) => setGuess(Number(event.currentTarget.value))} aria-label="Guess your email health score" />
+              </div>
+            )}
+            <button type="button" onClick={revealScore} style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: 0, borderRadius: '4px', background: '#1454A8', color: 'white', fontSize: '14px', lineHeight: '22px', cursor: 'pointer' }}>
+              {mode === 'guess' ? 'See actual score' : 'See my score'}
+            </button>
+          </div>
         </>
       )}
 
       {state === 'loading' && (
         <>
-          <div className="email-health-loading-ring" style={{ width: '48px', height: '48px', flex: '0 0 auto' }}>
-            <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
-              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--ref-color-neutral-100)" strokeWidth="4" />
-              <circle cx="24" cy="24" r="20" fill="none" stroke="var(--ref-color-ocean-500)" strokeWidth="4" strokeLinecap="round" strokeDasharray="31 126" />
-            </svg>
+          <div className="email-health-score-banner__copy" style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: 0 }}>
+            <div className="email-health-loading-ring" style={{ width: '48px', height: '48px', flex: '0 0 auto' }}>
+              <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
+                <circle cx="24" cy="24" r="20" fill="none" stroke="var(--ref-color-neutral-100)" strokeWidth="4" />
+                <circle cx="24" cy="24" r="20" fill="none" stroke="var(--ref-color-ocean-500)" strokeWidth="4" strokeLinecap="round" strokeDasharray="31 126" />
+              </svg>
+            </div>
+            <p style={{ flex: '1 1 auto', margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>Calculating your score...</p>
           </div>
-          <p style={{ flex: '1 1 auto', margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>Calculating your score...</p>
         </>
       )}
 
@@ -267,19 +272,23 @@ const EmailHealthScore = ({ mode = 'reveal' }: { mode?: 'reveal' | 'guess' }) =>
         const zone = scoreZone(score);
         return (
           <>
-            <ScoreGauge score={score} color={zone.color} />
-            <div style={{ minWidth: 0, flex: '1 1 300px' }}>
-              <p style={{ margin: '0 0 3px', color: zone.textColor, fontSize: '16px', fontWeight: 600, lineHeight: '24px' }}>{score}/100: {zone.name}</p>
-              <p style={{ margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>
-                {zone.caption}
-              </p>
-              {mode === 'guess' && (
-                <p style={{ margin: '4px 0 0', color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>
-                  You guessed {guess} - {Math.abs(score - guess)} points off.
+            <div className="email-health-score-banner__copy" style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: 0, flex: '1 1 300px' }}>
+              <ScoreGauge score={score} color={zone.color} />
+              <div style={{ minWidth: 0, flex: '1 1 0%' }}>
+                <p style={{ margin: '0 0 3px', color: zone.textColor, fontSize: '16px', fontWeight: 600, lineHeight: '24px' }}>{score}/100: {zone.name}</p>
+                <p style={{ margin: 0, color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>
+                  {zone.caption}
                 </p>
-              )}
+                {mode === 'guess' && (
+                  <p style={{ margin: '4px 0 0', color: '#272F36', fontSize: '14px', lineHeight: '20px' }}>
+                    You guessed {guess} - {Math.abs(score - guess)} points off.
+                  </p>
+                )}
+              </div>
             </div>
-            <button type="button" style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: '1px solid #1454A8', borderRadius: '4px', background: '#fff', color: '#1454A8', fontSize: '14px', lineHeight: '22px', cursor: 'default' }}>See full report</button>
+            <div className="email-health-score-banner__actions">
+              <button type="button" style={{ flex: '0 0 auto', height: '38px', padding: '8px 16px', border: '1px solid #1454A8', borderRadius: '4px', background: '#fff', color: '#1454A8', fontSize: '14px', lineHeight: '22px', cursor: 'default' }}>See full report</button>
+            </div>
           </>
         );
       })()}
