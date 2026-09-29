@@ -31,6 +31,7 @@ body {
 }
 
 .email-health-score-banner--guess {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) 24px;
   gap: clamp(16px, 2vw, 28px);
@@ -58,8 +59,12 @@ body {
   max-width: 360px;
 }
 
-.email-health-score-banner--guess > button[aria-label="Dismiss email health score"] {
-  grid-column: 3;
+.email-health-score-banner--guess .email-health-score-banner__dismiss {
+  position: absolute;
+  top: 50%;
+  right: 24px;
+  z-index: 1;
+  transform: translateY(-50%);
 }
 
 @media (max-width: 1080px) {
@@ -79,16 +84,16 @@ body {
     max-width: 520px;
   }
 
-  .email-health-score-banner--guess > button[aria-label="Dismiss email health score"] {
-    grid-column: 2;
-    grid-row: 1;
-  }
 }
 
 @media (max-width: 560px) {
   .email-health-score-banner--guess {
     gap: 12px;
     padding: 14px 16px !important;
+  }
+
+  .email-health-score-banner--guess .email-health-score-banner__dismiss {
+    right: 16px;
   }
 
   .email-health-score-banner--guess .email-health-score-banner__copy {
