@@ -15,7 +15,6 @@
    button that should do something in your app. Read event.detail.action.
      run-placement-test        Step 1 button
      view-health-score         Step 2 button (score ready)
-     acknowledge-health-score  Step 2 button (score not ready yet)
      toggle-score-notification Step 2 toggle (detail.value is true/false)
    ========================================================================== */
 
@@ -152,9 +151,7 @@
 
       whatScoresMeanHref: '#',
       /* Button when the score is ready */
-      cta: { label: 'See full report', action: 'view-health-score' },
-      /* Button when the score is not ready yet */
-      ctaNone: { label: 'Got it', action: 'acknowledge-health-score' }
+      cta: { label: 'See full report', action: 'view-health-score' }
     }
   };
 
@@ -490,7 +487,7 @@
         panelHeader(title, hs.description) +
         (ready
           ? scoreCard(hs.actual, hs, false) + primaryButton(hs.cta, 'cta-health')
-          : tracker(hs) + scoreCard(hs.example, hs, true) + benefits(hs.why) + primaryButton(hs.ctaNone, 'cta-health-none')) +
+          : tracker(hs) + scoreCard(hs.example, hs, true) + benefits(hs.why)) +
       '</div>'
     );
   }
