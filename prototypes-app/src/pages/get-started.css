@@ -274,7 +274,7 @@
 
 .gs-panel-col {
   min-width: 0;
-  max-width: 100%;
+  max-width: min(755px, 100%); /* never wider than the Figma frame, even when stacked */
   padding-left: 16px;
 }
 
@@ -456,6 +456,7 @@
 .gs-example__text {
   flex: 1;
   min-width: 0;
+  max-width: 480px; /* keeps titles, values and bars close together */
   align-self: center;
   display: flex;
   flex-direction: column;
