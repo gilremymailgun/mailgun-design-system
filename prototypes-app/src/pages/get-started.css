@@ -64,6 +64,10 @@
   letter-spacing: -0.01em;
 }
 
+.mg-page-header.get-started-page-header {
+  display: none;
+}
+
 .gs *,
 .gs *::before,
 .gs *::after {
