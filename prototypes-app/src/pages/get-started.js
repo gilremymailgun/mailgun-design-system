@@ -41,8 +41,8 @@
     activeTab: 'optimize',
 
     steps: [
-      { id: 'placement', label: 'Conduct a placement test', icon: 'inbox', done: false },
-      { id: 'health', label: 'Review your email health score', icon: 'heart-pulse' }
+      { id: 'placement', label: 'Conduct a placement test', icon: 'inbox', duration: '2 mins', done: false },
+      { id: 'health', label: 'Review your email health score', icon: 'heart-pulse', duration: '1 min' }
     ],
     activeStep: 'placement',
 
@@ -55,7 +55,6 @@
     placement: {
       title: 'Check where your emails will land before you send',
       description: 'Inbox placement tests show whether your email reaches the inbox, promotions, or spam.',
-      duration: '2 mins',
       segments: [
         { key: 'inbox', label: 'Inbox', value: 69.92, color: 'var(--gs-success)' },
         { key: 'missing', label: 'Missing', value: 7.52, color: 'var(--gs-info)' },
@@ -97,7 +96,6 @@
       },
       description:
         'A real-time score of your sending activity, so you can spot and fix deliverability issues before they affect your reputation.',
-      duration: '', /* e.g. '1 min'. Left empty until the step has a real estimate */
 
       requiredEmails: 10000,
       sentEmails: 6300,
@@ -280,14 +278,13 @@
      Pieces shared by the step panels
      ------------------------------------------------------------------------ */
 
-  function panelHeader(title, description, duration) {
+  function panelHeader(title, description) {
     return (
       '<div class="gs-panel__header">' +
         '<div class="gs-panel__titles">' +
           '<h2 class="gs-panel__title">' + esc(title) + '</h2>' +
           '<p class="gs-panel__desc">' + esc(description) + '</p>' +
         '</div>' +
-        (duration ? '<span class="gs-badge">' + esc(duration) + '</span>' : '') +
       '</div>'
     );
   }
@@ -347,7 +344,7 @@
 
     return (
       '<div class="gs-panel" id="gs-panel" role="region" aria-label="' + esc(p.title) + '">' +
-        panelHeader(p.title, p.description, p.duration) +
+        panelHeader(p.title, p.description) +
         '<div class="gs-example">' +
           '<div class="gs-example__top">' +
             '<div class="gs-score">' +
@@ -490,7 +487,7 @@
 
     return (
       '<div class="gs-panel" id="gs-panel" role="region" aria-label="' + esc(title) + '">' +
-        panelHeader(title, hs.description, hs.duration) +
+        panelHeader(title, hs.description) +
         (ready
           ? scoreCard(hs.actual, hs, false) + primaryButton(hs.cta, 'cta-health')
           : tracker(hs) + scoreCard(hs.example, hs, true) + benefits(hs.why) + primaryButton(hs.ctaNone, 'cta-health-none')) +
@@ -571,6 +568,7 @@
             (s.id === state.activeStep ? ' aria-current="true"' : '') + '>' +
             '<span class="gs-step__icon">' + (s.done ? DONE_ICON : icon(s.icon, 20)) + '</span>' +
             '<span class="gs-step__label">' + esc(s.label) + (s.done ? '<span class="gs-sr"> (completed)</span>' : '') + '</span>' +
+            (s.duration ? '<span class="gs-badge gs-step__duration">' + esc(s.duration) + '</span>' : '') +
           '</button></li>'
         );
       }).join('') +

@@ -264,6 +264,10 @@
   min-width: 0;
 }
 
+.gs-step__duration {
+  flex-shrink: 0;
+}
+
 .gs-panel-col {
   min-width: 0;
   max-width: 100%;
