@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Home } from './pages/Home';
 import { SignupTransition } from './pages/SignupTransition';
 import { GetStartedGuide } from './pages/GetStartedGuide';
+import { GetStartedPage } from './pages/GetStartedPage';
 import { Dashboard } from './pages/Dashboard';
 
 // Hash routes keep the prototype refresh-safe under GitHub Pages subpaths.
@@ -28,6 +29,8 @@ export const App = () => {
       return <SignupTransition />;
     case '/get-started-guide':
       return <GetStartedGuide />;
+    case '/get-started':
+      return <GetStartedPage />;
     default:
       return <Home />;
   }

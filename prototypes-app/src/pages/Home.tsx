@@ -23,6 +23,11 @@ const prototypes: PrototypeLink[] = [
     title: 'Get started guide',
     description: 'Onboarding page walking new users through initial account setup.',
   },
+  {
+    href: '/get-started',
+    title: 'Get started: page template',
+    description: 'The page template with Get started selected in the navigation.',
+  },
 ];
 
 export const Home = () => (
