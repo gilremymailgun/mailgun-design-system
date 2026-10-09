@@ -68,6 +68,29 @@
   display: none;
 }
 
+.mg-page:has(.gs) {
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+  overflow-x: clip;
+}
+
+.mg-page:has(.gs) .mg-page__main {
+  height: auto;
+  min-height: 100vh;
+}
+
+.mg-page:has(.gs) .mg-page__content {
+  flex: 1 0 auto;
+  min-height: auto;
+  overflow: visible;
+}
+
+.mg-page:has(.gs) .mg-footer {
+  flex: 0 0 auto;
+  margin-top: auto;
+}
+
 .gs *,
 .gs *::before,
 .gs *::after {
