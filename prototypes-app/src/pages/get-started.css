@@ -208,13 +208,13 @@
    -------------------------------------------------------------------------- */
 
 .gs-body {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   align-items: flex-start;
   gap: 16px;
 }
 
 .gs-steps {
-  flex: 1 1 0;
   min-width: 0;
   padding: 16px;
 }
@@ -267,7 +267,7 @@
 }
 
 .gs-panel-col {
-  flex: 0 0 755px;
+  min-width: 0;
   max-width: 100%;
   padding-left: 16px;
 }
@@ -832,12 +832,11 @@
 
 @media (max-width: 1000px) {
   .gs-body {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .gs-steps,
   .gs-panel-col {
-    flex: none;
     width: 100%;
   }
 
