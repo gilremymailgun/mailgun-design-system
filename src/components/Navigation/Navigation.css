@@ -6,6 +6,7 @@
 .nav-panel {
   width: 248px;
   background: var(--comp-navigation-color-default-background-initial);
+  border-right: 1px solid var(--sys-color-border-subtle);
   padding: var(--ref-spacing-16px) var(--ref-spacing-8px) 0;
   box-sizing: border-box;
   display: flex;
