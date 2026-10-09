@@ -52,7 +52,6 @@ export const GetStartedPage = () => {
   return (
     <Page
       navigationProps={{ defaultActive: 'get-started' }}
-      pageHeaderProps={{ title: 'Get started' }}
     >
       <div ref={hostRef} />
       {error && <p role="alert">{error}</p>}
