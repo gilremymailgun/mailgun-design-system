@@ -221,7 +221,6 @@
 .gs-steps__list {
   display: flex;
   flex-direction: column;
-  max-width: 427px;
 }
 
 .gs-step {
