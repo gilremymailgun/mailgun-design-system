@@ -265,7 +265,8 @@
       out += '<circle cx="' + mid + '" cy="' + mid + '" r="' + r + '" fill="none" stroke="' + s.color +
         '" stroke-width="' + sw + '" stroke-linecap="round" stroke-dasharray="' + dash.toFixed(2) + ' ' +
         (c - dash).toFixed(2) + '" stroke-dashoffset="' + (-start).toFixed(2) +
-        '" transform="rotate(' + rotate + ' ' + mid + ' ' + mid + ')"/>';
+        '" data-dash="1" style="--dash:' + dash.toFixed(2) + 'px;--circ:' + c.toFixed(2) +
+        'px" transform="rotate(' + rotate + ' ' + mid + ' ' + mid + ')"/>';
       pos += len;
     });
 
@@ -356,7 +357,7 @@
                   label: 'Example: ' + Math.round(inbox.value) + ' percent of test emails reached the inbox'
                 }) +
                 '<div class="gs-ring__center">' +
-                  '<span class="gs-ring__value">' + Math.round(inbox.value) + '%</span>' +
+                  '<span class="gs-ring__value" data-count-to="' + Math.round(inbox.value) + '" data-count-suffix="%">' + Math.round(inbox.value) + '%</span>' +
                   '<span class="gs-ring__caption">' + esc(inbox.label) + '</span>' +
                 '</div>' +
               '</div>' +
@@ -432,7 +433,7 @@
                 label: (isExample ? 'Example score: ' : 'Your score: ') + data.score + ' out of 100, ' + BANDS[band].name
               }) +
               '<div class="gs-ring__center">' +
-                '<span class="gs-ring__value gs-ring__value--score gs-ring__value--' + band + '">' + data.score + '</span>' +
+                '<span class="gs-ring__value gs-ring__value--score gs-ring__value--' + band + '" data-count-to="' + data.score + '">' + data.score + '</span>' +
               '</div>' +
             '</div>' +
             '<span class="gs-status gs-status--' + band + '">' + esc(BANDS[band].name) + '</span>' +
@@ -466,7 +467,7 @@
             '" aria-label="Progress toward ' + formatNumber(hs.requiredEmails) + ' sent emails">' +
             '<div class="gs-tracker__fill" style="width:' + pct + '%"></div>' +
           '</div>' +
-          '<span class="gs-tracker__percent">' + pct + '%</span>' +
+          '<span class="gs-tracker__percent" data-count-to="' + pct + '" data-count-suffix="%">' + pct + '%</span>' +
         '</div>' +
         '<p class="gs-tracker__hint">Send ' + formatNumber(remaining) + ' more emails to generate your score</p>' +
         (hs.trackerNote ? '<p class="gs-tracker__note">' + esc(hs.trackerNote) + '</p>' : '') +
@@ -590,6 +591,45 @@
   }
 
   /* ------------------------------------------------------------------------
+     Loading animation. The arcs and the bar are animated in CSS (get-started.css);
+     this only counts the numbers up so they land with the arc.
+     ------------------------------------------------------------------------ */
+
+  var ANIMATION_MS = 1000;
+
+  function prefersReducedMotion() {
+    return !!(global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
+  function countUp(root) {
+    if (prefersReducedMotion()) return;
+    var els = root.querySelectorAll('[data-count-to]');
+    if (!els.length) return;
+
+    var items = Array.prototype.map.call(els, function (el) {
+      var item = {
+        el: el,
+        to: Number(el.getAttribute('data-count-to')),
+        suffix: el.getAttribute('data-count-suffix') || ''
+      };
+      el.textContent = '0' + item.suffix;
+      return item;
+    });
+
+    var start = null;
+    function step(ts) {
+      if (start === null) start = ts;
+      var p = Math.min((ts - start) / ANIMATION_MS, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      items.forEach(function (it) {
+        it.el.textContent = Math.round(it.to * eased) + it.suffix;
+      });
+      if (p < 1) global.requestAnimationFrame(step);
+    }
+    global.requestAnimationFrame(step);
+  }
+
+  /* ------------------------------------------------------------------------
      Mount
      ------------------------------------------------------------------------ */
 
@@ -620,9 +660,13 @@
       if (state.onAction) state.onAction(detail);
     }
 
-    function render(focusKey) {
+    /* animate: play the loading animation. True whenever a step, tab or state is shown,
+       false for small updates such as flipping the notify toggle. */
+    function render(focusKey, animate) {
       var view = computeView(state);
+      root.classList.toggle('gs--animate', !!animate);
       root.innerHTML = renderHeader(state.guide, view.completed) + renderTabs(state) + renderBody(state, view.steps);
+      if (animate) countUp(root);
       if (focusKey) {
         var el = root.querySelector('[data-focus-key="' + focusKey + '"]');
         if (el) el.focus();
@@ -636,28 +680,28 @@
 
       if (el.hasAttribute('data-tab')) {
         state.activeTab = el.getAttribute('data-tab');
-        render(focusKey);
+        render(focusKey, true);
       } else if (el.hasAttribute('data-step')) {
         state.activeStep = el.getAttribute('data-step');
-        render(focusKey);
+        render(focusKey, true);
       } else if (el.getAttribute('data-toggle') === 'notify') {
         state.healthScore.notify = !state.healthScore.notify;
-        render(focusKey);
+        render(focusKey, false);
         emit('toggle-score-notification', { value: state.healthScore.notify });
       } else if (el.hasAttribute('data-action')) {
         emit(el.getAttribute('data-action'));
       }
     });
 
-    render();
+    render(null, true);
 
     return {
       setHealthScoreState: function (value) {
         state.healthScore.state = value === 'ready' ? 'ready' : 'none';
-        render();
+        render(null, true);
       },
-      selectStep: function (id) { state.activeStep = id; render(); },
-      selectTab: function (id) { state.activeTab = id; render(); },
+      selectStep: function (id) { state.activeStep = id; render(null, true); },
+      selectTab: function (id) { state.activeTab = id; render(null, true); },
       getState: function () { return state; }
     };
   }

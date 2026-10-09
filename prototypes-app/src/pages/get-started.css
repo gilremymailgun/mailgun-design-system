@@ -866,9 +866,50 @@
   }
 }
 
+/* --------------------------------------------------------------------------
+   Loading animation: rings draw in, the progress bar fills.
+   Only plays while the root has .gs--animate (set by the script when a step,
+   tab or state is shown, not when the notify toggle is flipped).
+   -------------------------------------------------------------------------- */
+
+@keyframes gs-ring-draw {
+  from {
+    stroke-dasharray: 0.01px var(--circ);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  to {
+    stroke-dasharray: var(--dash) var(--circ);
+    opacity: 1;
+  }
+}
+
+@keyframes gs-bar-grow {
+  from {
+    width: 0;
+  }
+}
+
+.gs--animate .gs-ring circle[data-dash] {
+  animation: gs-ring-draw 1000ms cubic-bezier(0.33, 1, 0.68, 1) both;
+}
+
+.gs--animate .gs-tracker__fill {
+  animation: gs-bar-grow 1000ms cubic-bezier(0.33, 1, 0.68, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .gs-switch,
   .gs-switch::after {
     transition: none;
+  }
+
+  .gs--animate .gs-ring circle[data-dash],
+  .gs--animate .gs-tracker__fill {
+    animation: none;
   }
 }
