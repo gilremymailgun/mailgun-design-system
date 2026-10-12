@@ -1,0 +1,82 @@
+/* Giddyup Design System — Toast */
+
+.mg-toast {
+  position: fixed;
+  right: var(--ref-spacing-24px);
+  bottom: var(--ref-spacing-24px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: var(--ref-spacing-12px);
+  width: max-content;
+  max-width: min(420px, calc(100vw - 48px));
+  padding: var(--ref-spacing-16px);
+  border-radius: var(--ref-radius-s);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+  font-family: var(--ref-font-family-font);
+  font-weight: var(--ref-font-weight-regular);
+  font-size: var(--ref-font-size-14);
+  line-height: 22px;
+  letter-spacing: -0.14px;
+}
+
+.mg-toast__icon,
+.mg-toast__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.mg-toast__message {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.mg-toast__close {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ref-radius-s);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.mg-toast__close:hover {
+  background: rgb(255 255 255 / 16%);
+}
+
+.mg-toast__close:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.mg-toast--default {
+  background: var(--comp-toast-color-default-background-initial);
+  color: var(--comp-toast-color-default-text-initial);
+}
+
+.mg-toast--default .mg-toast__icon {
+  color: var(--comp-toast-color-default-icon-initial);
+}
+
+.mg-toast--error {
+  background: var(--comp-toast-color-error-background-initial);
+  color: var(--comp-toast-color-error-text-initial);
+}
+
+.mg-toast--error .mg-toast__icon {
+  color: var(--comp-toast-color-error-icon-initial);
+}
+
+@media (max-width: 480px) {
+  .mg-toast {
+    right: 16px;
+    bottom: 16px;
+    max-width: calc(100vw - 32px);
+  }
+}

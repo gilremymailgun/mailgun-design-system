@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Page } from '@ds/patterns/Page/Page';
+import { Toast } from '@ds/components/Toast/Toast';
 import './get-started.css';
 
 declare global {
@@ -13,12 +14,23 @@ declare global {
 export const GetStartedPage = () => {
   const hostRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string>();
+  const [toastMessage, setToastMessage] = useState<string>();
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
     let isMounted = true;
+    const handleGuideAction = (event: Event) => {
+      const { action, value } = (event as CustomEvent<{ action: string; value?: boolean }>).detail;
+      if (action === 'toggle-score-notification') {
+        setToastMessage(value
+          ? 'You’ll get an email when your score is ready.'
+          : 'Email notification turned off.');
+      }
+    };
+    host.addEventListener('gs:action', handleGuideAction);
+
     const script = document.createElement('script');
     script.src = new URL('./get-started.js', import.meta.url).href;
     script.onload = () => {
@@ -44,6 +56,7 @@ export const GetStartedPage = () => {
 
     return () => {
       isMounted = false;
+      host.removeEventListener('gs:action', handleGuideAction);
       script.remove();
       host.replaceChildren();
     };
@@ -55,6 +68,7 @@ export const GetStartedPage = () => {
       pageHeaderProps={{ title: '', className: 'get-started-page-header' }}
     >
       <div ref={hostRef} />
+      {toastMessage && <Toast onClose={() => setToastMessage(undefined)}>{toastMessage}</Toast>}
       {error && <p role="alert">{error}</p>}
     </Page>
   );
