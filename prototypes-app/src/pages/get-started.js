@@ -455,7 +455,7 @@
     var remaining = Math.max(hs.requiredEmails - hs.sentEmails, 0);
     return (
       '<div class="gs-tracker">' +
-        '<p class="gs-tracker__title">' + formatNumber(hs.requiredEmails) + ' sent emails required</p>' +
+        '<p class="gs-tracker__title">' + formatNumber(hs.requiredEmails) + ' sent emails required over the last 30 days</p>' +
         '<div class="gs-tracker__row">' +
           '<div class="gs-tracker__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct +
             '" aria-label="Progress toward ' + formatNumber(hs.requiredEmails) + ' sent emails">' +
