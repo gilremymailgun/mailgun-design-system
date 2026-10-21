@@ -10,7 +10,8 @@
      /prototypes/?healthScore=ready#/get-started
      /prototypes/?step=health&healthScore=none#/get-started
      Guide completion starts at 5/7 (the five Send steps). It goes up only when an Optimize
-     step is completed: see steps[].done and the view-health-score action.
+     step is completed: "Run your first test" completes step 1, and seeing the actual score
+     (healthScore.state 'ready') completes step 2. The not-ready version never completes it.
 
    Events: the root element fires a bubbling "gs:action" CustomEvent for every
    button that should do something in your app. Read event.detail.action.
@@ -48,8 +49,8 @@
     activeStep: 'placement',
 
     /* false (default): nothing is checked on first load. A step counts only when its own
-       "done" flag is set (placementDone=1 in the URL, steps[].done, or the user clicking
-       "See full report" on their actual score).
+       "done" flag is set: placement when the user clicks "Run your first test" (or
+       placementDone=1 in the URL), health score once the user sees their actual score.
        true: steps before the active one count as done (demo mode). */
     autoComplete: false,
 
@@ -759,7 +760,16 @@
 
     /* animate: play the loading animation. True whenever a step, tab or state is shown,
        false for small updates such as flipping the notify toggle. */
+    function markDone(id) {
+      state.steps.forEach(function (st) { if (st.id === id) st.done = true; });
+    }
+
     function render(focusKey, animate) {
+      /* The health score step completes once the user is looking at their actual score.
+         It never completes in the "not ready yet" version. */
+      if (state.activeTab === 'optimize' && state.activeStep === 'health' && state.healthScore.state === 'ready') {
+        markDone('health');
+      }
       var view = computeView(state);
       root.classList.toggle('gs--animate', !!animate);
       root.innerHTML = renderHeader(state.guide, view.completed) + renderTabs(state, view.steps) + renderBody(state, view.steps);
@@ -833,9 +843,9 @@
         emit('toggle-score-notification', { value: state.healthScore.notify });
       } else if (el.hasAttribute('data-action')) {
         var action = el.getAttribute('data-action');
-        if (action === 'view-health-score') {
-          /* Opening the actual score is what completes the health score step. */
-          state.steps.forEach(function (st) { if (st.id === 'health') st.done = true; });
+        if (action === 'run-placement-test') {
+          /* Clicking "Run your first test" completes the placement step. */
+          markDone('placement');
           render(focusKey, false);
         }
         emit(action);
