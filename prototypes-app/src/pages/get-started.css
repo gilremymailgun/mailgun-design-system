@@ -780,6 +780,268 @@
 }
 
 /* --------------------------------------------------------------------------
+   Step 1 (placement test), Figma node 9729:4779
+   -------------------------------------------------------------------------- */
+
+.gs-panel--placement,
+.gs-panel--health {
+  gap: 24px;
+}
+
+.gs-panel--placement .gs-panel__title,
+.gs-panel--health .gs-panel__title {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.gs-step .gs-badge {
+  margin-left: auto;
+}
+
+.gs-example--dashed {
+  border: 1px dashed var(--gs-border-subtle);
+}
+
+.gs-example__intro {
+  display: flex;
+  flex-direction: column;
+}
+
+.gs-example__intro .gs-example__label {
+  font-weight: 500;
+}
+
+.gs-example__hint {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.01em;
+}
+
+.gs-hr {
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: var(--gs-border-subtle);
+}
+
+.gs-tag--sample {
+  border: 0;
+  background: #ffdd99;
+  color: #14181c;
+  letter-spacing: 0;
+}
+
+.gs-example__head--stack {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.gs-example--dashed .gs-example__top {
+  max-width: none;
+  align-items: center;
+}
+
+.gs-example--dashed .gs-example__text {
+  max-width: none;
+  padding-bottom: 0;
+}
+
+.gs-example--dashed .gs-score {
+  padding-bottom: 16px;
+}
+
+.gs-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gs-group__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.gs-group__title {
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.gs-group__hint {
+  color: var(--gs-text-muted);
+}
+
+.gs-tiles {
+  display: flex;
+  gap: 8px;
+}
+
+.gs-tile {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  padding: 8px 16px;
+  border: 1px solid var(--gs-border-subtle);
+  border-radius: var(--gs-radius-s);
+  background: #ffffff;
+  text-align: left;
+  font: inherit;
+  line-height: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.gs-tile:hover {
+  border-color: var(--gs-text-muted);
+}
+
+.gs-tile[aria-expanded='true'] {
+  border-color: var(--gs-tab-selected);
+}
+
+.gs-tile > * {
+  display: block;
+}
+
+/* Show/hide: the row animates between 0fr and 1fr, so the height eases
+   instead of jumping. The gap above the box lives inside the clip so a closed
+   box takes no space. */
+.gs-group {
+  gap: 0;
+}
+
+.gs-group__head {
+  margin-bottom: 8px;
+}
+
+.gs-detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition: grid-template-rows 220ms cubic-bezier(0.33, 1, 0.68, 1),
+    opacity 160ms ease-out, visibility 0s linear 220ms;
+}
+
+.gs-detail.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition: grid-template-rows 220ms cubic-bezier(0.33, 1, 0.68, 1),
+    opacity 200ms ease-out 40ms, visibility 0s;
+}
+
+.gs-detail__clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.gs-detail__box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: #ffffff;
+}
+
+.gs-detail__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.gs-detail__title {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: 0;
+  padding-top: 0;
+}
+
+.gs-detail__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-top: 8px;
+  border-top: 1px solid var(--gs-border-subtle);
+}
+
+.gs-detail__label {
+  flex: 0 0 98px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.gs-detail__text {
+  flex: 1;
+  min-width: 0;
+}
+
+@keyframes gs-detail-swap {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
+.gs-detail__box--swap > * {
+  animation: gs-detail-swap 180ms ease-out both;
+}
+
+.gs-tile__label {
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.gs-tile > .gs-tile__row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gs-tile__value {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.gs-tile__status {
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.gs-tile__caption {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.01em;
+  color: var(--gs-text);
+}
+
+.gs-tone--good { color: var(--gs-success-strong); }
+.gs-tone--warn { color: #8f3d1f; }
+.gs-tone--bad { color: var(--gs-band-attention-text); }
+
+.gs-btn--secondary {
+  background: var(--gs-example-bg);
+  color: #14181c;
+}
+
+.gs-btn--secondary:hover {
+  background: #e9eef1;
+}
+
+/* --------------------------------------------------------------------------
    Benefits + actions
    -------------------------------------------------------------------------- */
 
@@ -876,6 +1138,11 @@
 }
 
 @media (max-width: 640px) {
+  .gs-detail__row {
+    flex-direction: column;
+    gap: 0;
+  }
+
   .gs-example__top {
     flex-direction: column;
     align-items: center;
@@ -885,12 +1152,12 @@
     align-self: stretch;
   }
 
-  .gs-checks {
+  .gs-tiles {
     flex-wrap: wrap;
   }
 
-  .gs-check {
-    flex-basis: calc(50% - 4px);
+  .gs-tile {
+    flex-basis: 100%;
   }
 
   .gs-progress {
@@ -936,12 +1203,207 @@
 
 @media (prefers-reduced-motion: reduce) {
   .gs-switch,
-  .gs-switch::after {
+  .gs-switch::after,
+  .gs-tile,
+  .gs-detail,
+  .gs-detail.is-open {
     transition: none;
   }
 
+  .gs-detail__box--swap > *,
   .gs--animate .gs-ring circle[data-dash],
   .gs--animate .gs-tracker__fill {
     animation: none;
+  }
+}
+
+/* Placement step button fill taken from Figma (node 9729:4779) */
+.gs-panel--placement .gs-btn--primary,
+.gs-panel--health .gs-btn--primary {
+  background: #0d68d1;
+}
+
+.gs-panel--placement .gs-btn--primary:hover,
+.gs-panel--health .gs-btn--primary:hover {
+  background: #1454a8;
+}
+
+/* --------------------------------------------------------------------------
+   Step 2 (email health score), Figma nodes 9699:5970 and 9702:12932
+   -------------------------------------------------------------------------- */
+
+/* "Not ready yet" progress box */
+.gs-pbox {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border-radius: var(--gs-radius-s);
+  background: var(--gs-example-bg);
+}
+
+.gs-pbox__top {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 0;
+}
+
+.gs-pbox__tile {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--gs-radius-s);
+  background: #fceccb;
+  color: #131b20;
+}
+
+.gs-pbox__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.gs-pbox__title {
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.gs-pbox .gs-tracker__row {
+  gap: 8px;
+}
+
+.gs-pbox .gs-tracker__percent {
+  min-width: 0;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.gs-pbox__hint {
+  letter-spacing: -0.01em;
+}
+
+.gs-pbox .gs-tracker__divider {
+  margin: 12px 0;
+}
+
+.gs-pbox .gs-toggle {
+  padding-top: 0;
+}
+
+/* "What your score will look like" disclosure. Reuses the .gs-detail height animation. */
+.gs-reveal {
+  display: flex;
+  flex-direction: column;
+}
+
+.gs-reveal__btn {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--gs-link);
+  font-weight: 500;
+  line-height: 24px;
+  text-align: left;
+}
+
+.gs-reveal__btn:hover span {
+  text-decoration: underline;
+}
+
+.gs-reveal__chev {
+  transition: transform 0.18s ease-out;
+}
+
+.gs-reveal__btn[aria-expanded='true'] .gs-reveal__chev {
+  transform: rotate(90deg);
+}
+
+.gs-reveal__box {
+  margin-top: 8px;
+}
+
+/* Sample score box */
+.gs-example--health .gs-example__top {
+  align-items: flex-start;
+  border-bottom: 0;
+}
+
+.gs-example--health .gs-score {
+  padding: 0 16px;
+  gap: 9px;
+}
+
+.gs-example--health .gs-example__text {
+  max-width: none;
+  align-self: stretch;
+  padding-bottom: 0;
+}
+
+.gs-example--health .gs-ring__value--score {
+  font-size: 40px;
+  line-height: 48px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.gs-example--health .gs-status {
+  line-height: 24px;
+}
+
+.gs-example--health .gs-metrics {
+  gap: 4px;
+}
+
+.gs-example--health .gs-metric {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 12px;
+  gap: 8px;
+}
+
+.gs-example--health .gs-metric__bar {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.gs-example--health .gs-metric__bar > span {
+  border-radius: 4px;
+  background: var(--gs-text-label);
+}
+
+.gs-example--health .gs-metric__value {
+  font-weight: 400;
+}
+
+.gs-example--health .gs-legend {
+  gap: 16px;
+}
+
+.gs-example--health .gs-legend__item {
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--gs-text);
+}
+
+.gs-example--health .gs-link {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+/* Rings inside the closed disclosure stay still, then draw when it opens */
+.gs-detail:not(.is-open) .gs-ring circle[data-dash] {
+  animation: none;
+}
+
+@media (max-width: 640px) {
+  .gs-example--health .gs-example__top {
+    align-items: center;
   }
 }
