@@ -15,6 +15,7 @@
    button that should do something in your app. Read event.detail.action.
      run-placement-test        Step 1 button
      view-health-score         Step 2 button (score ready)
+     acknowledge-health-score  Step 2 button (score not ready yet)
      toggle-score-notification Step 2 toggle (detail.value is true/false)
    ========================================================================== */
 
@@ -40,7 +41,7 @@
     activeTab: 'optimize',
 
     steps: [
-      { id: 'placement', label: 'Conduct a placement test', icon: 'inbox', duration: '2 mins', done: false },
+      { id: 'placement', label: 'Conduct a placement test', icon: 'inbox', done: false, duration: '2 mins' },
       { id: 'health', label: 'Review your email health score', icon: 'heart-pulse', duration: '1 min' }
     ],
     activeStep: 'placement',
@@ -54,35 +55,42 @@
     placement: {
       title: 'Check where your emails will land before you send',
       description: 'Inbox placement tests show whether your email reaches the inbox, promotions, or spam.',
+      exampleTitle: 'Example results',
+      exampleHint: 'Run a test to see your own results.',
+      sampleLabel: 'Sample data',
       segments: [
         { key: 'inbox', label: 'Inbox', value: 69.92, color: 'var(--gs-success)' },
         { key: 'missing', label: 'Missing', value: 7.52, color: 'var(--gs-info)' },
         { key: 'spam', label: 'Spam', value: 22.56, color: 'var(--gs-danger)' }
       ],
       overall: { label: 'Low', tone: 'low' },
-      checks: [
-        { label: 'SpamAssassin', value: '2.3', ok: true },
-        { label: 'SPF', value: 'Passed', ok: true },
-        { label: 'DKIM', value: 'Passed', ok: true },
-        { label: 'DMARC', value: 'Passed', ok: true }
-      ],
-      benefits: [
-        {
-          icon: 'send',
-          title: 'See where your emails actually land',
-          text: 'Delivered emails can still land in spam. A test shows where yours really go.'
-        },
-        {
-          icon: 'target',
-          title: 'Spot problems before you send',
-          text: 'Run a test before each campaign to catch placement problems early.'
-        },
-        {
-          icon: 'mail-open',
-          title: 'Find out what to fix',
-          text: 'Your domain checks (SPF, DKIM, and DMARC) show what may be hurting your inbox placement.'
-        }
-      ],
+      /* tone: good (green) | warn (orange) | bad (red) */
+      spamScoring: {
+        title: 'Spam scoring',
+        whatLabel: 'What it checks',
+        fixLabel: 'What to do',
+        tiles: [
+          { label: 'SpamAssassin', value: '2.3', status: 'Below spam range', tone: 'good', caption: 'Usually spam at 5 or higher.',
+            details: { what: 'Your message\u2019s content, links, and headers for spam patterns, such as shouting subject lines, image-only emails, blocklisted links, and failed SPF or DKIM.', fix: 'Open the full report to see which rules added the most to your score, then fix those first' } },
+          { label: 'Microsoft SCL', value: '1', status: 'Below spam range', tone: 'good', caption: 'Usually spam at 5 or higher.',
+            details: { what: 'Microsoft\u2019s 0\u20139 rating of how likely a message is spam. Higher is worse.', fix: 'At 5 or higher, review your content and links, and make sure your domain is authenticated.' } },
+          { label: 'Microsoft BCL', value: '4', status: 'Mixed complaints', tone: 'warn', caption: 'Usually Junk at 7 or higher.',
+            details: { what: 'Microsoft\u2019s 0\u20139 rating of how bulk-like your mail is and how many complaints similar mail gets. 0 is not bulk, 8\u20139 draws many complaints.', fix: 'At 7 or higher, mail usually goes to Junk. Remove inactive recipients and make unsubscribing easy.' } }
+        ]
+      },
+      authentication: {
+        title: 'Authentication',
+        whatLabel: 'What it checks',
+        fixLabel: 'If it fails',
+        tiles: [
+          { label: 'SPF', status: 'Passed', tone: 'good', caption: 'Sending server is allowed.',
+            details: { what: 'Whether the server that sent your email is allowed by your domain\u2019s SPF record.', fix: 'Add your sending provider to your domain\u2019s SPF record.' } },
+          { label: 'DKIM', status: 'Passed', tone: 'good', caption: 'Signature is valid.',
+            details: { what: 'Whether the message signature matches the public key published in your DNS.', fix: 'Publish your DKIM key in DNS and confirm the selector matches.' } },
+          { label: 'DMARC', status: 'Passed', tone: 'good', caption: 'Matches your From domain',
+            details: { what: 'Whether SPF or DKIM passes and lines up with the domain in your From address.', fix: 'Make sure SPF or DKIM matches your From domain, then add or tighten a DMARC policy.' } }
+        ]
+      },
       cta: { label: 'Run your first test', action: 'run-placement-test' }
     },
 
@@ -90,19 +98,25 @@
     healthScore: {
       state: 'none', /* 'none' = not enough sends yet, 'ready' = user has a score */
       titles: {
-        none: 'Your email health score isn\u2019t ready yet',
+        none: 'Your email health score',
         ready: 'Your email health score is ready'
       },
       description:
-        'A real-time score of your sending activity, so you can spot and fix deliverability issues before they affect your reputation.',
+        'A real-time 0 to 100 score of your sending activity, so you can spot and fix deliverability issues before they affect your reputation.',
+      duration: '', /* e.g. '1 min'. Left empty until the step has a real estimate */
 
       requiredEmails: 10000,
       sentEmails: 6300,
-      trackerNote: '', /* optional, e.g. 'Based on emails sent in the last 30 days' */
+      requiredWindow: '30 days',
+      notStartedTitle: 'Your email health score isn\u2019t ready yet',
+      exampleOpen: false, /* "What your score will look like" starts hidden */
+      sampleLabel: 'Sample data',
+      /* The notify toggle is not in the current Figma design. Set true to show it again. */
+      showNotify: false,
       notify: false,
       notifyHelp: 'You\u2019ll get an email as soon as your score is ready.',
 
-      exampleLabel: 'What your score will look like',
+      exampleLabel: 'What a score looks like',
       actualLabel: 'Your score',
       highlightBand: false, /* true outlines the band the score falls in */
       showMetricCaption: false, /* true adds "Bars show each metric's share of the total..." */
@@ -110,6 +124,7 @@
       /* Shown while the user has no score. Illustrative only. */
       example: {
         score: 88,
+        barMax: 10, /* bars fill value / barMax (Figma). Without it, bars show each metric's share of the total */
         metrics: [
           { label: 'Bounce', value: 4 },
           { label: 'Complaint', value: 2 },
@@ -151,7 +166,9 @@
 
       whatScoresMeanHref: '#',
       /* Button when the score is ready */
-      cta: { label: 'See full report', action: 'view-health-score' }
+      cta: { label: 'See full report', action: 'view-health-score' },
+      /* Button when the score is not ready yet */
+      ctaNone: { label: 'Got it', action: 'acknowledge-health-score' }
     }
   };
 
@@ -181,6 +198,7 @@
     target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     'mail-open':
       '<path d="M21.2 8.4c.5.38.8.97.8 1.6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 .8-1.6l8-6a2 2 0 0 1 2.4 0l8 6Z"/><path d="m22 10-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 10"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
     activity:
       '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>',
     'shield-check':
@@ -275,13 +293,14 @@
      Pieces shared by the step panels
      ------------------------------------------------------------------------ */
 
-  function panelHeader(title, description) {
+  function panelHeader(title, description, duration) {
     return (
       '<div class="gs-panel__header">' +
         '<div class="gs-panel__titles">' +
           '<h2 class="gs-panel__title">' + esc(title) + '</h2>' +
           '<p class="gs-panel__desc">' + esc(description) + '</p>' +
         '</div>' +
+        (duration ? '<span class="gs-badge">' + esc(duration) + '</span>' : '') +
       '</div>'
     );
   }
@@ -317,7 +336,58 @@
      Step 1: inbox placement test
      ------------------------------------------------------------------------ */
 
-  function renderPlacement(p) {
+  /* Tiles are buttons. Selecting one opens its explanation below the row;
+     selecting it again (or another tile) closes/switches it. Only one is
+     open per group. The collapsed state is what the Figma frame shows. */
+  function detailHtml(g, tile, key) {
+    if (!tile || !tile.details) return '';
+    return (
+      '<div class="gs-detail__head">' +
+        '<p class="gs-detail__title">' + esc(tile.label) + '</p>' +
+        '<button type="button" class="gs-btn gs-btn--secondary" data-hide="' + key + '">' + esc(g.hideLabel || 'Hide') + '</button>' +
+      '</div>' +
+      '<div class="gs-detail__row"><p class="gs-detail__label">' + esc(g.whatLabel) + '</p><p class="gs-detail__text">' + esc(tile.details.what) + '</p></div>' +
+      '<div class="gs-detail__row"><p class="gs-detail__label">' + esc(g.fixLabel) + '</p><p class="gs-detail__text">' + esc(tile.details.fix) + '</p></div>'
+    );
+  }
+
+  function tileGroup(g, withValue, key, openIndex) {
+    var tiles = g.tiles.map(function (t, i) {
+      var open = openIndex === i;
+      return (
+        '<button type="button" class="gs-tile" data-tile="' + key + ':' + i + '" data-focus-key="tile-' + key + '-' + i +
+          '" aria-expanded="' + open + '" aria-controls="gs-detail-' + key + '">' +
+          '<span class="gs-tile__label">' + esc(t.label) + '</span>' +
+          '<span class="gs-tile__row">' +
+            (withValue ? '<span class="gs-tile__value gs-tone--' + esc(t.tone) + '">' + esc(t.value) + '</span>' : '') +
+            '<span class="gs-tile__status gs-tone--' + esc(t.tone) + '">' + esc(t.status) + '</span>' +
+          '</span>' +
+          '<span class="gs-tile__caption">' + esc(t.caption) + '</span>' +
+        '</button>'
+      );
+    }).join('');
+
+    var cur = openIndex === null || openIndex === undefined ? null : g.tiles[openIndex];
+    var detail =
+      '<div class="gs-detail' + (cur ? ' is-open' : '') + '" id="gs-detail-' + key + '" role="region"' +
+        (cur ? ' aria-label="' + esc(cur.label) + '"' : '') + '>' +
+        '<div class="gs-detail__clip"><div class="gs-detail__box">' + detailHtml(g, cur, key) + '</div></div>' +
+      '</div>';
+
+    return (
+      '<div class="gs-group">' +
+        '<div class="gs-group__head">' +
+          '<p class="gs-group__title">' + esc(g.title) + '</p>' +
+          (g.hint ? '<p class="gs-group__hint">' + esc(g.hint) + '</p>' : '') +
+        '</div>' +
+        '<div class="gs-tiles">' + tiles + '</div>' +
+        detail +
+      '</div>'
+    );
+  }
+
+  function renderPlacement(p, open) {
+    open = open || {};
     var inbox = p.segments.filter(function (s) { return s.key === 'inbox'; })[0] || p.segments[0];
 
     var list = p.segments.map(function (s) {
@@ -330,32 +400,28 @@
       );
     }).join('');
 
-    var checks = p.checks.map(function (c) {
-      return (
-        '<li class="gs-check">' +
-          '<span>' + esc(c.label) + '</span>' +
-          '<span class="gs-check__value' + (c.ok === false ? ' gs-check__value--fail' : '') + '">' + esc(c.value) + '</span>' +
-        '</li>'
-      );
-    }).join('');
-
     return (
-      '<div class="gs-panel" id="gs-panel" role="region" aria-label="' + esc(p.title) + '">' +
+      '<div class="gs-panel gs-panel--placement" id="gs-panel" role="region" aria-label="' + esc(p.title) + '">' +
         panelHeader(p.title, p.description) +
-        '<div class="gs-example">' +
+        '<div class="gs-example gs-example--dashed">' +
+          '<div class="gs-example__intro">' +
+            '<p class="gs-example__label">' + esc(p.exampleTitle) + '</p>' +
+            '<p class="gs-example__hint">' + esc(p.exampleHint) + '</p>' +
+          '</div>' +
+          '<hr class="gs-hr">' +
           '<div class="gs-example__top">' +
             '<div class="gs-score">' +
               '<div class="gs-ring">' +
                 ring({
-                  size: 125, stroke: 14, gap: 4, rotate: -75, segments: p.segments,
-                  label: 'Example: ' + Math.round(inbox.value) + ' percent of test emails reached the inbox'
+                  size: 125, stroke: 12, gap: 4, rotate: -75, segments: p.segments,
+                  label: 'Sample data: ' + Math.round(inbox.value) + ' percent of test emails reached the inbox'
                 }) +
                 '<div class="gs-ring__center">' +
                   '<span class="gs-ring__value" data-count-to="' + Math.round(inbox.value) + '" data-count-suffix="%">' + Math.round(inbox.value) + '%</span>' +
                   '<span class="gs-ring__caption">' + esc(inbox.label) + '</span>' +
                 '</div>' +
               '</div>' +
-              '<span class="gs-tag">Example</span>' +
+              '<span class="gs-tag gs-tag--sample">' + esc(p.sampleLabel) + '</span>' +
             '</div>' +
             '<div class="gs-example__text">' +
               '<div class="gs-example__head">' +
@@ -366,10 +432,13 @@
               '<p class="gs-overall gs-overall--' + esc(p.overall.tone) + '">OVERALL SCORE: <strong>' + esc(p.overall.label) + '</strong></p>' +
             '</div>' +
           '</div>' +
-          '<ul class="gs-checks">' + checks + '</ul>' +
+          tileGroup(p.spamScoring, true, 'spam', open.spam) +
+          tileGroup(p.authentication, false, 'auth', open.auth) +
         '</div>' +
-        benefits(p.benefits) +
-        primaryButton(p.cta, 'cta-placement') +
+        '<div class="gs-actions">' +
+          '<button type="button" class="gs-btn gs-btn--primary" data-action="' + esc(p.cta.action) +
+            '" data-focus-key="cta-placement">' + esc(p.cta.label) + '</button>' +
+        '</div>' +
       '</div>'
     );
   }
@@ -397,12 +466,13 @@
   function scoreCard(data, hs, isExample) {
     var band = bandFor(data.score);
     var total = data.metrics.reduce(function (a, m) { return a + m.value; }, 0) || 1;
+    var scale = data.barMax || total; /* example: value / barMax, actual: share of total */
 
     var rows = data.metrics.map(function (m) {
       return (
         '<div class="gs-metric">' +
           '<span>' + esc(m.label) + '</span>' +
-          '<span class="gs-metric__bar"><span style="width:' + ((m.value / total) * 100).toFixed(1) + '%"></span></span>' +
+          '<span class="gs-metric__bar"><span style="width:' + Math.min(100, (m.value / scale) * 100).toFixed(1) + '%"></span></span>' +
           '<span class="gs-metric__value">' + m.value + '</span>' +
         '</div>'
       );
@@ -416,22 +486,22 @@
     }
 
     return (
-      '<div class="gs-example">' +
-        '<p class="gs-example__label">' + esc(isExample ? hs.exampleLabel : hs.actualLabel) + '</p>' +
+      '<div class="gs-example' + (isExample ? ' gs-example--dashed gs-example--health' : '') + '">' +
+        (isExample ? '' : '<p class="gs-example__label">' + esc(hs.actualLabel) + '</p>') +
         '<div class="gs-example__top">' +
           '<div class="gs-score">' +
             '<div class="gs-ring">' +
               ring({
                 size: 125, stroke: 12, total: 100, track: 'var(--gs-border-subtle)',
                 segments: [{ value: data.score, color: BANDS[band].color }],
-                label: (isExample ? 'Example score: ' : 'Your score: ') + data.score + ' out of 100, ' + BANDS[band].name
+                label: (isExample ? 'Sample score: ' : 'Your score: ') + data.score + ' out of 100, ' + BANDS[band].name
               }) +
               '<div class="gs-ring__center">' +
-                '<span class="gs-ring__value gs-ring__value--score gs-ring__value--' + band + '" data-count-to="' + data.score + '">' + data.score + '</span>' +
+                '<span class="gs-ring__value gs-ring__value--score' + (isExample ? '' : ' gs-ring__value--' + band) + '" data-count-to="' + data.score + '">' + data.score + '</span>' +
               '</div>' +
             '</div>' +
             '<span class="gs-status gs-status--' + band + '">' + esc(BANDS[band].name) + '</span>' +
-            (isExample ? '<span class="gs-tag">Example</span>' : '') +
+            (isExample ? '<span class="gs-tag gs-tag--sample">' + esc(hs.sampleLabel) + '</span>' : '') +
           '</div>' +
           '<div class="gs-example__text">' +
             '<div class="gs-example__head">' +
@@ -442,6 +512,7 @@
             caption +
           '</div>' +
         '</div>' +
+        (isExample ? '<hr class="gs-hr">' : '') +
         '<div class="gs-legend-row">' +
           legend(band, hs.highlightBand) +
           '<a class="gs-link" href="' + esc(hs.whatScoresMeanHref) + '">What scores mean</a>' +
@@ -450,12 +521,19 @@
     );
   }
 
+  /* "Not ready yet" progress box (Figma 9699:5970 / 9702:12932) */
   function tracker(hs) {
     var pct = Math.min(100, Math.floor((hs.sentEmails / hs.requiredEmails) * 100));
     var remaining = Math.max(hs.requiredEmails - hs.sentEmails, 0);
     return (
-      '<div class="gs-tracker">' +
-        '<p class="gs-tracker__title">' + formatNumber(hs.requiredEmails) + ' sent emails required over the last 30 days</p>' +
+      '<div class="gs-pbox">' +
+        '<div class="gs-pbox__top">' +
+          '<span class="gs-pbox__tile">' + icon('clock', 16) + '</span>' +
+          '<div class="gs-pbox__text">' +
+            '<p class="gs-pbox__title">' + esc(hs.notStartedTitle) + '</p>' +
+            '<p>Your score needs ' + formatNumber(hs.requiredEmails) + ' sent emails in the last ' + esc(hs.requiredWindow) + '.</p>' +
+          '</div>' +
+        '</div>' +
         '<div class="gs-tracker__row">' +
           '<div class="gs-tracker__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct +
             '" aria-label="Progress toward ' + formatNumber(hs.requiredEmails) + ' sent emails">' +
@@ -463,16 +541,35 @@
           '</div>' +
           '<span class="gs-tracker__percent" data-count-to="' + pct + '" data-count-suffix="%">' + pct + '%</span>' +
         '</div>' +
-        '<p class="gs-tracker__hint">Send ' + formatNumber(remaining) + ' more emails to generate your score</p>' +
-        (hs.trackerNote ? '<p class="gs-tracker__note">' + esc(hs.trackerNote) + '</p>' : '') +
-        '<div class="gs-tracker__divider"></div>' +
-        '<div class="gs-toggle">' +
-          '<div>' +
-            '<p class="gs-toggle__label" id="gs-notify-label">Email me when my score is ready</p>' +
-            '<p class="gs-caption">' + esc(hs.notifyHelp) + '</p>' +
-          '</div>' +
-          '<button type="button" class="gs-switch" role="switch" aria-checked="' + (hs.notify ? 'true' : 'false') +
-            '" aria-labelledby="gs-notify-label" data-toggle="notify" data-focus-key="notify"></button>' +
+        '<p class="gs-caption gs-pbox__hint">Send ' + formatNumber(remaining) + ' more emails to generate your score</p>' +
+        (hs.showNotify
+          ? '<div class="gs-tracker__divider"></div>' +
+            '<div class="gs-toggle">' +
+              '<div>' +
+                '<p class="gs-toggle__label" id="gs-notify-label">Email me when my score is ready</p>' +
+                '<p class="gs-caption">' + esc(hs.notifyHelp) + '</p>' +
+              '</div>' +
+              '<button type="button" class="gs-switch" role="switch" aria-checked="' + (hs.notify ? 'true' : 'false') +
+                '" aria-labelledby="gs-notify-label" data-toggle="notify" data-focus-key="notify"></button>' +
+            '</div>'
+          : '') +
+      '</div>'
+    );
+  }
+
+  var CHEVRON =
+    '<svg class="gs-svg gs-reveal__chev" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">' +
+    '<path d="M6 4l5 4-5 4z"/></svg>';
+
+  /* "What your score will look like": a disclosure that starts hidden */
+  function reveal(hs) {
+    var open = !!hs.exampleOpen;
+    return (
+      '<div class="gs-reveal">' +
+        '<button type="button" class="gs-reveal__btn" data-reveal="1" data-focus-key="reveal" aria-expanded="' + open +
+          '" aria-controls="gs-reveal-body">' + CHEVRON + '<span>' + esc(hs.exampleLabel) + '</span></button>' +
+        '<div class="gs-detail' + (open ? ' is-open' : '') + '" id="gs-reveal-body" role="region" aria-label="' + esc(hs.exampleLabel) + '">' +
+          '<div class="gs-detail__clip"><div class="gs-reveal__box">' + scoreCard(hs.example, hs, true) + '</div></div>' +
         '</div>' +
       '</div>'
     );
@@ -483,11 +580,11 @@
     var title = ready ? hs.titles.ready : hs.titles.none;
 
     return (
-      '<div class="gs-panel" id="gs-panel" role="region" aria-label="' + esc(title) + '">' +
-        panelHeader(title, hs.description) +
+      '<div class="gs-panel gs-panel--health" id="gs-panel" role="region" aria-label="' + esc(title) + '">' +
+        panelHeader(title, hs.description, hs.duration) +
         (ready
           ? scoreCard(hs.actual, hs, false) + primaryButton(hs.cta, 'cta-health')
-          : tracker(hs) + scoreCard(hs.example, hs, true) + benefits(hs.why)) +
+          : tracker(hs) + reveal(hs) + primaryButton(hs.ctaNone, 'cta-health-none')) +
       '</div>'
     );
   }
@@ -581,7 +678,7 @@
         '<div class="gs-panel"><p class="gs-empty">' + esc(tab.label) + ' steps go here.</p></div></div></div>';
     }
 
-    var panel = state.activeStep === 'health' ? renderHealth(state.healthScore) : renderPlacement(state.placement);
+    var panel = state.activeStep === 'health' ? renderHealth(state.healthScore) : renderPlacement(state.placement, state.openTiles);
     return '<div class="gs-body">' + renderSteps(state, steps) + '<div class="gs-panel-col">' + panel + '</div></div>';
   }
 
@@ -596,7 +693,7 @@
     return !!(global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }
 
-  function countUp(root) {
+  function countUp(root) { /* root: the element whose [data-count-to] children count up */
     if (prefersReducedMotion()) return;
     var els = root.querySelectorAll('[data-count-to]');
     if (!els.length) return;
@@ -646,6 +743,8 @@
       state.activeStep = params.get('step');
     }
 
+    state.openTiles = { spam: null, auth: null };
+
     root.classList.add('gs');
 
     function emit(action, extra) {
@@ -669,11 +768,57 @@
     }
 
     root.addEventListener('click', function (event) {
-      var el = event.target.closest('[data-tab],[data-step],[data-toggle],[data-action]');
+      var el = event.target.closest('[data-tab],[data-step],[data-toggle],[data-action],[data-tile],[data-hide],[data-reveal]');
       if (!el || !root.contains(el)) return;
       var focusKey = el.getAttribute('data-focus-key');
 
-      if (el.hasAttribute('data-tab')) {
+      if (el.hasAttribute('data-reveal')) {
+        var open = !state.healthScore.exampleOpen;
+        state.healthScore.exampleOpen = open;
+        el.setAttribute('aria-expanded', open ? 'true' : 'false');
+        var body = root.querySelector('#gs-reveal-body');
+        if (open) {
+          root.classList.add('gs--animate'); /* lets the ring draw and the number count when it opens */
+          body.classList.add('is-open');
+          countUp(body);
+        } else {
+          body.classList.remove('is-open');
+        }
+        emit('toggle-score-example', { open: open });
+      } else if (el.hasAttribute('data-tile') || el.hasAttribute('data-hide')) {
+        /* Updated in place (no re-render) so the box can animate open and closed. */
+        var isHide = el.hasAttribute('data-hide');
+        var parts = (isHide ? el.getAttribute('data-hide') + ':-1' : el.getAttribute('data-tile')).split(':');
+        var group = parts[0];
+        var idx = Number(parts[1]);
+        var prev = state.openTiles[group];
+        var next = isHide ? null : (prev === idx ? null : idx);
+        state.openTiles[group] = next;
+
+        var data = state.placement[group === 'spam' ? 'spamScoring' : 'authentication'];
+        var groupEl = el.closest('.gs-group');
+        var tileEls = groupEl.querySelectorAll('.gs-tile');
+        Array.prototype.forEach.call(tileEls, function (t, i) {
+          t.setAttribute('aria-expanded', i === next ? 'true' : 'false');
+        });
+
+        var detail = groupEl.querySelector('.gs-detail');
+        var box = detail.querySelector('.gs-detail__box');
+        if (next === null) {
+          detail.classList.remove('is-open'); /* keep the text so it can fade out */
+          if (isHide && prev !== null && tileEls[prev]) tileEls[prev].focus(); /* hand focus back to the tile */
+        } else {
+          box.innerHTML = detailHtml(data, data.tiles[next], group);
+          detail.setAttribute('aria-label', data.tiles[next].label);
+          if (prev !== null) { /* switching tiles: replay a quick fade on the new text */
+            box.classList.remove('gs-detail__box--swap');
+            void box.offsetWidth;
+            box.classList.add('gs-detail__box--swap');
+          }
+          detail.classList.add('is-open');
+        }
+        emit('toggle-placement-detail', { group: group, index: isHide ? prev : idx, open: next !== null });
+      } else if (el.hasAttribute('data-tab')) {
         state.activeTab = el.getAttribute('data-tab');
         render(focusKey, true);
       } else if (el.hasAttribute('data-step')) {
