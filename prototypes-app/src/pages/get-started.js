@@ -8,7 +8,7 @@
 
    Demo shortcut (works with hash routing because it uses the real query string):
      /prototypes/?healthScore=ready#/get-started
-     /prototypes/?step=health&healthScore=none#/get-started
+     /prototypes/?healthScore=none#/get-started
      Guide completion starts at 5/7 (the five Send steps). It goes up only when an Optimize
      step is completed: "Run your first test" completes step 1, and seeing the actual score
      (healthScore.state 'ready') completes step 2. The not-ready version never completes it.
@@ -743,9 +743,8 @@
     if (params.get('placementDone') === '1' || params.get('placementDone') === 'true') {
       state.steps[0].done = true;
     }
-    if (params.get('step') === 'health' || params.get('step') === 'placement') {
-      state.activeStep = params.get('step');
-    }
+    /* The guide always opens on the placement test. A ?step= value in the URL is ignored;
+       use options.activeStep or controller.selectStep() to open another step in code. */
 
     state.openTiles = { spam: null, auth: null };
 
