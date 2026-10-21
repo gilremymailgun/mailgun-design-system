@@ -9,7 +9,8 @@
    Demo shortcut (works with hash routing because it uses the real query string):
      /prototypes/?healthScore=ready#/get-started
      /prototypes/?step=health&healthScore=none#/get-started
-     Guide completion shows 5/7 on step 1 and 6/7 on step 2 (see autoComplete).
+     Guide completion starts at 5/7 (the five Send steps). It goes up only when an Optimize
+     step is completed: see steps[].done and the view-health-score action.
 
    Events: the root element fires a bubbling "gs:action" CustomEvent for every
    button that should do something in your app. Read event.detail.action.
@@ -36,7 +37,7 @@
 
     tabs: [
       { id: 'send', label: 'Send', done: 5, total: 5 },
-      { id: 'optimize', label: 'Optimize', done: 0, total: 8 }
+      { id: 'optimize', label: 'Optimize', done: 0, total: 2 }
     ],
     activeTab: 'optimize',
 
@@ -46,10 +47,11 @@
     ],
     activeStep: 'placement',
 
-    /* true: steps before the active one count as done, so the guide completion
-       and the green checks follow the step you are viewing (5/7, then 6/7).
-       false: use each step's own "done" flag and guide.completed as given. */
-    autoComplete: true,
+    /* false (default): nothing is checked on first load. A step counts only when its own
+       "done" flag is set (placementDone=1 in the URL, steps[].done, or the user clicking
+       "See full report" on their actual score).
+       true: steps before the active one count as done (demo mode). */
+    autoComplete: false,
 
     /* Step 1: inbox placement test --------------------------------------- */
     placement: {
@@ -601,8 +603,6 @@
       var copy = {};
       Object.keys(st).forEach(function (k) { copy[k] = st[k]; });
       copy.done = !!st.done || (state.autoComplete && i < activeIndex);
-      /* The health score step only counts once the user has an actual score. */
-      if (st.id === 'health') copy.done = !!st.done || state.healthScore.state === 'ready';
       return copy;
     });
 
@@ -635,14 +635,15 @@
     );
   }
 
-  function renderTabs(state) {
+  function renderTabs(state, steps) {
+    var optimizeDone = steps.filter(function (st) { return st.done; }).length;
     return (
       '<div class="gs-tabs" role="tablist" aria-label="Guide sections">' +
       state.tabs.map(function (t) {
         return (
           '<button type="button" class="gs-tab" role="tab" id="gs-tab-' + t.id + '" aria-selected="' +
             (t.id === state.activeTab) + '" data-tab="' + t.id + '" data-focus-key="tab-' + t.id + '">' +
-            esc(t.label) + ' (' + t.done + '/' + t.total + ')' +
+            esc(t.label) + ' (' + (t.id === 'optimize' ? optimizeDone : t.done) + '/' + t.total + ')' +
           '</button>'
         );
       }).join('') +
@@ -761,7 +762,7 @@
     function render(focusKey, animate) {
       var view = computeView(state);
       root.classList.toggle('gs--animate', !!animate);
-      root.innerHTML = renderHeader(state.guide, view.completed) + renderTabs(state) + renderBody(state, view.steps);
+      root.innerHTML = renderHeader(state.guide, view.completed) + renderTabs(state, view.steps) + renderBody(state, view.steps);
       if (animate) countUp(root);
       if (focusKey) {
         var el = root.querySelector('[data-focus-key="' + focusKey + '"]');
@@ -831,7 +832,13 @@
         render(focusKey, false);
         emit('toggle-score-notification', { value: state.healthScore.notify });
       } else if (el.hasAttribute('data-action')) {
-        emit(el.getAttribute('data-action'));
+        var action = el.getAttribute('data-action');
+        if (action === 'view-health-score') {
+          /* Opening the actual score is what completes the health score step. */
+          state.steps.forEach(function (st) { if (st.id === 'health') st.done = true; });
+          render(focusKey, false);
+        }
+        emit(action);
       }
     });
 
