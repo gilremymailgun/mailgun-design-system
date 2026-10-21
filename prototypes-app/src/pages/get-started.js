@@ -15,7 +15,7 @@
    button that should do something in your app. Read event.detail.action.
      run-placement-test        Step 1 button
      view-health-score         Step 2 button (score ready)
-     acknowledge-health-score  Step 2 button (score not ready yet)
+     go-to-health-score        Step 2 button (score not ready yet)
      toggle-score-notification Step 2 toggle (detail.value is true/false)
    ========================================================================== */
 
@@ -168,7 +168,7 @@
       /* Button when the score is ready */
       cta: { label: 'See full report', action: 'view-health-score' },
       /* Button when the score is not ready yet */
-      ctaNone: { label: 'Got it', action: 'acknowledge-health-score' }
+      ctaNone: { label: 'Go to Email health score', action: 'go-to-health-score' }
     }
   };
 
@@ -601,6 +601,8 @@
       var copy = {};
       Object.keys(st).forEach(function (k) { copy[k] = st[k]; });
       copy.done = !!st.done || (state.autoComplete && i < activeIndex);
+      /* The health score step only counts once the user has an actual score. */
+      if (st.id === 'health') copy.done = !!st.done || state.healthScore.state === 'ready';
       return copy;
     });
 
