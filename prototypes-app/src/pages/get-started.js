@@ -10,12 +10,12 @@
      /prototypes/?healthScore=ready#/get-started
      /prototypes/?healthScore=none#/get-started
      Guide completion starts at 5/7 (the five Send steps). It goes up only when an Optimize
-     step is completed: "Run your first test" completes step 1, and seeing the actual score
+     step is completed: "Run your first test" completes step 1 and opens step 2, and seeing the actual score
      (healthScore.state 'ready') completes step 2. The not-ready version never completes it.
 
    Events: the root element fires a bubbling "gs:action" CustomEvent for every
    button that should do something in your app. Read event.detail.action.
-     run-placement-test        Step 1 button
+     run-placement-test        Step 1 button (also completes step 1 and opens step 2)
      view-health-score         Step 2 button (score ready)
      go-to-health-score        Step 2 button (score not ready yet)
      toggle-score-notification Step 2 toggle (detail.value is true/false)
@@ -843,9 +843,11 @@
       } else if (el.hasAttribute('data-action')) {
         var action = el.getAttribute('data-action');
         if (action === 'run-placement-test') {
-          /* Clicking "Run your first test" completes the placement step. */
+          /* Clicking "Run your first test" completes the placement step and moves on to the
+             next step, playing the same loading animation as picking it from the list. */
           markDone('placement');
-          render(focusKey, false);
+          state.activeStep = 'health';
+          render('step-health', true);
         }
         emit(action);
       }
