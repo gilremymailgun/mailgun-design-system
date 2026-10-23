@@ -330,6 +330,14 @@ export const EmailHealthScorePage = () => {
                 <div className="ehs-gauge__value" style={{ color: scoreColor({ band: ACCOUNT_BAND }) }}>{ACCOUNT_SCORE}</div>
               </div>
               <div className="ehs-gauge__label" style={{ color: scoreColor({ band: ACCOUNT_BAND }) }}>{BAND[ACCOUNT_BAND].label}</div>
+              <div className="ehs-legend">
+                {(['healthy', 'risk', 'attention'] as Band[]).map((b) => (
+                  <span key={b} className="ehs-legend__item">
+                    <span className="ehs-dot" style={{ background: BAND[b].bar }} />
+                    {b === 'healthy' ? 'Healthy >85' : b === 'risk' ? 'At risk 70\u201385' : 'Requires attention <70'}
+                  </span>
+                ))}
+              </div>
             </div>
             <div className="ehs-metrics">
               <div className="ehs-metrics__head">
@@ -354,14 +362,6 @@ export const EmailHealthScorePage = () => {
               ))}
             </div>
           </div>
-          <footer className="ehs-legend">
-            {(['healthy', 'risk', 'attention'] as Band[]).map((b) => (
-              <span key={b} className="ehs-legend__item">
-                <span className="ehs-dot" style={{ background: BAND[b].bar }} />
-                {b === 'healthy' ? 'Healthy >85' : b === 'risk' ? 'At risk 70–85' : 'Requires attention <70'}
-              </span>
-            ))}
-          </footer>
         </Card>
 
         {/* Domains by score */}
