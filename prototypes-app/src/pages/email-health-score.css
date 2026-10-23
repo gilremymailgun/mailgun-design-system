@@ -118,7 +118,8 @@
 .ehs-row.is-open { background: #fafbfb; }
 .ehs-row__main { width: 100%; min-height: 52px; padding: 0; background: none; border: 0; cursor: pointer; }
 .ehs-row__main:hover { background: #f4f6f7; }
-.ehs-row__name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ehs-row__name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #1976c9; }
+.ehs-row__main:hover .ehs-row__name { text-decoration: underline; }
 .ehs-num { font-variant-numeric: tabular-nums; }
 .ehs-row__chev { color: #626c73; transition: transform 0.15s; }
 .ehs-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 16px 24px 24px; }
