@@ -4,6 +4,7 @@ import { SignupTransition } from './pages/SignupTransition';
 import { GetStartedGuide } from './pages/GetStartedGuide';
 import { GetStartedPage } from './pages/GetStartedPage';
 import { Dashboard } from './pages/Dashboard';
+import { EmailHealthScorePage } from './pages/EmailHealthScorePage';
 
 // Hash routes keep the prototype refresh-safe under GitHub Pages subpaths.
 export const App = () => {
@@ -31,6 +32,8 @@ export const App = () => {
       return <GetStartedGuide />;
     case '/get-started':
       return <GetStartedPage />;
+    case '/email-health-score':
+      return <EmailHealthScorePage />;
     default:
       return <Home />;
   }

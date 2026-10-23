@@ -28,6 +28,11 @@ const prototypes: PrototypeLink[] = [
     title: 'Get started: page template',
     description: 'The page template with Get started selected in the navigation.',
   },
+  {
+    href: '/email-health-score',
+    title: 'Optimize: Email health score',
+    description: 'Account score, domains to fix first, biggest movers, daily scores and a sortable domain table.',
+  },
 ];
 
 export const Home = () => (
