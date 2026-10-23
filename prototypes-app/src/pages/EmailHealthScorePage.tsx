@@ -15,12 +15,12 @@ type SortKey = 'priority' | 'name' | 'score' | 'change' | 'sent' | 'imp0' | 'imp
 type SortDir = 'asc' | 'desc';
 
 const METRIC_LABELS = ['Bounce', 'Complaint', 'Spam trap', 'Full mailbox', 'Critical failure'];
-const METRIC_FIX: Record<number, [string, string]> = {
-  0: ['Reduce bounces', 'Validate new addresses before you send and remove addresses that keep bouncing from your list.'],
-  1: ['Reduce spam complaints', 'Make unsubscribing easy to find, stop sending to people who have not opened recently, and check that recipients expect this mail.'],
-  2: ['Remove spam trap risk', 'Stop mailing old, purchased or unconfirmed lists. Spam trap hits point to list quality, not content.'],
-  3: ['Reduce full mailboxes', 'Suppress recipients whose mailbox has been full for several sends, and lower the frequency to them.'],
-  4: ['Reduce critical failures', 'Remove addresses that fail permanently and confirm your SPF and DKIM records are set up for this domain.'],
+const METRIC_FIX: Record<number, [string, string, string]> = {
+  0: ['Reduce bounces', 'Excessive bounces will harm your sending reputation. Reduce your bounces to lower your bounce count and maintain your health score. To lower your bounce count, consider using validations to remove invalid recipients from your lists.', 'https://help.mailgun.com/hc/en-us/articles/202229054-How-can-I-lower-my-domain-s-bounce-rate'],
+  1: ['Reduce spam complaints', 'Complaints occur when recipients mark your email as spam. This has a significant negative impact on your reputation. Ensure your users expect to receive your mail to reduce complaints.', 'https://www.mailgun.com/blog/deliverability/spam-complaint-rate/'],
+  2: ['Remove spam trap risk', 'Spam traps are email addresses designed to receive spam. If you are sending to spam traps, review your list hygiene practices and sunset policies.', 'https://help.mailgun.com/hc/en-us/articles/4413151071515-What-are-spam-traps-and-why-should-I-avoid-them'],
+  3: ['Reduce full mailboxes', 'If you send enough email you will always see some full mailbox bounces, but an excessive number points to a problem with your list. Consider validating your recipients to reduce full mailbox bounces.', 'https://www.mailgun.com/blog/deliverability/email-bounces-what-to-do-about-them/'],
+  4: ['Reduce critical failures', 'Critical failures will erode your reputation. It is up to you to manage your sending when you start to see them. Bounce classification helps you identify these issues and resolve specific problems to maintain your health score.', 'https://help.mailgun.com/hc/en-us/articles/23504153869723-Bounce-Classification'],
 };
 
 const BAND: Record<Band, { label: string; range: string; fg: string; bar: string }> = {
@@ -50,13 +50,13 @@ const RAW: Array<[string, number | null, number | null, number, number[] | null]
   ['offers.acme.com', 78, 80, 380000, [8, 4, 5, 2, 3]],
   ['partners.acme.com', 74, 79, 52000, [6, 2, 1, 2, 15]],
   ['app.acme.com', 84, 85, 690000, [4, 3, 1, 6, 2]],
-  ['community.acme.com', 71, 70, 29000, [5, 4, 12, 3, 5]],
+  ['community.acme.com', 71, 70, 29000, [5, 4, 10, 3, 7]],
   ['sales.acme.com', 76, 83, 88000, [4, 3, 2, 10, 5]],
   ['winback.acme.com', 48, 61, 460000, [10, 22, 8, 4, 8]],
-  ['leads.acme.com', 55, 58, 215000, [15, 6, 10, 4, 10]],
+  ['leads.acme.com', 55, 58, 215000, [10, 11, 10, 4, 10]],
   ['survey.acme.com', 63, 75, 140000, [7, 16, 3, 4, 7]],
-  ['beta.acme.com', 67, 66, 12500, [6, 2, 1, 18, 6]],
-  ['promo-eu.acme.com', 38, 52, 76000, [10, 17, 12, 4, 19]],
+  ['beta.acme.com', 67, 66, 12500, [6, 6, 1, 10, 10]],
+  ['promo-eu.acme.com', 38, 52, 76000, [10, 18, 10, 4, 20]],
   ['pilot.acme.com', null, null, 6300, null],
   ['staging.acme.com', null, null, 1900, null],
 ];
@@ -507,7 +507,7 @@ export const EmailHealthScorePage = () => {
                 const isOpen = open === d.name;
                 const isCollecting = d.band === 'collecting';
                 const maxN = Math.max(1, ...d.counts);
-                const fix: [string, string] =
+                const fix: [string, string, string?] =
                   d.band === 'healthy'
                     ? ['No action needed', 'This domain is scoring Healthy. Keep an eye on the change.']
                     : isCollecting
@@ -563,6 +563,7 @@ export const EmailHealthScorePage = () => {
                         <div className="ehs-detail__col">
                           <div className="ehs-strong-500">{fix[0]}</div>
                           <p>{fix[1]}</p>
+                          {fix[2] && <a className="ehs-learn" href={fix[2]} target="_blank" rel="noopener noreferrer">Learn more</a>}
                           <div className="ehs-detail__actions">
                             <button type="button" className="ehs-btn ehs-btn--primary">Open domain report</button>
                             {!isCollecting && d.band !== 'healthy' && <button type="button" className="ehs-btn ehs-btn--quiet">Check DNS records</button>}

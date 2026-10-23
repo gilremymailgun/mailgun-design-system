@@ -56,6 +56,8 @@
 .ehs-tile__label { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
 .ehs-tile__count { font-size: 28px; line-height: 36px; font-weight: 700; }
 
+.ehs-learn { color: #1976c9; font-size: 14px; display: inline-block; margin-bottom: 12px; }
+
 /* Pair */
 .ehs-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: stretch; }
 .ehs-pair .ehs-card { display: flex; flex-direction: column; }
