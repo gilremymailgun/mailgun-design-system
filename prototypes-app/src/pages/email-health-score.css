@@ -56,6 +56,23 @@
 .ehs-tile__label { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
 .ehs-tile__count { font-size: 28px; line-height: 36px; font-weight: 700; }
 
+/* How the score is calculated */
+.ehs-how > summary { cursor: pointer; list-style: none; }
+.ehs-how > summary::-webkit-details-marker { display: none; }
+.ehs-how__summary { align-items: center; }
+.ehs-how__body { display: flex; flex-direction: column; gap: 20px; padding: 4px 24px 24px; max-width: 960px; }
+.ehs-how__body p { margin: 0; color: #4b575e; }
+.ehs-how__formula { padding: 12px 16px; border-radius: 4px; background: #f4f6f7; font-weight: 600; }
+.ehs-how__row { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(220px, 3fr) 96px; gap: 16px; padding: 12px 0; border-bottom: 1px solid #dfe3e6; }
+.ehs-how__row:last-child { border-bottom: 0; }
+.ehs-how__row--head { padding: 8px 0; font-size: 12px; line-height: 16px; color: #626c73; }
+.ehs-how__name { font-weight: 600; }
+.ehs-how__how { color: #4b575e; }
+.ehs-how__max { text-align: right; }
+.ehs-how__notes { display: flex; flex-direction: column; gap: 8px; }
+.ehs-how__notes b { color: #272f36; font-weight: 600; }
+.ehs-learn { color: #1976c9; font-size: 14px; display: inline-block; margin-bottom: 12px; }
+
 /* Pair */
 .ehs-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: stretch; }
 .ehs-pair .ehs-card { display: flex; flex-direction: column; }

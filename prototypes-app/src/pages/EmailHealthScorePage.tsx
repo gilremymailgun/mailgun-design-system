@@ -15,13 +15,22 @@ type SortKey = 'priority' | 'name' | 'score' | 'change' | 'sent' | 'imp0' | 'imp
 type SortDir = 'asc' | 'desc';
 
 const METRIC_LABELS = ['Bounce', 'Complaint', 'Spam trap', 'Full mailbox', 'Critical failure'];
-const METRIC_FIX: Record<number, [string, string]> = {
-  0: ['Reduce bounces', 'Validate new addresses before you send and remove addresses that keep bouncing from your list.'],
-  1: ['Reduce spam complaints', 'Make unsubscribing easy to find, stop sending to people who have not opened recently, and check that recipients expect this mail.'],
-  2: ['Remove spam trap risk', 'Stop mailing old, purchased or unconfirmed lists. Spam trap hits point to list quality, not content.'],
-  3: ['Reduce full mailboxes', 'Suppress recipients whose mailbox has been full for several sends, and lower the frequency to them.'],
-  4: ['Reduce critical failures', 'Remove addresses that fail permanently and confirm your SPF and DKIM records are set up for this domain.'],
+const METRIC_FIX: Record<number, [string, string, string]> = {
+  0: ['Reduce bounces', 'Excessive bounces will harm your sending reputation. Reduce your bounces to lower your bounce count and maintain your health score. To lower your bounce count, consider using validations to remove invalid recipients from your lists.', 'https://help.mailgun.com/hc/en-us/articles/202229054-How-can-I-lower-my-domain-s-bounce-rate'],
+  1: ['Reduce spam complaints', 'Complaints occur when recipients mark your email as spam. This has a significant negative impact on your reputation. Ensure your users expect to receive your mail to reduce complaints.', 'https://www.mailgun.com/blog/deliverability/spam-complaint-rate/'],
+  2: ['Remove spam trap risk', 'Spam traps are email addresses designed to receive spam. If you are sending to spam traps, review your list hygiene practices and sunset policies.', 'https://help.mailgun.com/hc/en-us/articles/4413151071515-What-are-spam-traps-and-why-should-I-avoid-them'],
+  3: ['Reduce full mailboxes', 'If you send enough email you will always see some full mailbox bounces, but an excessive number points to a problem with your list. Consider validating your recipients to reduce full mailbox bounces.', 'https://www.mailgun.com/blog/deliverability/email-bounces-what-to-do-about-them/'],
+  4: ['Reduce critical failures', 'Critical failures will erode your reputation. It is up to you to manage your sending when you start to see them. Bounce classification helps you identify these issues and resolve specific problems to maintain your health score.', 'https://help.mailgun.com/hc/en-us/articles/23504153869723-Bounce-Classification'],
 };
+
+/* How each measure loses points, from the score spec. */
+const SCORE_RULES: Array<[string, string, number]> = [
+  ['Bounce', 'Bounces per 1,000 emails sent, minus 1', 10],
+  ['Complaint', 'Spam complaints per 100,000 delivered emails, minus 1', 35],
+  ['Spam trap', 'Spam trap hits per 20,000 delivered emails, minus 1', 10],
+  ['Full mailbox', 'Full mailbox bounces per 1,000 delivered emails, minus 1', 10],
+  ['Critical failure', 'Critical bounces per 5,000 delivered emails, minus 1', 35],
+];
 
 const BAND: Record<Band, { label: string; range: string; fg: string; bar: string }> = {
   healthy: { label: 'Healthy', range: 'over 85', fg: '#23613c', bar: '#53bd69' },
@@ -50,13 +59,13 @@ const RAW: Array<[string, number | null, number | null, number, number[] | null]
   ['offers.acme.com', 78, 80, 380000, [8, 4, 5, 2, 3]],
   ['partners.acme.com', 74, 79, 52000, [6, 2, 1, 2, 15]],
   ['app.acme.com', 84, 85, 690000, [4, 3, 1, 6, 2]],
-  ['community.acme.com', 71, 70, 29000, [5, 4, 12, 3, 5]],
+  ['community.acme.com', 71, 70, 29000, [5, 4, 10, 3, 7]],
   ['sales.acme.com', 76, 83, 88000, [4, 3, 2, 10, 5]],
   ['winback.acme.com', 48, 61, 460000, [10, 22, 8, 4, 8]],
-  ['leads.acme.com', 55, 58, 215000, [15, 6, 10, 4, 10]],
+  ['leads.acme.com', 55, 58, 215000, [10, 11, 10, 4, 10]],
   ['survey.acme.com', 63, 75, 140000, [7, 16, 3, 4, 7]],
-  ['beta.acme.com', 67, 66, 12500, [6, 2, 1, 18, 6]],
-  ['promo-eu.acme.com', 38, 52, 76000, [10, 17, 12, 4, 19]],
+  ['beta.acme.com', 67, 66, 12500, [6, 6, 1, 10, 10]],
+  ['promo-eu.acme.com', 38, 52, 76000, [10, 18, 10, 4, 20]],
   ['pilot.acme.com', null, null, 6300, null],
   ['staging.acme.com', null, null, 1900, null],
 ];
@@ -372,6 +381,43 @@ export const EmailHealthScorePage = () => {
           </Card>
         </div>
 
+        {/* How the score is calculated */}
+        <details className="ehs-card ehs-how" open>
+          <summary className="ehs-card__head ehs-how__summary">
+            <span className="ehs-card__heading">
+              <span className="ehs-card__title">How your score is calculated</span>
+              <span className="ehs-card__subtitle">Last 30 days</span>
+            </span>
+            <span className="ehs-card__subtitle">Show or hide</span>
+          </summary>
+          <div className="ehs-how__body">
+            <p>
+              Your score starts at 100. Each of five measures takes points off as it gets worse, up to a limit for that
+              measure. Spammy behavior has an immediate effect, and you can always see which measure moved your score.
+            </p>
+            <div className="ehs-how__formula">Score = 100 &minus; Bounce &minus; Complaint &minus; Spam trap &minus; Full mailbox &minus; Critical failure</div>
+            <div role="table" aria-label="How each measure loses points">
+              <div role="row" className="ehs-how__row ehs-how__row--head">
+                <span role="columnheader">Measure</span>
+                <span role="columnheader">Points lost</span>
+                <span role="columnheader" className="ehs-how__max">Most you can lose</span>
+              </div>
+              {SCORE_RULES.map(([name, how, max]) => (
+                <div role="row" className="ehs-how__row" key={name}>
+                  <span role="cell" className="ehs-how__name">{name}</span>
+                  <span role="cell" className="ehs-how__how">{how}</span>
+                  <span role="cell" className="ehs-how__max">{max}</span>
+                </div>
+              ))}
+            </div>
+            <div className="ehs-how__notes">
+              <p><b>Example.</b> You deliver 200,000 emails and get 12 spam complaints. That is 6 complaints per 100,000 delivered. Minus 1, your score loses 5 points to complaints.</p>
+              <p>A measure never goes below 0 points lost, so a clean sending history keeps all 100.</p>
+              <p>Scores use the last 30 days of data and need at least 10,000 emails in that period. Domains below that show Collecting data.</p>
+            </div>
+          </div>
+        </details>
+
         {/* Domains by score */}
         <Card title="Domains by score" subtitle="Avg 30 days" action={<span className="ehs-card__subtitle">{`${DOMAINS.length} domains, ${SCORED.length} with a score`}</span>}>
           <div className="ehs-overview">
@@ -507,7 +553,7 @@ export const EmailHealthScorePage = () => {
                 const isOpen = open === d.name;
                 const isCollecting = d.band === 'collecting';
                 const maxN = Math.max(1, ...d.counts);
-                const fix: [string, string] =
+                const fix: [string, string, string?] =
                   d.band === 'healthy'
                     ? ['No action needed', 'This domain is scoring Healthy. Keep an eye on the change.']
                     : isCollecting
@@ -563,6 +609,7 @@ export const EmailHealthScorePage = () => {
                         <div className="ehs-detail__col">
                           <div className="ehs-strong-500">{fix[0]}</div>
                           <p>{fix[1]}</p>
+                          {fix[2] && <a className="ehs-learn" href={fix[2]} target="_blank" rel="noopener noreferrer">Learn more</a>}
                           <div className="ehs-detail__actions">
                             <button type="button" className="ehs-btn ehs-btn--primary">Open domain report</button>
                             {!isCollecting && d.band !== 'healthy' && <button type="button" className="ehs-btn ehs-btn--quiet">Check DNS records</button>}
