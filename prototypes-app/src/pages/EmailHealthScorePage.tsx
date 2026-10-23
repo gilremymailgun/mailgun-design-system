@@ -160,6 +160,10 @@ const DAYS = DAILY_OFFSETS.map((offset, i) => {
 });
 const dayX = (i: number) => ((i + 0.5) / DAYS.length) * 100;
 
+/* Gauge geometry: 168px ring, 14px round-capped stroke (round caps add the stroke width to the arc). */
+const GAUGE_CIRC = 2 * Math.PI * 77;
+const GAUGE_DASH = Math.max((ACCOUNT_SCORE / 100) * GAUGE_CIRC - 14, 0.01);
+
 const deltaColor = (delta: number | null) =>
   delta == null ? '#626c73' : delta < 0 ? ATTENTION_RED : delta > 0 ? POSITIVE_GREEN : '#272f36';
 
@@ -295,7 +299,6 @@ export const EmailHealthScorePage = () => {
     },
   ];
 
-  const circumference = 2 * Math.PI * 70;
   const hoverDay = hover >= 0 ? DAYS[hover] : null;
   const rowsHeadDir = dir;
 
@@ -315,15 +318,19 @@ export const EmailHealthScorePage = () => {
             <div className="ehs-gauge">
               <div className="ehs-gauge__ring">
                 <svg width="168" height="168" viewBox="0 0 168 168" role="img" aria-label={`Account score ${ACCOUNT_SCORE} out of 100, ${BAND[ACCOUNT_BAND].label}`}>
-                  <circle cx="84" cy="84" r="70" fill="none" stroke="#dfe3e6" strokeWidth="14" />
+                  <circle cx="84" cy="84" r="77" fill="none" stroke="#dfe3e6" strokeWidth="14" />
                   <circle
+                    className="ehs-gauge__arc"
                     cx="84"
                     cy="84"
-                    r="70"
+                    r="77"
                     fill="none"
                     stroke={BAND[ACCOUNT_BAND].bar}
                     strokeWidth="14"
-                    strokeDasharray={`${((ACCOUNT_SCORE / 100) * circumference).toFixed(1)} ${circumference.toFixed(1)}`}
+                    strokeLinecap="round"
+                    strokeDasharray={`${GAUGE_DASH.toFixed(2)} ${GAUGE_CIRC.toFixed(2)}`}
+                    strokeDashoffset={-7}
+                    style={{ '--dash': `${GAUGE_DASH.toFixed(2)}px`, '--circ': `${GAUGE_CIRC.toFixed(2)}px` } as CSSProperties}
                     transform="rotate(-90 84 84)"
                   />
                 </svg>
