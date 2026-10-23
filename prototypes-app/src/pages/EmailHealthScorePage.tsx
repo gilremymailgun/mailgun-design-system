@@ -312,10 +312,11 @@ export const EmailHealthScorePage = () => {
       }}
     >
       <div className="ehs">
-        {/* Account score */}
-        <Card title="Account score" subtitle="Avg 30 days">
-          <div className="ehs-account">
-            <div className="ehs-gauge">
+        {/* Account score and metrics */}
+        <div className="ehs-score-row">
+          <Card title="Account score" subtitle="Avg 30 days">
+            <div className="ehs-account">
+              <div className="ehs-gauge">
               <div className="ehs-gauge__ring">
                 <svg width="168" height="168" viewBox="0 0 168 168" role="img" aria-label={`Account score ${ACCOUNT_SCORE} out of 100, ${BAND[ACCOUNT_BAND].label}`}>
                   <circle cx="84" cy="84" r="77" fill="none" stroke="#dfe3e6" strokeWidth="14" />
@@ -337,6 +338,7 @@ export const EmailHealthScorePage = () => {
                 <div className="ehs-gauge__value" style={{ color: scoreColor({ band: ACCOUNT_BAND }) }}>{ACCOUNT_SCORE}</div>
               </div>
               <div className="ehs-gauge__label" style={{ color: scoreColor({ band: ACCOUNT_BAND }) }}>{BAND[ACCOUNT_BAND].label}</div>
+              </div>
               <div className="ehs-legend">
                 {(['healthy', 'risk', 'attention'] as Band[]).map((b) => (
                   <span key={b} className="ehs-legend__item">
@@ -346,11 +348,10 @@ export const EmailHealthScorePage = () => {
                 ))}
               </div>
             </div>
+          </Card>
+
+          <Card title="Metrics impacting score" action={<span className="ehs-card__subtitle">Domains affected</span>}>
             <div className="ehs-metrics">
-              <div className="ehs-metrics__head">
-                <span className="ehs-strong">Metrics impacting score</span>
-                <span className="ehs-muted-small">Domains affected</span>
-              </div>
               {METRIC_LABELS.map((label, i) => (
                 <button
                   key={label}
@@ -368,8 +369,8 @@ export const EmailHealthScorePage = () => {
                 </button>
               ))}
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
 
         {/* Domains by score */}
         <Card title="Domains by score" subtitle="Avg 30 days" action={<span className="ehs-card__subtitle">{`${DOMAINS.length} domains, ${SCORED.length} with a score`}</span>}>
