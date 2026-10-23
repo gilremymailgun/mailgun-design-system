@@ -23,15 +23,6 @@ const METRIC_FIX: Record<number, [string, string, string]> = {
   4: ['Reduce critical failures', 'Critical failures will erode your reputation. It is up to you to manage your sending when you start to see them. Bounce classification helps you identify these issues and resolve specific problems to maintain your health score.', 'https://help.mailgun.com/hc/en-us/articles/23504153869723-Bounce-Classification'],
 };
 
-/* How each measure loses points, from the score spec. */
-const SCORE_RULES: Array<[string, string, number]> = [
-  ['Bounce', 'Bounces per 1,000 emails sent, minus 1', 10],
-  ['Complaint', 'Spam complaints per 100,000 delivered emails, minus 1', 35],
-  ['Spam trap', 'Spam trap hits per 20,000 delivered emails, minus 1', 10],
-  ['Full mailbox', 'Full mailbox bounces per 1,000 delivered emails, minus 1', 10],
-  ['Critical failure', 'Critical bounces per 5,000 delivered emails, minus 1', 35],
-];
-
 const BAND: Record<Band, { label: string; range: string; fg: string; bar: string }> = {
   healthy: { label: 'Healthy', range: 'over 85', fg: '#23613c', bar: '#53bd69' },
   risk: { label: 'At risk', range: '70 to 85', fg: '#8f5509', bar: '#c97a12' },
@@ -380,43 +371,6 @@ export const EmailHealthScorePage = () => {
             </div>
           </Card>
         </div>
-
-        {/* How the score is calculated */}
-        <details className="ehs-card ehs-how" open>
-          <summary className="ehs-card__head ehs-how__summary">
-            <span className="ehs-card__heading">
-              <span className="ehs-card__title">How your score is calculated</span>
-              <span className="ehs-card__subtitle">Last 30 days</span>
-            </span>
-            <span className="ehs-card__subtitle">Show or hide</span>
-          </summary>
-          <div className="ehs-how__body">
-            <p>
-              Your score starts at 100. Each of five measures takes points off as it gets worse, up to a limit for that
-              measure. Spammy behavior has an immediate effect, and you can always see which measure moved your score.
-            </p>
-            <div className="ehs-how__formula">Score = 100 &minus; Bounce &minus; Complaint &minus; Spam trap &minus; Full mailbox &minus; Critical failure</div>
-            <div role="table" aria-label="How each measure loses points">
-              <div role="row" className="ehs-how__row ehs-how__row--head">
-                <span role="columnheader">Measure</span>
-                <span role="columnheader">Points lost</span>
-                <span role="columnheader" className="ehs-how__max">Most you can lose</span>
-              </div>
-              {SCORE_RULES.map(([name, how, max]) => (
-                <div role="row" className="ehs-how__row" key={name}>
-                  <span role="cell" className="ehs-how__name">{name}</span>
-                  <span role="cell" className="ehs-how__how">{how}</span>
-                  <span role="cell" className="ehs-how__max">{max}</span>
-                </div>
-              ))}
-            </div>
-            <div className="ehs-how__notes">
-              <p><b>Example.</b> You deliver 200,000 emails and get 12 spam complaints. That is 6 complaints per 100,000 delivered. Minus 1, your score loses 5 points to complaints.</p>
-              <p>A measure never goes below 0 points lost, so a clean sending history keeps all 100.</p>
-              <p>Scores use the last 30 days of data and need at least 10,000 emails in that period. Domains below that show Collecting data.</p>
-            </div>
-          </div>
-        </details>
 
         {/* Domains by score */}
         <Card title="Domains by score" subtitle="Avg 30 days" action={<span className="ehs-card__subtitle">{`${DOMAINS.length} domains, ${SCORED.length} with a score`}</span>}>
