@@ -169,4 +169,4 @@
 .ehs-fix__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .ehs-fix__sub { font-size: 14px; line-height: 20px; color: #4b575e; }
 .ehs-fix__sub b { color: #272f36; font-weight: 700; }
-.ehs-fix__driver { flex: none; text-align: right; font-size: 16px; line-height: 24px; font-weight: 700; color: #b3302f; }
+.ehs-fix__driver { flex: none; text-align: right; font-size: 14px; line-height: 20px; font-weight: 700; color: #272f36; }

@@ -499,7 +499,7 @@ export const EmailHealthScorePage = () => {
                     </span>
                     <span className="ehs-fix__sub">Email delivered: <b>{fmt(d.sent)}</b></span>
                   </div>
-                  <span className="ehs-fix__driver">{`${d.counts[d.topIndex]} pts from ${METRIC_LABELS[d.topIndex].toLowerCase()}`}</span>
+                  <span className="ehs-fix__driver">{`\u2212${d.counts[d.topIndex]} pts from ${METRIC_LABELS[d.topIndex].toLowerCase()}`}</span>
                 </div>
               ))}
             </div>
