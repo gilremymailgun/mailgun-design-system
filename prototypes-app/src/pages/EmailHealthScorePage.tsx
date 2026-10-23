@@ -502,17 +502,6 @@ export const EmailHealthScorePage = () => {
                   <span className="ehs-fix__driver">{`${d.counts[d.topIndex]} pts from ${METRIC_LABELS[d.topIndex].toLowerCase()}`}</span>
                 </div>
               ))}
-                      </span>
-                    </span>
-                    <Delta value={d.delta} />
-                    <strong className="ehs-score ehs-score--lg" style={{ color: BAND[d.band].fg }}>{d.score}</strong>
-                  </div>
-                  <div className="ehs-list__meta">
-                    <span>Biggest impact: <b>{`${METRIC_LABELS[d.topIndex]} (${d.counts[d.topIndex]} pts)`}</b></span>
-                    <span>Delivered: <b>{fmt(d.sent)}</b></span>
-                  </div>
-                </div>
-              ))}
             </div>
           </Card>
 
