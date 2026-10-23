@@ -136,11 +136,11 @@ const METRIC_HITS = METRIC_LABELS.map((_, i) => SCORED.filter((d) => d.counts[i]
 /* Account insight: what changed, what drives it, where to focus, what to do. */
 const PLURAL = ['Bounces', 'Complaints', 'Spam traps', 'Full mailboxes', 'Critical failures'];
 const ACTION_HINT = [
-  'validate addresses and remove invalid recipients from your lists',
-  'confirm recipients opted in and stop mailing inactive subscribers',
-  'review list hygiene and sunset old or unconfirmed lists',
-  'suppress recipients whose mailbox stays full and send to them less often',
-  'use bounce classification to find and fix permanent failures',
+  'validate addresses and remove invalid ones',
+  'confirm opt-in and drop inactive subscribers',
+  'clean up old or unconfirmed lists',
+  'suppress full mailboxes and send less often',
+  'use bounce classification to fix failures',
 ];
 
 const buildInsight = () => {
@@ -185,11 +185,11 @@ const buildInsight = () => {
     focus: focus.map((f) => f.d),
     focusSentence: `${both ? ' represent ' : ' represents '}${ptsShare}% of points lost and ${volShare}% of all email delivered.`,
     action:
-      `Bring ${both ? 'both domains' : names[0]} back to Healthy (${HEALTHY_FLOOR}+) to reach about ${Math.round(lifted)}. ` +
+      `Lift ${both ? 'both' : names[0]} to Healthy (${HEALTHY_FLOOR}+) to reach about ${Math.round(lifted)}. ` +
       (same
-        ? `${both ? 'Both are' : 'It is'} driven mainly by ${PLURAL[keys[0]].toLowerCase()}`
-        : `${names[0]} is driven mainly by ${PLURAL[keys[0]].toLowerCase()} and ${names[1]} by ${PLURAL[keys[1]].toLowerCase()}`) +
-      `. Start there: ${ACTION_HINT[keys[0]]}.`,
+        ? `${PLURAL[keys[0]]} drive ${both ? 'both' : 'it'}`
+        : `${names[0]}: ${PLURAL[keys[0]].toLowerCase()}, ${names[1]}: ${PLURAL[keys[1]].toLowerCase()}`) +
+      `: ${ACTION_HINT[keys[0]]}.`,
   };
 };
 const INSIGHT = buildInsight();
@@ -221,9 +221,9 @@ const DAYS = DAILY_OFFSETS.map((offset, i) => {
 });
 const dayX = (i: number) => ((i + 0.5) / DAYS.length) * 100;
 
-/* Gauge geometry: 168px ring, 14px round-capped stroke (round caps add the stroke width to the arc). */
-const GAUGE_CIRC = 2 * Math.PI * 77;
-const GAUGE_DASH = Math.max((ACCOUNT_SCORE / 100) * GAUGE_CIRC - 14, 0.01);
+/* Gauge geometry: 128px ring, 12px round-capped stroke (round caps add the stroke width to the arc). */
+const GAUGE_CIRC = 2 * Math.PI * 58;
+const GAUGE_DASH = Math.max((ACCOUNT_SCORE / 100) * GAUGE_CIRC - 12, 0.01);
 
 const deltaColor = (delta: number | null) =>
   delta == null ? '#626c73' : delta < 0 ? ATTENTION_RED : delta > 0 ? POSITIVE_GREEN : '#272f36';
@@ -381,21 +381,21 @@ export const EmailHealthScorePage = () => {
             <div className="ehs-account">
               <div className="ehs-account__score">
               <div className="ehs-gauge__ring">
-                <svg width="168" height="168" viewBox="0 0 168 168" role="img" aria-label={`Account score ${ACCOUNT_SCORE} out of 100, ${BAND[ACCOUNT_BAND].label}`}>
-                  <circle cx="84" cy="84" r="77" fill="none" stroke="#dfe3e6" strokeWidth="14" />
+                <svg width="128" height="128" viewBox="0 0 128 128" role="img" aria-label={`Account score ${ACCOUNT_SCORE} out of 100, ${BAND[ACCOUNT_BAND].label}`}>
+                  <circle cx="64" cy="64" r="58" fill="none" stroke="#dfe3e6" strokeWidth="12" />
                   <circle
                     className="ehs-gauge__arc"
-                    cx="84"
-                    cy="84"
-                    r="77"
+                    cx="64"
+                    cy="64"
+                    r="58"
                     fill="none"
                     stroke={BAND[ACCOUNT_BAND].bar}
-                    strokeWidth="14"
+                    strokeWidth="12"
                     strokeLinecap="round"
                     strokeDasharray={`${GAUGE_DASH.toFixed(2)} ${GAUGE_CIRC.toFixed(2)}`}
-                    strokeDashoffset={-7}
+                    strokeDashoffset={-6}
                     style={{ '--dash': `${GAUGE_DASH.toFixed(2)}px`, '--circ': `${GAUGE_CIRC.toFixed(2)}px` } as CSSProperties}
-                    transform="rotate(-90 84 84)"
+                    transform="rotate(-90 64 64)"
                   />
                 </svg>
                 <div className="ehs-gauge__value" style={{ color: scoreColor({ band: ACCOUNT_BAND }) }}>{ACCOUNT_SCORE}</div>
