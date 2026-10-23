@@ -246,10 +246,10 @@ const Delta = ({ value }: { value: number | null }) => (
   </span>
 );
 
-const Card = ({ title, subtitle, action, children, id }: { title: string; subtitle?: string; action?: ReactNode; children: ReactNode; id?: string }) => (
+const Card = ({ title, subtitle, action, children, id, stacked }: { title: string; subtitle?: string; action?: ReactNode; children: ReactNode; id?: string; stacked?: boolean }) => (
   <section className="ehs-card" id={id}>
     <header className="ehs-card__head">
-      <div className="ehs-card__heading">
+      <div className={`ehs-card__heading${stacked ? ' is-stacked' : ''}`}>
         <h2 className="ehs-card__title">{title}</h2>
         {subtitle && <span className="ehs-card__subtitle">{subtitle}</span>}
       </div>
@@ -478,6 +478,7 @@ export const EmailHealthScorePage = () => {
         <div className="ehs-pair">
           <Card
             title="Fix these first"
+            stacked
             subtitle="Ranked by how far a domain is below Healthy (over 85) and how much email it delivers"
             action={
               <button type="button" className="ehs-link ehs-link--action" onClick={() => { applyView({ filter: 'all', sort: 'priority', query: '' }); goTable(); }}>
@@ -511,6 +512,7 @@ export const EmailHealthScorePage = () => {
 
           <Card
             title="Biggest movers"
+            stacked
             subtitle="Score change vs previous 30 days"
             action={
               <button type="button" className="ehs-link ehs-link--action" onClick={() => { applyView({ filter: 'all', sort: 'change', dir: 'desc', query: '' }); goTable(); }}>
