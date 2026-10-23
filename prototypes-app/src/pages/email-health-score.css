@@ -23,7 +23,7 @@
 
 /* Account score */
 /* Account score and metrics: two cards side by side */
-.ehs-score-row { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 24px; align-items: stretch; }
+.ehs-score-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px; align-items: stretch; }
 .ehs-score-row > .ehs-card { display: flex; flex-direction: column; }
 .ehs-account { flex: 1; display: flex; flex-wrap: wrap; align-items: stretch; padding: 16px 0; }
 .ehs-account__score { flex: 0 0 33.333%; max-width: 33.333%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0 24px; }
