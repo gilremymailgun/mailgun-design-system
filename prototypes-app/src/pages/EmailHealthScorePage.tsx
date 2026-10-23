@@ -487,14 +487,21 @@ export const EmailHealthScorePage = () => {
           >
             <div className="ehs-list">
               {FIX_FIRST.map((d, i) => (
-                <div key={d.name} className="ehs-list__row ehs-list__row--stacked" style={{ borderBottomColor: i === FIX_FIRST.length - 1 ? 'transparent' : undefined }}>
-                  <div className="ehs-list__line">
+                <div key={d.name} className="ehs-list__row ehs-list__row--fix" style={{ borderBottomColor: i === FIX_FIRST.length - 1 ? 'transparent' : undefined }}>
+                  <div className="ehs-fix__main">
                     <span className="ehs-list__name">
                       <button type="button" className="ehs-link ehs-link--name" onClick={() => reviewDomain(d)}>{d.name}</button>
                       <span className="ehs-dots" role="img" aria-label={`Priority ${i + 1} of ${FIX_FIRST.length}`} title={`Priority ${i + 1} of ${FIX_FIRST.length}`}>
                         {[0, 1, 2, 3, 4].map((k) => (
                           <span key={k} className={k < 5 - i ? 'is-on' : undefined} />
                         ))}
+                      </span>
+                    </span>
+                    <span className="ehs-fix__sub">Email delivered: <b>{fmt(d.sent)}</b></span>
+                  </div>
+                  <span className="ehs-fix__driver">{`${d.counts[d.topIndex]} pts from ${METRIC_LABELS[d.topIndex].toLowerCase()}`}</span>
+                </div>
+              ))}
                       </span>
                     </span>
                     <Delta value={d.delta} />
