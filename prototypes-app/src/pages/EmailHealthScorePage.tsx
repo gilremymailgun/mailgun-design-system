@@ -438,62 +438,6 @@ export const EmailHealthScorePage = () => {
           </Card>
         </div>
 
-        {/* Daily scores */}
-        <Card title="Daily scores" subtitle="Account, last 30 days">
-          <div className="ehs-chart">
-            <div className="ehs-chart__yaxis" aria-hidden="true">
-              {[100, 75, 50, 25, 0].map((v) => (
-                <span key={v} style={{ top: `${100 - v}%` }}>{v}</span>
-              ))}
-            </div>
-            <div className="ehs-chart__main">
-              <div className="ehs-chart__plot" onMouseLeave={() => setHover(-1)}>
-                <div className="ehs-chart__band" style={{ top: 0, height: '15%', background: '#53bd69', opacity: 0.1 }} />
-                <div className="ehs-chart__band" style={{ top: '15%', height: '15%', background: '#f0a113', opacity: 0.12 }} />
-                <div className="ehs-chart__band" style={{ top: '30%', height: '70%', background: '#ef5350', opacity: 0.07 }} />
-                {[0, 25, 50, 75].map((t) => (
-                  <div key={t} className="ehs-chart__grid" style={{ top: `${t}%` }} />
-                ))}
-                <span className="ehs-chart__note" style={{ top: 2, color: '#23613c' }}>Healthy over 85</span>
-                <span className="ehs-chart__note" style={{ top: 'calc(30% - 16px)', color: '#8f5509' }}>At risk 70 to 85</span>
-                <span className="ehs-chart__note" style={{ top: 'calc(30% + 2px)', color: ATTENTION_RED }}>Requires attention under 70</span>
-                <svg className="ehs-chart__line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                  <polyline points={DAYS.map((d, i) => `${dayX(i).toFixed(2)},${100 - d.score}`).join(' ')} fill="none" stroke="#1976c9" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
-                </svg>
-                {hover >= 0 && <div className="ehs-chart__cross" style={{ left: `${dayX(hover)}%` }} />}
-                {DAYS.map((d, i) => (
-                  <div key={d.date} className="ehs-chart__dot" style={{ left: `${dayX(i)}%`, top: `${100 - d.score}%`, background: i === hover ? '#1976c9' : '#ffffff' }} />
-                ))}
-                <div className="ehs-chart__hits">
-                  {DAYS.map((d, i) => (
-                    <div key={d.date} onMouseEnter={() => setHover(i)} />
-                  ))}
-                </div>
-                {hoverDay && (
-                  <div
-                    className="ehs-chart__tip"
-                    style={{
-                      left: `${dayX(hover)}%`,
-                      transform: dayX(hover) > 70 ? 'translateX(calc(-100% - 12px))' : 'translateX(12px)',
-                    } as CSSProperties}
-                  >
-                    <div className="ehs-chart__tip-date">{hoverDay.date}</div>
-                    <div>Daily health score: <strong style={{ color: BAND[bandOf(hoverDay.score)].fg }}>{hoverDay.score}</strong></div>
-                    {['Bounce impact', 'Complaint impact', 'Trap impact', 'Full mailbox impact', 'Critical failure impact'].map((label, i) => (
-                      <div key={label}>{`${label}: ${hoverDay.impacts[i]}`}</div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="ehs-chart__xaxis">
-                {[0, 7, 14, 21, DAYS.length - 1].map((i) => (
-                  <span key={i}>{DAYS[i].date}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
-
         {/* Table */}
         <Card
           id="ehs-domains-table"
@@ -645,6 +589,62 @@ export const EmailHealthScorePage = () => {
               )}
             </div>
           </footer>
+        </Card>
+
+        {/* Daily scores */}
+        <Card title="Daily scores" subtitle="Account, last 30 days">
+          <div className="ehs-chart">
+            <div className="ehs-chart__yaxis" aria-hidden="true">
+              {[100, 75, 50, 25, 0].map((v) => (
+                <span key={v} style={{ top: `${100 - v}%` }}>{v}</span>
+              ))}
+            </div>
+            <div className="ehs-chart__main">
+              <div className="ehs-chart__plot" onMouseLeave={() => setHover(-1)}>
+                <div className="ehs-chart__band" style={{ top: 0, height: '15%', background: '#53bd69', opacity: 0.1 }} />
+                <div className="ehs-chart__band" style={{ top: '15%', height: '15%', background: '#f0a113', opacity: 0.12 }} />
+                <div className="ehs-chart__band" style={{ top: '30%', height: '70%', background: '#ef5350', opacity: 0.07 }} />
+                {[0, 25, 50, 75].map((t) => (
+                  <div key={t} className="ehs-chart__grid" style={{ top: `${t}%` }} />
+                ))}
+                <span className="ehs-chart__note" style={{ top: 2, color: '#23613c' }}>Healthy over 85</span>
+                <span className="ehs-chart__note" style={{ top: 'calc(30% - 16px)', color: '#8f5509' }}>At risk 70 to 85</span>
+                <span className="ehs-chart__note" style={{ top: 'calc(30% + 2px)', color: ATTENTION_RED }}>Requires attention under 70</span>
+                <svg className="ehs-chart__line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                  <polyline points={DAYS.map((d, i) => `${dayX(i).toFixed(2)},${100 - d.score}`).join(' ')} fill="none" stroke="#1976c9" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                </svg>
+                {hover >= 0 && <div className="ehs-chart__cross" style={{ left: `${dayX(hover)}%` }} />}
+                {DAYS.map((d, i) => (
+                  <div key={d.date} className="ehs-chart__dot" style={{ left: `${dayX(i)}%`, top: `${100 - d.score}%`, background: i === hover ? '#1976c9' : '#ffffff' }} />
+                ))}
+                <div className="ehs-chart__hits">
+                  {DAYS.map((d, i) => (
+                    <div key={d.date} onMouseEnter={() => setHover(i)} />
+                  ))}
+                </div>
+                {hoverDay && (
+                  <div
+                    className="ehs-chart__tip"
+                    style={{
+                      left: `${dayX(hover)}%`,
+                      transform: dayX(hover) > 70 ? 'translateX(calc(-100% - 12px))' : 'translateX(12px)',
+                    } as CSSProperties}
+                  >
+                    <div className="ehs-chart__tip-date">{hoverDay.date}</div>
+                    <div>Daily health score: <strong style={{ color: BAND[bandOf(hoverDay.score)].fg }}>{hoverDay.score}</strong></div>
+                    {['Bounce impact', 'Complaint impact', 'Trap impact', 'Full mailbox impact', 'Critical failure impact'].map((label, i) => (
+                      <div key={label}>{`${label}: ${hoverDay.impacts[i]}`}</div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="ehs-chart__xaxis">
+                {[0, 7, 14, 21, DAYS.length - 1].map((i) => (
+                  <span key={i}>{DAYS[i].date}</span>
+                ))}
+              </div>
+            </div>
+          </div>
         </Card>
       </div>
     </Page>
