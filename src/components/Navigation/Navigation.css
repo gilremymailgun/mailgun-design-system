@@ -199,10 +199,18 @@
 
 .nav-panel__scroll {
   flex: 1 0 0;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--ref-spacing-4px);
+  /* Long menus still scroll (wheel, trackpad, keyboard), but without a visible bar. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nav-panel__scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-panel__footer {
