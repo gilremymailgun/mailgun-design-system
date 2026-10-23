@@ -6,7 +6,7 @@
   font-size: 14px;
   line-height: 20px;
 }
-.ehs button { font: inherit; color: inherit; }
+:where(.ehs) button { font: inherit; color: inherit; }
 .ehs-strong { font-weight: 700; }
 .ehs-strong-500 { font-weight: 600; margin-bottom: 12px; }
 .ehs-muted-small { font-size: 12px; line-height: 16px; color: #626c73; }
