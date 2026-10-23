@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { Page } from '@ds/patterns/Page/Page';
 import './email-health-score.css';
@@ -133,6 +133,67 @@ const ACCOUNT_IMPACTS = allocate(
 
 const METRIC_HITS = METRIC_LABELS.map((_, i) => SCORED.filter((d) => d.counts[i] >= HIT_THRESHOLD).length);
 
+/* Account insight: what changed, what drives it, where to focus, what to do. */
+const PLURAL = ['Bounces', 'Complaints', 'Spam traps', 'Full mailboxes', 'Critical failures'];
+const ACTION_HINT = [
+  'validate addresses and remove invalid recipients from your lists',
+  'confirm recipients opted in and stop mailing inactive subscribers',
+  'review list hygiene and sunset old or unconfirmed lists',
+  'suppress recipients whose mailbox stays full and send to them less often',
+  'use bounce classification to find and fix permanent failures',
+];
+
+const buildInsight = () => {
+  const accRaw = SCORED.reduce((a, d) => a + (d.score ?? 0) * d.sent, 0) / SCORED_SENT;
+  const lostPts = 100 - accRaw;
+  const weights = METRIC_LABELS.map((_, i) => SCORED.reduce((a, d) => a + d.counts[i] * d.sent, 0) / SCORED_SENT);
+  const weightTotal = weights.reduce((a, b) => a + b, 0) || 1;
+  const topMetric = weights.indexOf(Math.max(...weights));
+  const prevScore = Math.round(SCORED.reduce((a, d) => a + ((d.score ?? 0) - (d.delta ?? 0)) * d.sent, 0) / SCORED_SENT);
+  const prevBand = bandOf(prevScore);
+  const change = ACCOUNT_SCORE - prevScore;
+  const points = Math.abs(change) === 1 ? ' point' : ' points';
+
+  const headline =
+    change === 0
+      ? `Your account score held steady at ${ACCOUNT_SCORE} (${BAND[ACCOUNT_BAND].label}).`
+      : `Your account score ${change < 0 ? 'fell' : 'rose'} ${Math.abs(change)}${points} to ${ACCOUNT_SCORE}` +
+        (prevBand !== ACCOUNT_BAND ? ` and moved from ${BAND[prevBand].label} to ${BAND[ACCOUNT_BAND].label}.` : ` (${BAND[ACCOUNT_BAND].label}).`);
+
+  const driver = `${PLURAL[topMetric]} are the biggest driver, costing ${weights[topMetric].toFixed(1)} of the ${Math.round(lostPts)} points lost (${Math.round((weights[topMetric] / weightTotal) * 100)}%).`;
+
+  const focus = SCORED.filter((d) => (d.score ?? 0) < HEALTHY_FLOOR)
+    .map((d) => ({ d, pts: ((100 - (d.score ?? 0)) * d.sent) / SCORED_SENT }))
+    .sort((a, b) => b.pts - a.pts)
+    .slice(0, 2);
+
+  if (!focus.length) {
+    return { headline, driver, focus: [] as Domain[], focusSentence: 'No domain is below Healthy.', action: 'Keep sending to engaged recipients and watch the 30-day change for early signs of a drop.' };
+  }
+
+  const names = focus.map((f) => f.d.name);
+  const ptsShare = Math.round((focus.reduce((a, f) => a + f.pts, 0) / lostPts) * 100);
+  const volShare = Math.round((focus.reduce((a, f) => a + f.d.sent, 0) / SCORED_SENT) * 100);
+  const lifted = SCORED.reduce((a, d) => a + (names.includes(d.name) ? Math.max(d.score ?? 0, HEALTHY_FLOOR) : (d.score ?? 0)) * d.sent, 0) / SCORED_SENT;
+  const keys = focus.map((f) => f.d.topIndex);
+  const same = keys.every((k) => k === keys[0]);
+  const both = names.length > 1;
+
+  return {
+    headline,
+    driver,
+    focus: focus.map((f) => f.d),
+    focusSentence: `${both ? ' represent ' : ' represents '}${ptsShare}% of points lost and ${volShare}% of all email delivered.`,
+    action:
+      `Bring ${both ? 'both domains' : names[0]} back to Healthy (${HEALTHY_FLOOR}+) to reach about ${Math.round(lifted)}. ` +
+      (same
+        ? `${both ? 'Both are' : 'It is'} driven mainly by ${PLURAL[keys[0]].toLowerCase()}`
+        : `${names[0]} is driven mainly by ${PLURAL[keys[0]].toLowerCase()} and ${names[1]} by ${PLURAL[keys[1]].toLowerCase()}`) +
+      `. Start there: ${ACTION_HINT[keys[0]]}.`,
+  };
+};
+const INSIGHT = buildInsight();
+
 /* Fix these first: shortfall below Healthy x delivered volume, boosted for sharp drops. */
 const PRIORITY_ORDER = [...DOMAINS].sort((a, b) => nullsLast(a, b) || b.priority - a.priority || (a.score ?? 0) - (b.score ?? 0));
 const FIX_FIRST = DOMAINS.filter((d) => d.priority > 0)
@@ -237,8 +298,10 @@ export const EmailHealthScorePage = () => {
     setPage(next.page ?? 1);
   };
 
-  const reviewDomain = (d: Domain) =>
+  const reviewDomain = (d: Domain) => {
     applyView({ filter: 'all', sort: 'priority', open: d.name, query: '', page: Math.floor(PRIORITY_ORDER.indexOf(d) / pageSize) + 1 });
+    goTable();
+  };
 
   const clickHeader = (key: SortKey, first: SortDir) => {
     if (sort === key) setDir(dir === 'asc' ? 'desc' : 'asc');
@@ -316,7 +379,7 @@ export const EmailHealthScorePage = () => {
         <div className="ehs-score-row">
           <Card title="Account score" subtitle="Avg 30 days">
             <div className="ehs-account">
-              <div className="ehs-gauge">
+              <div className="ehs-account__score">
               <div className="ehs-gauge__ring">
                 <svg width="168" height="168" viewBox="0 0 168 168" role="img" aria-label={`Account score ${ACCOUNT_SCORE} out of 100, ${BAND[ACCOUNT_BAND].label}`}>
                   <circle cx="84" cy="84" r="77" fill="none" stroke="#dfe3e6" strokeWidth="14" />
@@ -338,7 +401,6 @@ export const EmailHealthScorePage = () => {
                 <div className="ehs-gauge__value" style={{ color: scoreColor({ band: ACCOUNT_BAND }) }}>{ACCOUNT_SCORE}</div>
               </div>
               <div className="ehs-gauge__label" style={{ color: scoreColor({ band: ACCOUNT_BAND }) }}>{BAND[ACCOUNT_BAND].label}</div>
-              </div>
               <div className="ehs-legend">
                 {(['healthy', 'risk', 'attention'] as Band[]).map((b) => (
                   <span key={b} className="ehs-legend__item">
@@ -347,11 +409,27 @@ export const EmailHealthScorePage = () => {
                   </span>
                 ))}
               </div>
+              </div>
+              <div className="ehs-insight">
+                <p className="ehs-insight__headline">{INSIGHT.headline}</p>
+                <p className="ehs-insight__row">{INSIGHT.driver}</p>
+                <p className="ehs-insight__row">
+                  {INSIGHT.focus.map((d, i) => (
+                    <Fragment key={d.name}>
+                      <button type="button" className="ehs-link ehs-link--inline" onClick={() => reviewDomain(d)}>{d.name}</button>
+                      {i < INSIGHT.focus.length - 1 ? ', ' : ''}
+                    </Fragment>
+                  ))}
+                  {INSIGHT.focusSentence}
+                </p>
+                <p className="ehs-insight__action">{INSIGHT.action}</p>
+              </div>
             </div>
           </Card>
 
-          <Card title="Metrics impacting score" action={<span className="ehs-card__subtitle">Domains affected</span>}>
+          <Card title="Metrics impacting score">
             <div className="ehs-metrics">
+              <div className="ehs-metrics__head"><span>Metric</span><span>Domains affected</span></div>
               {METRIC_LABELS.map((label, i) => (
                 <button
                   key={label}
@@ -411,7 +489,14 @@ export const EmailHealthScorePage = () => {
               {FIX_FIRST.map((d, i) => (
                 <div key={d.name} className="ehs-list__row ehs-list__row--stacked" style={{ borderBottomColor: i === FIX_FIRST.length - 1 ? 'transparent' : undefined }}>
                   <div className="ehs-list__line">
-                    <button type="button" className="ehs-link ehs-link--name" onClick={() => reviewDomain(d)}>{d.name}</button>
+                    <span className="ehs-list__name">
+                      <button type="button" className="ehs-link ehs-link--name" onClick={() => reviewDomain(d)}>{d.name}</button>
+                      <span className="ehs-dots" role="img" aria-label={`Priority ${i + 1} of ${FIX_FIRST.length}`} title={`Priority ${i + 1} of ${FIX_FIRST.length}`}>
+                        {[0, 1, 2, 3, 4].map((k) => (
+                          <span key={k} className={k < 5 - i ? 'is-on' : undefined} />
+                        ))}
+                      </span>
+                    </span>
                     <Delta value={d.delta} />
                     <strong className="ehs-score ehs-score--lg" style={{ color: BAND[d.band].fg }}>{d.score}</strong>
                   </div>
