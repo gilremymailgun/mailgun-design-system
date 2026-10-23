@@ -478,7 +478,7 @@ export const EmailHealthScorePage = () => {
         <div className="ehs-pair">
           <Card
             title="Fix these first"
-            subtitle="Ranked by how far a domain is below Healthy (over 85) and how much email it delivers"
+            subtitle="Ranked by distance below Healthy and email volume"
             action={
               <button type="button" className="ehs-link ehs-link--action" onClick={() => { applyView({ filter: 'all', sort: 'priority', query: '' }); goTable(); }}>
                 See all
@@ -487,8 +487,8 @@ export const EmailHealthScorePage = () => {
           >
             <div className="ehs-list">
               {FIX_FIRST.map((d, i) => (
-                <div key={d.name} className="ehs-list__row ehs-list__row--stacked" style={{ borderBottomColor: i === FIX_FIRST.length - 1 ? 'transparent' : undefined }}>
-                  <div className="ehs-list__line">
+                <div key={d.name} className="ehs-list__row ehs-list__row--fix" style={{ borderBottomColor: i === FIX_FIRST.length - 1 ? 'transparent' : undefined }}>
+                  <div className="ehs-fix__main">
                     <span className="ehs-list__name">
                       <button type="button" className="ehs-link ehs-link--name" onClick={() => reviewDomain(d)}>{d.name}</button>
                       <span className="ehs-dots" role="img" aria-label={`Priority ${i + 1} of ${FIX_FIRST.length}`} title={`Priority ${i + 1} of ${FIX_FIRST.length}`}>
@@ -497,13 +497,9 @@ export const EmailHealthScorePage = () => {
                         ))}
                       </span>
                     </span>
-                    <Delta value={d.delta} />
-                    <strong className="ehs-score ehs-score--lg" style={{ color: BAND[d.band].fg }}>{d.score}</strong>
+                    <span className="ehs-fix__sub">Email delivered: <b>{fmt(d.sent)}</b></span>
                   </div>
-                  <div className="ehs-list__meta">
-                    <span>Biggest impact: <b>{`${METRIC_LABELS[d.topIndex]} (${d.counts[d.topIndex]} pts)`}</b></span>
-                    <span>Delivered: <b>{fmt(d.sent)}</b></span>
-                  </div>
+                  <span className="ehs-fix__driver">{`\u2212${d.counts[d.topIndex]} pts from ${METRIC_LABELS[d.topIndex].toLowerCase()}`}</span>
                 </div>
               ))}
             </div>
