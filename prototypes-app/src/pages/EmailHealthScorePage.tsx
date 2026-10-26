@@ -377,7 +377,7 @@ export const EmailHealthScorePage = () => {
       <div className="ehs">
         {/* Account score and metrics */}
         <div className="ehs-score-row">
-          <Card title="Account score" subtitle="Avg 30 days">
+          <Card title="Account score" subtitle="Weighted average of all domains, last 30 days">
             <div className="ehs-account">
               <div className="ehs-account__score">
               <div className="ehs-gauge__ring">
