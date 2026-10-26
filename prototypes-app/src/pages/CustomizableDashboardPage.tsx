@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Page } from '@ds/patterns/Page/Page';
 import { Button } from '@ds/components/Button/Button';
@@ -51,7 +51,11 @@ const LIBRARY: { cat: string; ids: WidgetId[] }[] = [
   { cat: 'Account', ids: ACCOUNT_IDS },
 ];
 const ALL_IDS = LIBRARY.flatMap((g) => g.ids);
-const DEFAULT_LAYOUT: WidgetId[] = ['delivery', 'opened', 'bounce', 'failed', 'clicked', 'unsub', 'tickets', 'overview', 'account'];
+/* A widget on the dashboard. The same widget can be added more than once, so each has its own key. */
+interface Item { key: string; id: WidgetId; size: Size }
+const MULTI: WidgetId[] = ['health'];
+const DEFAULT_LAYOUT: Item[] = (['delivery', 'opened', 'bounce', 'failed', 'clicked', 'unsub', 'tickets', 'overview', 'account'] as WidgetId[])
+  .map((id) => ({ key: id, id, size: 'l' as Size }));
 
 const formatsOf = (id: WidgetId): Format[] => {
   if (id === 'overview') return ['Bar', 'Line'];
@@ -376,26 +380,26 @@ const Modal = ({ title, size, onClose, children, footer }: { title?: string; siz
 export const CustomizableDashboardPage = () => {
   const [screen, setScreen] = useState<'dash' | 'plans'>('dash');
   const [editing, setEditing] = useState(false);
-  const [layout, setLayout] = useState<WidgetId[]>(DEFAULT_LAYOUT);
+  const [layout, setLayout] = useState<Item[]>(DEFAULT_LAYOUT);
+  const nextKey = useRef(0);
   const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
   const [modal, setModal] = useState<'add' | 'leave' | null>(null);
-  const [picked, setPicked] = useState<WidgetId[]>([]);
   const [pickSize, setPickSize] = useState<Partial<Record<WidgetId, Size>>>({});
-  const [sizes, setSizes] = useState<Partial<Record<WidgetId, Size>>>({});
   const [tab, setTab] = useState('Send');
-  const [flash, setFlash] = useState<WidgetId[]>([]);
+  const [flash, setFlash] = useState<string[]>([]);
   const [homeBanner, setHomeBanner] = useState(true);
   const [editBanner, setEditBanner] = useState(true);
   const [toast, setToast] = useState('');
 
-  const available = ALL_IDS.filter((i) => !layout.includes(i)).length;
+  const countOf = (id: WidgetId) => layout.filter((i) => i.id === id).length;
+  const canAdd = (id: WidgetId) => MULTI.includes(id) || countOf(id) === 0;
+  const available = ALL_IDS.filter(canAdd).length;
 
   const customize = () => { setEditing(true); setEditBanner(true); setSaved(false); };
-  const sizeOf = (id: WidgetId): Size => sizes[id] ?? 'l';
-  const typeOf = (id: WidgetId) => (SIZED.includes(id) ? (sizeOf(id) === 's' ? 'm' : 'b') : DEFS[id].type);
-  const openLibrary = () => { setTab('Send'); setPicked([]); setPickSize({}); setModal('add'); };
-  const remove = (id: WidgetId) => { setLayout(layout.filter((i) => i !== id)); setDirty(true); };
+  const typeOf = (item: Item) => (SIZED.includes(item.id) ? (item.size === 's' ? 'm' : 'b') : DEFS[item.id].type);
+  const openLibrary = () => { setTab('Send'); setPickSize({}); setModal('add'); };
+  const remove = (key: string) => { setLayout(layout.filter((i) => i.key !== key)); setDirty(true); };
   const cancel = () => {
     if (dirty) { setModal('leave'); return; }
     setEditing(false);
@@ -406,13 +410,14 @@ export const CustomizableDashboardPage = () => {
     setLayout(DEFAULT_LAYOUT);
     setToast('Changes discarded.');
   };
-  const commitAdd = () => {
-    setSizes({ ...sizes, ...Object.fromEntries(picked.filter((i) => SIZED.includes(i)).map((i) => [i, pickSize[i] ?? 's'])) });
-    setLayout([...layout, ...picked]);
-    setFlash(picked);
+  const addWidget = (id: WidgetId) => {
+    const size: Size = SIZED.includes(id) ? (pickSize[id] ?? 's') : 'l';
+    const key = `${id}-new-${nextKey.current++}`;
+    setLayout([...layout, { key, id, size }]);
+    setFlash([key]);
     window.setTimeout(() => setFlash([]), 1400);
-    setPicked([]); setDirty(true); setModal(null);
-    setToast('Added to your preview. Upgrade to save it.');
+    setDirty(true);
+    setToast(`${DEFS[id].title} added to your preview. Upgrade to save it.`);
   };
   const upgrade = () => { setModal(null); setScreen('plans'); };
   const choosePlan = () => {
@@ -423,16 +428,16 @@ export const CustomizableDashboardPage = () => {
   const metrics = layout.filter((i) => typeOf(i) === 'm');
   const bigs = layout.filter((i) => typeOf(i) === 'b');
 
-  const renderWidget = (id: WidgetId) => (
-    <section key={id} className={`cd-w${typeOf(id) === 'b' ? ' cd-w--big' : ''}${flash.includes(id) ? ' is-new' : ''}`} aria-label={DEFS[id].title}>
+  const renderWidget = ({ key, id, size }: Item) => (
+    <section key={key} className={`cd-w${typeOf({ key, id, size }) === 'b' ? ' cd-w--big' : ''}${flash.includes(key) ? ' is-new' : ''}`} aria-label={DEFS[id].title}>
       <div className="cd-w__head">
         {editing && <span className="cd-grip" aria-hidden="true">⋮⋮</span>}
         <span className="cd-w__title">{DEFS[id].title}</span>
         {editing
-          ? <button type="button" className="cd-rm" onClick={() => remove(id)} aria-label={`Remove ${DEFS[id].title}`}>×</button>
+          ? <button type="button" className="cd-rm" onClick={() => remove(key)} aria-label={`Remove ${DEFS[id].title}`}>×</button>
           : <span className="cd-dots" aria-hidden="true">•••</span>}
       </div>
-      <WidgetBody id={id} size={sizeOf(id)} />
+      <WidgetBody id={id} size={size} />
       {editing && <span className="cd-corner" aria-hidden="true" />}
     </section>
   );
@@ -513,9 +518,8 @@ export const CustomizableDashboardPage = () => {
           onClose={() => setModal(null)}
           footer={
             <>
-              <span className="cd-modal__left">{`Widgets selected (${picked.length})`}</span>
-              <Button hierarchy="secondary" onClick={() => setModal(null)}>Cancel</Button>
-              <Button hierarchy="primary" disabled={!picked.length} onClick={commitAdd}>Add to dashboard</Button>
+              <span className="cd-modal__left">{`${layout.length} widgets on your dashboard`}</span>
+              <Button hierarchy="primary" onClick={() => setModal(null)}>Done</Button>
             </>
           }
         >
@@ -528,40 +532,32 @@ export const CustomizableDashboardPage = () => {
           <p className="cd-msub"><b>{available}</b> {`of ${ALL_IDS.length} widgets available to add`}</p>
           <div className="cd-picks">
             {group.ids.map((id) => {
-              const have = layout.includes(id);
-              const on = picked.includes(id);
+              const n = countOf(id);
               const sz = pickSize[id] ?? 's';
+              const addable = canAdd(id);
               return (
-                <div key={id} className={`cd-pickwrap${on ? ' is-on' : ''}${have ? ' is-have' : ''}`}>
-                  <button
-                    type="button"
-                    className="cd-pick"
-                    aria-pressed={on}
-                    disabled={have}
-                    onClick={() => setPicked(on ? picked.filter((p) => p !== id) : [...picked, id])}
-                  >
-                    <span className="cd-pick__t"><span className="cd-cb">✓</span>{DEFS[id].title}</span>
+                <div key={id} className={`cd-pickwrap${n ? ' is-have' : ''}`}>
+                  <div className="cd-pick">
+                    <span className="cd-pick__t">{DEFS[id].title}</span>
                     <p>{DEFS[id].desc}</p>
                     {!SIZED.includes(id) && <span className="cd-ftiles">{formatsOf(id).map((f) => <FormatTile key={f} f={f} />)}</span>}
                     {isTimed(id) && <span className="cd-pick__rng">Day ▾</span>}
-                    {have && <span className="cd-pick__have">Already on dashboard</span>}
-                  </button>
-                  {SIZED.includes(id) && (
-                    <div className="cd-size" role="group" aria-label={`${DEFS[id].title} size`}>
-                      {(['s', 'l'] as Size[]).map((z) => (
-                        <button
-                          key={z}
-                          type="button"
-                          className="cd-size__opt"
-                          aria-pressed={sz === z}
-                          disabled={have}
-                          onClick={() => setPickSize({ ...pickSize, [id]: z })}
-                        >
-                          {z === 's' ? 'Small' : 'Large'}
-                        </button>
-                      ))}
+                  </div>
+                  <div className="cd-pickfoot">
+                    {SIZED.includes(id) && (
+                      <div className="cd-size" role="group" aria-label={`${DEFS[id].title} size`}>
+                        {(['s', 'l'] as Size[]).map((z) => (
+                          <button key={z} type="button" className="cd-size__opt" aria-pressed={sz === z} onClick={() => setPickSize({ ...pickSize, [id]: z })}>
+                            {z === 's' ? 'Small' : 'Large'}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <div className="cd-pickfoot__row">
+                      <span className="cd-pick__have">{n ? (MULTI.includes(id) ? `${n} on dashboard` : 'On dashboard') : ''}</span>
+                      <Button hierarchy="secondary" size="small" disabled={!addable} onClick={() => addWidget(id)}>{addable ? 'Add' : 'Added'}</Button>
                     </div>
-                  )}
+                  </div>
                 </div>
               );
             })}
