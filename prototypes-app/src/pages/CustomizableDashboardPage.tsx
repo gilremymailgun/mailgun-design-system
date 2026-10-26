@@ -241,7 +241,12 @@ const useFitRows = (rowSelector: string) => {
       rows.forEach((r) => { r.style.display = ''; r.style.borderBottomWidth = ''; });
       const top = el.getBoundingClientRect().top;
       const limit = el.clientHeight - parseFloat(getComputedStyle(el).paddingBottom) + 0.5;
-      let n = rows.findIndex((r) => r.getBoundingClientRect().bottom - top > limit);
+      /* A row's own bottom padding and divider are only needed when another row follows it. */
+      const contentBottom = (r: HTMLElement) => {
+        const cs = getComputedStyle(r);
+        return r.getBoundingClientRect().bottom - top - parseFloat(cs.paddingBottom) - parseFloat(cs.borderBottomWidth);
+      };
+      let n = rows.findIndex((r) => contentBottom(r) > limit);
       if (n < 0) n = rows.length;
       n = Math.max(1, n);
       rows.forEach((r, i) => { if (i >= n) r.style.display = 'none'; });
