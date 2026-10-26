@@ -480,7 +480,7 @@ export const EmailHealthScorePage = () => {
         <div className="ehs-pair">
           <Card
             title="Fix these first"
-            subtitle="Ranked by distance below Healthy and email volume"
+            subtitle="Ranked by score and email volume"
             action={
               <button type="button" className="ehs-link ehs-link--action" onClick={() => { applyView({ filter: 'fix', sort: 'priority', query: '' }); goTable(); }}>
                 See all
