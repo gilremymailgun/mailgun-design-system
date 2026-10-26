@@ -58,16 +58,16 @@ const ALL_IDS = LIBRARY.flatMap((g) => g.ids);
 interface Item { key: string; id: WidgetId; size: Size; x: number; y: number; w: number; h: number }
 const MULTI: WidgetId[] = ['health'];
 
-/* Grid geometry: 12 columns. Every compact widget (metric tiles and small formats) is 2 x 4 so they line up; a full widget is 4 wide. */
+/* Grid geometry: 12 columns. Every compact widget (metric tiles and small formats) is 2 x 3, the least height that fits the tightest one, so they line up; a full widget is 4 wide. */
 const ROW_H = 52;
 const GAP = 16;
 const STACK_BELOW = 760;
 const dimsFor = (id: WidgetId, size: Size): { w: number; h: number } => {
   if (SIZED.includes(id)) {
-    if (size === 's') return { w: 2, h: 4 };
+    if (size === 's') return { w: 2, h: 3 };
     return { w: 4, h: id === 'fixfirst' ? 7 : id === 'movers' ? 8 : 6 };
   }
-  if (DEFS[id].type === 'm') return { w: 2, h: 4 };
+  if (DEFS[id].type === 'm') return { w: 2, h: 3 };
   return { w: 4, h: id === 'overview' ? 6 : 4 };
 };
 const place = (items: Item[], id: WidgetId, size: Size, key: string): Item[] => {
@@ -282,7 +282,7 @@ const WidgetBody = ({ id, size = 'l' }: { id: WidgetId; size?: Size }) => {
     const up = MOVERS[0];
     const down = MOVERS[MOVERS.length - 1];
     return (
-      <div className="cd-w__body">
+      <div className="cd-w__body cd-w__body--mv">
         {[up, down].map((m) => (
           <div key={m.name} className="cd-mv">
             <span className="cd-mv__d" style={{ color: m.delta < 0 ? '#b3302f' : '#23613c' }}>
