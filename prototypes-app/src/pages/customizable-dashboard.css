@@ -29,6 +29,8 @@
 .cd-corner { position: absolute; right: 0; bottom: 0; width: 22px; height: 22px; padding: 0; border: 0; background: none; cursor: nwse-resize; touch-action: none; }
 .cd-corner::after { content: ''; position: absolute; right: 3px; bottom: 3px; border-style: solid; border-width: 0 0 12px 12px; border-color: transparent transparent #626c73 transparent; opacity: .7; }
 .cd-corner:hover::after { opacity: 1; border-bottom-color: #1976c9; }
+.cd-w:not(.cd-w--big) .cd-w__body { overflow: hidden; }
+.cd-w:not(.cd-w--big) .cd-w__range { margin-top: auto; }
 .cd-w__body { padding: 16px; flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 2px; }
 .cd-w__num { font-size: 30px; line-height: 36px; font-weight: 600; }
 .cd-w__sub { color: #4b575e; }
