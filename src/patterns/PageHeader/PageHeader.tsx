@@ -29,6 +29,8 @@ export interface PageHeaderProps {
   onPrimaryClick?: () => void;
   /** e.g. "You've used 2,153 of 20,000 validations" */
   infoText?: string;
+  /** Extra content for the right-hand actions area (e.g. a custom set of buttons), rendered after the built-in actions. */
+  actions?: React.ReactNode;
   className?: string;
 }
 
@@ -51,6 +53,7 @@ export const PageHeader = ({
   primaryButtonLabel,
   onPrimaryClick,
   infoText,
+  actions,
   className,
 }: PageHeaderProps) => {
   const classes = ['mg-page-header', className || ''].filter(Boolean).join(' ');
@@ -117,6 +120,7 @@ export const PageHeader = ({
               aria-label="More"
             />
           )}
+          {actions}
         </div>
         {infoText && (
           <div className="mg-page-header__info">
