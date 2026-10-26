@@ -664,7 +664,24 @@ export const CustomizableDashboardPage = () => {
     <Page
       navigationProps={{ defaultActive: 'dashboard' }}
       headerProps={{ accountName: 'Bob', accountCompany: 'Acme, Inc.', hasSubAccountTag: false }}
-      pageHeaderProps={{ title: screen === 'plans' ? 'Choose a plan' : 'Dashboard' }}
+      pageHeaderProps={{
+        title: screen === 'plans' ? 'Choose a plan' : 'Dashboard',
+        className: 'cd-header',
+        actions: screen === 'plans' ? undefined : (
+          <>
+            {editing && UPGRADE_FLOW && <span className="cd-tag">Preview</span>}
+            {editing ? (
+              <>
+                <Button hierarchy="secondary-neutral" onClick={cancel}>Cancel</Button>
+                <Button hierarchy="secondary" onClick={openLibrary}>{`Widget library (${available})`}</Button>
+                <Button hierarchy="primary" onClick={primaryAction}>{primaryLabel}</Button>
+              </>
+            ) : (
+              <Button hierarchy="primary" onClick={customize}>Customize</Button>
+            )}
+          </>
+        ),
+      }}
     >
       <div className="cd">
         {screen === 'plans' ? (
@@ -681,21 +698,6 @@ export const CustomizableDashboardPage = () => {
           </>
         ) : (
           <>
-            <div className="cd-bar">
-              {editing && UPGRADE_FLOW && <span className="cd-tag">Preview</span>}
-              <div className="cd-bar__actions">
-                {editing ? (
-                  <>
-                    <Button hierarchy="secondary-neutral" onClick={cancel}>Cancel</Button>
-                    <Button hierarchy="secondary" onClick={openLibrary}>{`Widget library (${available})`}</Button>
-                    <Button hierarchy="primary" onClick={primaryAction}>{primaryLabel}</Button>
-                  </>
-                ) : (
-                  <Button hierarchy="primary" onClick={customize}>Customize</Button>
-                )}
-              </div>
-            </div>
-
             {editing && editBanner && (
               <Banner type="info" onClose={() => setEditBanner(false)}>
                 {UPGRADE_FLOW

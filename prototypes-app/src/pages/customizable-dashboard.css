@@ -1,5 +1,8 @@
 .cd { display: flex; flex-direction: column; gap: 16px; color: #272f36; font-size: 14px; line-height: 20px; }
 :where(.cd) button { font: inherit; color: inherit; }
+/* Title and the action buttons share one row, centred on each other. */
+.mg-page-header.cd-header { align-items: center; }
+.cd-header .mg-page-header__right { flex-direction: row; }
 .cd-bar { display: flex; align-items: center; gap: 12px; min-height: 40px; }
 .cd-bar__actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
 .cd-tag { display: inline-block; background: #e8f1fb; color: #1976c9; border: 1px solid #b9d4f0; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 16px; font-weight: 600; }
