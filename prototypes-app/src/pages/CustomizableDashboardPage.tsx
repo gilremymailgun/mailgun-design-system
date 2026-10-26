@@ -247,7 +247,6 @@ const WidgetBody = ({ id, size = 'l' }: { id: WidgetId; size?: Size }) => {
   if (id === 'fixfirst' && size === 's') {
     return (
       <div className="cd-w__body cd-w__body--list">
-        <div className="cd-w__sub">Ranked by priority</div>
         {FIX_FIRST.map((f, i) => (
           <div key={f.name} className="cd-it">
             <span className="cd-mover__name cd-it__name">{f.name}</span>
