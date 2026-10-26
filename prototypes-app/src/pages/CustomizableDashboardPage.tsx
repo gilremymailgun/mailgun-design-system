@@ -11,7 +11,8 @@ import './customizable-dashboard.css';
 
 type WidgetId =
   | 'delivery' | 'opened' | 'bounce' | 'failed' | 'clicked' | 'unsub' | 'complained'
-  | 'tickets' | 'overview' | 'account' | 'domains' | 'movers' | 'fixfirst';
+  | 'tickets' | 'overview' | 'account' | 'domains' | 'movers' | 'fixfirst' | 'health';
+type Size = 's' | 'l';
 type Format = 'Number' | 'Bar' | 'Line' | 'List' | 'Summary';
 
 interface WidgetDef {
@@ -34,13 +35,16 @@ const DEFS: Record<WidgetId, WidgetDef> = {
   overview: { type: 'b', title: 'Sending overview', desc: 'Accepted, delivered, opened, and clicked counts visualized over time.' },
   account: { type: 'b', title: 'Mailgun', desc: 'Plan and usage.' },
   domains: { type: 'b', title: 'Sending domains', desc: 'Sending domains and their verification status.' },
+  health: { type: 'b', title: 'Email health score', desc: 'Your account score, or the score of one domain you choose to monitor.' },
   fixfirst: { type: 'b', title: 'Fix these first', desc: 'Domains to work on first, ranked by how far they are below Healthy and how much email they deliver.' },
   movers: { type: 'b', title: 'Biggest movers', desc: 'Domains whose email health score changed the most vs the previous 30 days.' },
 };
 
 const SEND_IDS: WidgetId[] = ['overview', 'delivery', 'opened', 'clicked', 'bounce', 'failed', 'unsub', 'complained', 'domains'];
 const ACCOUNT_IDS: WidgetId[] = ['account', 'tickets'];
-const OPTIMIZE_IDS: WidgetId[] = ['fixfirst', 'movers'];
+const OPTIMIZE_IDS: WidgetId[] = ['health', 'fixfirst', 'movers'];
+/* Widgets offered in a small (metric tile) and a large format. */
+const SIZED: WidgetId[] = ['health', 'fixfirst', 'movers'];
 const LIBRARY: { cat: string; ids: WidgetId[] }[] = [
   { cat: 'Send', ids: SEND_IDS },
   { cat: 'Optimize', ids: OPTIMIZE_IDS },
@@ -52,6 +56,7 @@ const DEFAULT_LAYOUT: WidgetId[] = ['delivery', 'opened', 'bounce', 'failed', 'c
 const formatsOf = (id: WidgetId): Format[] => {
   if (id === 'overview') return ['Bar', 'Line'];
   if (id === 'domains' || id === 'tickets' || id === 'movers' || id === 'fixfirst') return ['List'];
+  if (id === 'health') return [];
   if (id === 'account') return ['Summary'];
   return ['Number', 'Bar', 'Line'];
 };
@@ -94,8 +99,112 @@ const OverviewChart = () => (
   </svg>
 );
 
-const WidgetBody = ({ id }: { id: WidgetId }) => {
+/* Sample domains from the Email health score page: name, score (null = not ready), delivered, points lost per measure. */
+const HEALTH_DOMAINS: [string, number | null, number, number[] | null][] = [
+  ['mg.acme.com', 94, 1240000, [2, 2, 0, 1, 1]], ['news.acme.com', 91, 860000, [3, 3, 1, 1, 1]], ['receipts.acme.com', 96, 410000, [1, 1, 0, 1, 1]],
+  ['alerts.acme.com', 89, 220000, [3, 2, 2, 1, 3]], ['hello.acme.com', 92, 95000, [2, 3, 0, 1, 2]], ['billing.acme.com', 97, 61000, [1, 0, 0, 0, 2]],
+  ['eu.acme.com', 88, 305000, [4, 3, 1, 2, 2]], ['support.acme.com', 90, 74000, [2, 2, 0, 3, 3]], ['onboarding.acme.com', 93, 133000, [2, 2, 0, 1, 2]],
+  ['digest.acme.com', 87, 540000, [4, 3, 2, 2, 2]], ['careers.acme.com', 95, 18000, [1, 1, 0, 2, 1]], ['events.acme.com', 86, 47000, [3, 3, 3, 2, 3]],
+  ['promo.acme.com', 82, 1020000, [3, 9, 2, 2, 2]], ['offers.acme.com', 78, 380000, [8, 4, 5, 2, 3]], ['partners.acme.com', 74, 52000, [6, 2, 1, 2, 15]],
+  ['app.acme.com', 84, 690000, [4, 3, 1, 6, 2]], ['community.acme.com', 71, 29000, [5, 4, 10, 3, 7]], ['sales.acme.com', 76, 88000, [4, 3, 2, 10, 5]],
+  ['winback.acme.com', 48, 460000, [10, 22, 8, 4, 8]], ['leads.acme.com', 55, 215000, [10, 11, 10, 4, 10]], ['survey.acme.com', 63, 140000, [7, 16, 3, 4, 7]],
+  ['beta.acme.com', 67, 12500, [6, 6, 1, 10, 10]], ['promo-eu.acme.com', 38, 76000, [10, 18, 10, 4, 20]],
+  ['pilot.acme.com', null, 6300, null], ['staging.acme.com', null, 1900, null],
+];
+const MEASURES = ['Bounces', 'Complaints', 'Spam traps', 'Full mailboxes', 'Critical failures'];
+const READY_AT = 10000;
+type Tone = 'ok' | 'warn' | 'bad' | 'none';
+const TONE: Record<Tone, { label: string; fg: string; arc: string }> = {
+  ok: { label: 'Healthy', fg: '#23613c', arc: '#53bd69' },
+  warn: { label: 'Caution', fg: '#8f5509', arc: '#c97a12' },
+  bad: { label: 'Urgent', fg: '#b3302f', arc: '#e24b4a' },
+  none: { label: 'Not ready', fg: '#4b575e', arc: '#b9c3c9' },
+};
+const toneOf = (score: number): Tone => (score > 85 ? 'ok' : score >= 70 ? 'warn' : 'bad');
+const SCORED_DOMAINS = HEALTH_DOMAINS.filter((d) => d[1] != null);
+const ACCOUNT_SCORE = Math.round(
+  SCORED_DOMAINS.reduce((a, d) => a + (d[1] as number) * d[2], 0) / SCORED_DOMAINS.reduce((a, d) => a + d[2], 0),
+);
+
+const HealthWidget = ({ size }: { size: Size }) => {
+  const [domain, setDomain] = useState('all');
+  const d = HEALTH_DOMAINS.find((x) => x[0] === domain);
+  const px = size === 's' ? 72 : 104;
+  const R = 30;
+  const C = 2 * Math.PI * R;
+  const SW = 7;
+
+  let score: number | null;
+  let tone: Tone;
+  let frac: number;
+  let info: ReactNode;
+  if (!d) {
+    score = ACCOUNT_SCORE; tone = toneOf(score); frac = score / 100;
+    info = `${HEALTH_DOMAINS.length} domains, last 30 days`;
+  } else if (d[1] == null) {
+    score = null; tone = 'none'; frac = d[2] / READY_AT;
+    info = <><b>{d[2].toLocaleString('en-US')}</b>{` of ${READY_AT.toLocaleString('en-US')} emails`}</>;
+  } else {
+    score = d[1]; tone = toneOf(score); frac = score / 100;
+    const c = d[3] ?? [];
+    const top = c.indexOf(Math.max(...c));
+    info = tone === 'ok' ? 'No action needed' : <>{`${MEASURES[top]}:`}<br /><b>{`\u2212${c[top]} pts`}</b></>;
+  }
+  const t = TONE[tone];
+
+  const counts = (['ok', 'warn', 'bad'] as Tone[]).map((k) => ({
+    k,
+    n: SCORED_DOMAINS.filter((x) => toneOf(x[1] as number) === k).length,
+  }));
+  const notReady = HEALTH_DOMAINS.length - SCORED_DOMAINS.length;
+
+  return (
+    <div className={`cd-w__body cd-hs cd-hs--${size}`}>
+      <div className="cd-hs__top">
+        <div className="cd-hs__ring" style={{ width: px, height: px }} role="img" aria-label={`${score ?? 'No'} score, ${t.label}`}>
+          <svg width={px} height={px} viewBox="0 0 72 72" aria-hidden="true">
+            <circle cx="36" cy="36" r={R} fill="none" stroke="#dfe3e6" strokeWidth={SW} />
+            <circle className="cd-hs__arc" cx="36" cy="36" r={R} fill="none" stroke={t.arc} strokeWidth={SW} strokeLinecap="round"
+              strokeDasharray={`${Math.max(frac * C - SW, 0.01)} ${C}`} strokeDashoffset={-SW / 2} transform="rotate(-90 36 36)" />
+          </svg>
+          <span className="cd-hs__val" style={{ fontSize: size === 's' ? 24 : 34, lineHeight: size === 's' ? '30px' : '40px' }}>{score ?? '—'}</span>
+        </div>
+        <div className="cd-hs__txt">
+          <span className="cd-hs__band" style={{ color: t.fg }}>{t.label}</span>
+          <div className="cd-hs__info">{info}</div>
+        </div>
+      </div>
+      {size === 'l' && (
+        <div className="cd-hs__stats">
+          {!d ? (
+            <>
+              {counts.map(({ k, n }) => (
+                <div key={k}><b style={{ color: TONE[k].fg }}>{n}</b><span>{TONE[k].label}</span></div>
+              ))}
+              <div><b style={{ color: TONE.none.fg }}>{notReady}</b><span>Not ready</span></div>
+            </>
+          ) : d[3] ? (
+            d[3].map((n, i) => (
+              <div key={MEASURES[i]}><b>{`\u2212${n}`}</b><span>{MEASURES[i]}</span></div>
+            ))
+          ) : (
+            <div className="cd-hs__wait">Scores start once a domain has delivered {READY_AT.toLocaleString('en-US')} emails.</div>
+          )}
+        </div>
+      )}
+      <div className="cd-hs__sel">
+        <select value={domain} onChange={(e) => setDomain(e.target.value)} aria-label="Domain to monitor">
+          <option value="all">All domains</option>
+          {HEALTH_DOMAINS.map((x) => <option key={x[0]} value={x[0]}>{x[0]}</option>)}
+        </select>
+      </div>
+    </div>
+  );
+};
+
+const WidgetBody = ({ id, size = 'l' }: { id: WidgetId; size?: Size }) => {
   const d = DEFS[id];
+  if (id === 'health') return <HealthWidget size={size} />;
   if (d.type === 'm') {
     return (
       <div className="cd-w__body">
@@ -128,6 +237,41 @@ const WidgetBody = ({ id }: { id: WidgetId }) => {
         </div>
         <OverviewChart />
         <div className="cd-w__range">Day ▾</div>
+      </div>
+    );
+  }
+  if (id === 'fixfirst' && size === 's') {
+    return (
+      <div className="cd-w__body cd-w__body--list">
+        <div className="cd-w__sub">Ranked by priority</div>
+        {FIX_FIRST.map((f, i) => (
+          <div key={f.name} className="cd-it">
+            <span className="cd-mover__name cd-it__name">{f.name}</span>
+            <span className="cd-dots-p" role="img" aria-label={`Priority ${i + 1} of ${FIX_FIRST.length}`}>
+              {[0, 1, 2, 3, 4].map((k) => <span key={k} className={k < 5 - i ? 'is-on' : undefined} />)}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (id === 'movers' && size === 's') {
+    const up = MOVERS[0];
+    const down = MOVERS[MOVERS.length - 1];
+    return (
+      <div className="cd-w__body">
+        {[up, down].map((m) => (
+          <div key={m.name} className="cd-mv">
+            <span className="cd-mv__d" style={{ color: m.delta < 0 ? '#b3302f' : '#23613c' }}>
+              <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true">
+                <path d={m.delta < 0 ? 'M6 10 1.5 3.5h9z' : 'M6 2 10.5 8.5h-9z'} fill="currentColor" />
+              </svg>
+              {Math.abs(m.delta)}<small>pts</small>
+            </span>
+            <span className="cd-mover__name cd-it__name">{m.name}</span>
+          </div>
+        ))}
+        <div className="cd-w__sub cd-w__foot">vs previous 30 days</div>
       </div>
     );
   }
@@ -237,6 +381,8 @@ export const CustomizableDashboardPage = () => {
   const [saved, setSaved] = useState(false);
   const [modal, setModal] = useState<'add' | 'leave' | null>(null);
   const [picked, setPicked] = useState<WidgetId[]>([]);
+  const [pickSize, setPickSize] = useState<Partial<Record<WidgetId, Size>>>({});
+  const [sizes, setSizes] = useState<Partial<Record<WidgetId, Size>>>({});
   const [tab, setTab] = useState('Send');
   const [flash, setFlash] = useState<WidgetId[]>([]);
   const [homeBanner, setHomeBanner] = useState(true);
@@ -246,7 +392,9 @@ export const CustomizableDashboardPage = () => {
   const available = ALL_IDS.filter((i) => !layout.includes(i)).length;
 
   const customize = () => { setEditing(true); setEditBanner(true); setSaved(false); };
-  const openLibrary = () => { setTab('Send'); setPicked([]); setModal('add'); };
+  const sizeOf = (id: WidgetId): Size => sizes[id] ?? 'l';
+  const typeOf = (id: WidgetId) => (SIZED.includes(id) ? (sizeOf(id) === 's' ? 'm' : 'b') : DEFS[id].type);
+  const openLibrary = () => { setTab('Send'); setPicked([]); setPickSize({}); setModal('add'); };
   const remove = (id: WidgetId) => { setLayout(layout.filter((i) => i !== id)); setDirty(true); };
   const cancel = () => {
     if (dirty) { setModal('leave'); return; }
@@ -259,6 +407,7 @@ export const CustomizableDashboardPage = () => {
     setToast('Changes discarded.');
   };
   const commitAdd = () => {
+    setSizes({ ...sizes, ...Object.fromEntries(picked.filter((i) => SIZED.includes(i)).map((i) => [i, pickSize[i] ?? 's'])) });
     setLayout([...layout, ...picked]);
     setFlash(picked);
     window.setTimeout(() => setFlash([]), 1400);
@@ -271,11 +420,11 @@ export const CustomizableDashboardPage = () => {
     setToast('Dashboard saved.');
   };
 
-  const metrics = layout.filter((i) => DEFS[i].type === 'm');
-  const bigs = layout.filter((i) => DEFS[i].type === 'b');
+  const metrics = layout.filter((i) => typeOf(i) === 'm');
+  const bigs = layout.filter((i) => typeOf(i) === 'b');
 
   const renderWidget = (id: WidgetId) => (
-    <section key={id} className={`cd-w${DEFS[id].type === 'b' ? ' cd-w--big' : ''}${flash.includes(id) ? ' is-new' : ''}`} aria-label={DEFS[id].title}>
+    <section key={id} className={`cd-w${typeOf(id) === 'b' ? ' cd-w--big' : ''}${flash.includes(id) ? ' is-new' : ''}`} aria-label={DEFS[id].title}>
       <div className="cd-w__head">
         {editing && <span className="cd-grip" aria-hidden="true">⋮⋮</span>}
         <span className="cd-w__title">{DEFS[id].title}</span>
@@ -283,7 +432,7 @@ export const CustomizableDashboardPage = () => {
           ? <button type="button" className="cd-rm" onClick={() => remove(id)} aria-label={`Remove ${DEFS[id].title}`}>×</button>
           : <span className="cd-dots" aria-hidden="true">•••</span>}
       </div>
-      <WidgetBody id={id} />
+      <WidgetBody id={id} size={sizeOf(id)} />
       {editing && <span className="cd-corner" aria-hidden="true" />}
     </section>
   );
@@ -381,21 +530,39 @@ export const CustomizableDashboardPage = () => {
             {group.ids.map((id) => {
               const have = layout.includes(id);
               const on = picked.includes(id);
+              const sz = pickSize[id] ?? 's';
               return (
-                <button
-                  key={id}
-                  type="button"
-                  className="cd-pick"
-                  aria-pressed={on}
-                  disabled={have}
-                  onClick={() => setPicked(on ? picked.filter((p) => p !== id) : [...picked, id])}
-                >
-                  <span className="cd-pick__t"><span className="cd-cb">✓</span>{DEFS[id].title}</span>
-                  <p>{DEFS[id].desc}</p>
-                  <span className="cd-ftiles">{formatsOf(id).map((f) => <FormatTile key={f} f={f} />)}</span>
-                  {isTimed(id) && <span className="cd-pick__rng">Day ▾</span>}
-                  {have && <span className="cd-pick__have">Already on dashboard</span>}
-                </button>
+                <div key={id} className={`cd-pickwrap${on ? ' is-on' : ''}${have ? ' is-have' : ''}`}>
+                  <button
+                    type="button"
+                    className="cd-pick"
+                    aria-pressed={on}
+                    disabled={have}
+                    onClick={() => setPicked(on ? picked.filter((p) => p !== id) : [...picked, id])}
+                  >
+                    <span className="cd-pick__t"><span className="cd-cb">✓</span>{DEFS[id].title}</span>
+                    <p>{DEFS[id].desc}</p>
+                    {!SIZED.includes(id) && <span className="cd-ftiles">{formatsOf(id).map((f) => <FormatTile key={f} f={f} />)}</span>}
+                    {isTimed(id) && <span className="cd-pick__rng">Day ▾</span>}
+                    {have && <span className="cd-pick__have">Already on dashboard</span>}
+                  </button>
+                  {SIZED.includes(id) && (
+                    <div className="cd-size" role="group" aria-label={`${DEFS[id].title} size`}>
+                      {(['s', 'l'] as Size[]).map((z) => (
+                        <button
+                          key={z}
+                          type="button"
+                          className="cd-size__opt"
+                          aria-pressed={sz === z}
+                          disabled={have}
+                          onClick={() => setPickSize({ ...pickSize, [id]: z })}
+                        >
+                          {z === 's' ? 'Small' : 'Large'}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
