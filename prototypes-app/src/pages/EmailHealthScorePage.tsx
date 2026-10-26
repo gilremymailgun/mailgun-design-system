@@ -25,8 +25,8 @@ const METRIC_FIX: Record<number, [string, string, string]> = {
 
 const BAND: Record<Band, { label: string; range: string; fg: string; bar: string }> = {
   healthy: { label: 'Healthy', range: 'over 85', fg: '#23613c', bar: '#53bd69' },
-  risk: { label: 'At risk', range: '70 to 85', fg: '#8f5509', bar: '#c97a12' },
-  attention: { label: 'Requires attention', range: 'under 70', fg: '#b3302f', bar: '#e24b4a' },
+  risk: { label: 'Caution', range: '70 to 85', fg: '#8f5509', bar: '#c97a12' },
+  attention: { label: 'Urgent', range: 'under 70', fg: '#b3302f', bar: '#e24b4a' },
   collecting: { label: 'Collecting data', range: '', fg: '#4b575e', bar: '#b9c3c9' },
 };
 const BAND_ORDER: Band[] = ['attention', 'risk', 'healthy', 'collecting'];
@@ -407,7 +407,7 @@ export const EmailHealthScorePage = () => {
                 {(['healthy', 'risk', 'attention'] as Band[]).map((b) => (
                   <span key={b} className="ehs-legend__item">
                     <span className="ehs-dot" style={{ background: BAND[b].bar }} />
-                    {b === 'healthy' ? 'Healthy >85' : b === 'risk' ? 'At risk 70\u201385' : 'Requires attention <70'}
+                    {b === 'healthy' ? 'Healthy >85' : b === 'risk' ? 'Caution 70\u201385' : 'Urgent <70'}
                   </span>
                 ))}
               </div>
@@ -550,8 +550,8 @@ export const EmailHealthScorePage = () => {
               >
                 <option value="all">All domains</option>
                 <option value="fix">Fix first</option>
-                <option value="attention">Requires attention</option>
-                <option value="risk">At risk</option>
+                <option value="attention">Urgent</option>
+                <option value="risk">Caution</option>
                 <option value="healthy">Healthy</option>
                 <option value="collecting">Collecting data</option>
               </select>
