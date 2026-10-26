@@ -11,7 +11,7 @@ import './customizable-dashboard.css';
 
 type WidgetId =
   | 'delivery' | 'opened' | 'bounce' | 'failed' | 'clicked' | 'unsub' | 'complained'
-  | 'tickets' | 'overview' | 'account' | 'domains' | 'movers';
+  | 'tickets' | 'overview' | 'account' | 'domains' | 'movers' | 'fixfirst';
 type Format = 'Number' | 'Bar' | 'Line' | 'List' | 'Summary';
 
 interface WidgetDef {
@@ -34,12 +34,13 @@ const DEFS: Record<WidgetId, WidgetDef> = {
   overview: { type: 'b', title: 'Sending overview', desc: 'Accepted, delivered, opened, and clicked counts visualized over time.' },
   account: { type: 'b', title: 'Mailgun', desc: 'Plan and usage.' },
   domains: { type: 'b', title: 'Sending domains', desc: 'Sending domains and their verification status.' },
+  fixfirst: { type: 'b', title: 'Fix these first', desc: 'Domains to work on first, ranked by how far they are below Healthy and how much email they deliver.' },
   movers: { type: 'b', title: 'Biggest movers', desc: 'Domains whose email health score changed the most vs the previous 30 days.' },
 };
 
 const SEND_IDS: WidgetId[] = ['overview', 'delivery', 'opened', 'clicked', 'bounce', 'failed', 'unsub', 'complained', 'domains'];
 const ACCOUNT_IDS: WidgetId[] = ['account', 'tickets'];
-const OPTIMIZE_IDS: WidgetId[] = ['movers'];
+const OPTIMIZE_IDS: WidgetId[] = ['fixfirst', 'movers'];
 const LIBRARY: { cat: string; ids: WidgetId[] }[] = [
   { cat: 'Send', ids: SEND_IDS },
   { cat: 'Optimize', ids: OPTIMIZE_IDS },
@@ -50,7 +51,7 @@ const DEFAULT_LAYOUT: WidgetId[] = ['delivery', 'opened', 'bounce', 'failed', 'c
 
 const formatsOf = (id: WidgetId): Format[] => {
   if (id === 'overview') return ['Bar', 'Line'];
-  if (id === 'domains' || id === 'tickets' || id === 'movers') return ['List'];
+  if (id === 'domains' || id === 'tickets' || id === 'movers' || id === 'fixfirst') return ['List'];
   if (id === 'account') return ['Summary'];
   return ['Number', 'Bar', 'Line'];
 };
@@ -67,6 +68,16 @@ const MOVERS: { name: string; delta: number; score: number; color: string }[] = 
   { name: 'survey.acme.com', delta: -12, score: 63, color: '#b3302f' },
   { name: 'winback.acme.com', delta: -13, score: 48, color: '#b3302f' },
   { name: 'promo-eu.acme.com', delta: -14, score: 38, color: '#b3302f' },
+];
+
+/* Sample data from the Email health score page: top 5 domains by priority
+   (shortfall below Healthy x delivered volume, boosted for sharp drops). */
+const FIX_FIRST: { name: string; score: number; color: string; sent: string; count: string; pts: number }[] = [
+  { name: 'winback.acme.com', score: 48, color: '#b3302f', sent: '460,000', count: '106 complaints', pts: 22 },
+  { name: 'leads.acme.com', score: 55, color: '#b3302f', sent: '215,000', count: '26 complaints', pts: 11 },
+  { name: 'promo.acme.com', score: 82, color: '#8f5509', sent: '1,020,000', count: '102 complaints', pts: 9 },
+  { name: 'promo-eu.acme.com', score: 38, color: '#b3302f', sent: '76,000', count: '319 critical failures', pts: 20 },
+  { name: 'survey.acme.com', score: 63, color: '#b3302f', sent: '140,000', count: '24 complaints', pts: 16 },
 ];
 
 const BAR_VALUES: [number, number][] = [[130, 128], [0, 0], [135, 133], [2, 2], [1, 1], [0, 0], [3, 2], [1, 1]];
@@ -117,6 +128,30 @@ const WidgetBody = ({ id }: { id: WidgetId }) => {
         </div>
         <OverviewChart />
         <div className="cd-w__range">Day ▾</div>
+      </div>
+    );
+  }
+  if (id === 'fixfirst') {
+    return (
+      <div className="cd-w__body cd-w__body--list">
+        <div className="cd-w__sub">Ranked by how far a domain is below Healthy (over 85) and how much email it delivers</div>
+        {FIX_FIRST.map((f, i) => (
+          <div key={f.name} className="cd-fix">
+            <div className="cd-fix__main">
+              <span className="cd-fix__name">
+                <span className="cd-mover__name">{f.name}</span>
+                <span className="cd-dots-p" role="img" aria-label={`Priority ${i + 1} of ${FIX_FIRST.length}`}>
+                  {[0, 1, 2, 3, 4].map((k) => <span key={k} className={k < 5 - i ? 'is-on' : undefined} />)}
+                </span>
+              </span>
+              <span className="cd-fix__sub">
+                <span>Score: <b style={{ color: f.color }}>{f.score}</b></span>
+                <span>Email delivered: <b>{f.sent}</b></span>
+              </span>
+            </div>
+            <div className="cd-fix__driver"><span>{f.count}</span><b>{`\u2212${f.pts} pts`}</b></div>
+          </div>
+        ))}
       </div>
     );
   }
