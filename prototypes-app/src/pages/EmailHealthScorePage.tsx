@@ -174,7 +174,9 @@ const buildInsight = () => {
   const names = focus.map((f) => f.d.name);
   const ptsShare = Math.round((focus.reduce((a, f) => a + f.pts, 0) / lostPts) * 100);
   const volShare = Math.round((focus.reduce((a, f) => a + f.d.sent, 0) / SCORED_SENT) * 100);
-  const lifted = SCORED.reduce((a, d) => a + (names.includes(d.name) ? Math.max(d.score ?? 0, HEALTHY_FLOOR) : (d.score ?? 0)) * d.sent, 0) / SCORED_SENT;
+  const gain = focus.reduce((a, f) => a + (f.d.counts[f.d.topIndex] * f.d.sent) / 2, 0) / SCORED_SENT;
+  const gainRounded = Math.round(gain);
+  const gainText = gain >= 1 ? `about ${gainRounded} ${gainRounded === 1 ? 'point' : 'points'}` : 'under 1 point';
   const keys = focus.map((f) => f.d.topIndex);
   const same = keys.every((k) => k === keys[0]);
   const both = names.length > 1;
@@ -185,11 +187,8 @@ const buildInsight = () => {
     focus: focus.map((f) => f.d),
     focusSentence: `${both ? ' represent ' : ' represents '}${ptsShare}% of points lost and ${volShare}% of all email delivered.`,
     action:
-      `Lift ${both ? 'both' : names[0]} to Healthy (${HEALTHY_FLOOR}+) to reach about ${Math.round(lifted)}. ` +
-      (same
-        ? `${PLURAL[keys[0]]} drive ${both ? 'both' : 'it'}`
-        : `${names[0]}: ${PLURAL[keys[0]].toLowerCase()}, ${names[1]}: ${PLURAL[keys[1]].toLowerCase()}`) +
-      `: ${ACTION_HINT[keys[0]]}.`,
+      `Start with ${same ? PLURAL[keys[0]].toLowerCase() : names[0]}: ${ACTION_HINT[keys[0]]}. ` +
+      `Halving ${same ? PLURAL[keys[0]].toLowerCase() : 'the top driver'} on ${both ? 'both domains' : 'it'} would add ${gainText} to your account score.`,
   };
 };
 const INSIGHT = buildInsight();
