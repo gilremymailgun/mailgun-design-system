@@ -89,3 +89,23 @@
 .cd-ft--bar { background: #dcf3e2; color: #2c8a47; }
 .cd-ft--line { background: #ece8fb; color: #7a62d6; }
 .cd-ft--list { background: #fde8d8; color: #d0661c; }
+
+.cd-w__body--list { gap: 0; }
+.cd-mover { display: flex; align-items: center; gap: 16px; padding: 8px 0; border-bottom: 1px solid #dfe3e6; }
+.cd-mover:last-child { border-bottom: 0; }
+.cd-mover__name { flex: 1; min-width: 0; color: #1976c9; text-decoration: underline; font-weight: 500; overflow-wrap: anywhere; }
+.cd-mover__delta { display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; min-width: 40px; font-weight: 600; }
+.cd-mover__score { min-width: 28px; text-align: right; }
+
+.cd-fix { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #dfe3e6; }
+.cd-fix:last-child { border-bottom: 0; }
+.cd-fix__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cd-fix__name { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.cd-fix__name .cd-mover__name { flex: 0 1 auto; }
+.cd-dots-p { display: inline-flex; gap: 3px; align-items: center; flex: none; }
+.cd-dots-p span { width: 8px; height: 8px; border-radius: 50%; background: #dfe3e6; }
+.cd-dots-p span.is-on { background: #b3302f; }
+.cd-fix__sub { display: flex; flex-wrap: wrap; gap: 4px 16px; color: #4b575e; }
+.cd-fix__sub b { color: #272f36; font-weight: 700; }
+.cd-fix__driver { flex: none; align-self: stretch; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.cd-fix__driver b { font-weight: 700; }

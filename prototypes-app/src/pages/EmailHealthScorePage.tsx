@@ -505,7 +505,7 @@ export const EmailHealthScorePage = () => {
                     </span>
                   </div>
                   <div className="ehs-fix__driver">
-                    <span>{`${fmt(instancesFor(d))} ${METRIC_LABELS[d.topIndex].toLowerCase()}`}</span>
+                    <span>{`${fmt(instancesFor(d))} ${PLURAL[d.topIndex].toLowerCase()}`}</span>
                     <b>{`\u2212${d.counts[d.topIndex]} pts`}</b>
                   </div>
                 </div>
