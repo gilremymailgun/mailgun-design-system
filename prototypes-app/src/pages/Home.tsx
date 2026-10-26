@@ -33,6 +33,11 @@ const prototypes: PrototypeLink[] = [
     title: 'Optimize: Email health score',
     description: 'Account score, domains to fix first, biggest movers, daily scores and a sortable domain table.',
   },
+  {
+    href: '/customizable-dashboard',
+    title: 'Dashboard: customize preview (free plan)',
+    description: 'Free-plan preview of the paid customizable dashboard: try the widget library, then upgrade to save.',
+  },
 ];
 
 export const Home = () => (
