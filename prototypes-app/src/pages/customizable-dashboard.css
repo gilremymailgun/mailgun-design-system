@@ -116,6 +116,8 @@
 .cd-ft--list { background: #fde8d8; color: #d0661c; }
 
 .cd-w__body--list { gap: 0; overflow: hidden; }
+/* The last visible row brings its own 12px bottom padding, so 4px here keeps the usual 16px to the edge and fits one more row. */
+.cd-w--big .cd-w__body--list { padding-bottom: 4px; }
 .cd-mover { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid #dfe3e6; }
 .cd-mover:last-child { border-bottom: 0; }
 .cd-mover__name { flex: 1; min-width: 0; color: #1976c9; text-decoration: underline; font-weight: 500; overflow-wrap: anywhere; }
