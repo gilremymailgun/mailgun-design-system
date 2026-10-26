@@ -89,3 +89,10 @@
 .cd-ft--bar { background: #dcf3e2; color: #2c8a47; }
 .cd-ft--line { background: #ece8fb; color: #7a62d6; }
 .cd-ft--list { background: #fde8d8; color: #d0661c; }
+
+.cd-w__body--list { gap: 0; }
+.cd-mover { display: flex; align-items: center; gap: 16px; padding: 8px 0; border-bottom: 1px solid #dfe3e6; }
+.cd-mover:last-child { border-bottom: 0; }
+.cd-mover__name { flex: 1; min-width: 0; color: #1976c9; text-decoration: underline; font-weight: 500; overflow-wrap: anywhere; }
+.cd-mover__delta { display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; min-width: 40px; font-weight: 600; }
+.cd-mover__score { min-width: 28px; text-align: right; }
