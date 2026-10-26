@@ -29,7 +29,16 @@
 .cd-corner { position: absolute; right: 0; bottom: 0; width: 22px; height: 22px; padding: 0; border: 0; background: none; cursor: nwse-resize; touch-action: none; }
 .cd-corner::after { content: ''; position: absolute; right: 3px; bottom: 3px; border-style: solid; border-width: 0 0 12px 12px; border-color: transparent transparent #626c73 transparent; opacity: .7; }
 .cd-corner:hover::after { opacity: 1; border-bottom-color: #1976c9; }
-.cd-w:not(.cd-w--big) .cd-w__body { overflow: hidden; }
+.cd-w:not(.cd-w--big) .cd-w__body { overflow: hidden; padding: 12px 16px; }
+/* Compact widgets are 2 x 3 (188px): tighten just enough for the three Optimize widgets to fit without scrolling. */
+.cd-w__body--list .cd-it { padding: 1px 0; }
+.cd-hs:not(.cd-hs--l) { gap: 8px; }
+.cd-hs--s .cd-hs__info { font-size: 13px; line-height: 16px; }
+.cd-hs--s .cd-hs__sel select { padding-top: 0; padding-bottom: 0; }
+.cd-w__body--mv { gap: 0; }
+.cd-w__body--mv .cd-mv + .cd-mv { margin-top: 4px; }
+.cd-w__body--mv .cd-mv__d { font-size: 20px; line-height: 22px; }
+.cd-w__body--mv .cd-w__foot { padding-top: 4px; }
 .cd-w:not(.cd-w--big) .cd-w__range { margin-top: auto; }
 .cd-w__body { padding: 16px; flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 2px; }
 .cd-w__num { font-size: 30px; line-height: 36px; font-weight: 600; }
