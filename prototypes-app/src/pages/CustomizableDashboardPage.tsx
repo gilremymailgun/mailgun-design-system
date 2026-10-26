@@ -70,6 +70,8 @@ const dimsFor = (id: WidgetId, size: Size): { w: number; h: number } => {
   if (DEFS[id].type === 'm') return { w: 2, h: 3 };
   return { w: 4, h: id === 'overview' ? 6 : 4 };
 };
+const COMPACT_H = 3;
+const LARGE_MIN_H = 5;
 const place = (items: Item[], id: WidgetId, size: Size, key: string): Item[] => {
   const d = dimsFor(id, size);
   return [...items, { key, id, size, ...d, ...firstFit(items, d.w, d.h) }];
@@ -508,8 +510,15 @@ export const CustomizableDashboardPage = () => {
     setToast('Dashboard saved.');
   };
 
-  /* A SIZED widget switches between its small and large layouts as it is resized. */
-  const withFormat = (list: Item[]) => list.map((i) => (SIZED.includes(i.id) ? { ...i, size: (i.w >= 3 ? 'l' : 's') as Size } : i));
+  /* A SIZED widget switches format as it is resized: 2 columns wide is the compact tile (always 3 rows tall),
+     3 or more columns is the large format (at least 5 rows tall). */
+  const resizeFormat = (list: Item[], key: string, w: number, h: number) => {
+    const it = list.find((i) => i.key === key);
+    const sized = !!it && SIZED.includes(it.id);
+    const large = w >= 3;
+    const next = resizeItem(list, key, sized ? (large ? w : 2) : w, sized ? (large ? Math.max(h, LARGE_MIN_H) : COMPACT_H) : h);
+    return next.map((i) => (SIZED.includes(i.id) ? { ...i, size: (i.w >= 3 ? 'l' : 's') as Size } : i));
+  };
 
   /* One pointer gesture for both moving (grip) and resizing (corner). The widget follows the pointer
      smoothly; the layout snaps to whole cells and is only recomputed when the target cell changes. */
@@ -550,7 +559,7 @@ export const CustomizableDashboardPage = () => {
         const ch = Math.round((height + GAP) / stepY);
         box = { left: px.left, top: px.top, width, height };
         cell = `${cw},${ch}`;
-        compute = () => withFormat(resizeItem(start, item.key, cw, ch));
+        compute = () => resizeFormat(start, item.key, cw, ch);
       }
       setDrag({ key: item.key, ...box });
       if (cell !== lastCell) { lastCell = cell; latest = compute(); setPreview(latest); }
@@ -593,7 +602,7 @@ export const CustomizableDashboardPage = () => {
     if (!step || stack) return;
     e.preventDefault();
     setLayout(compact(e.shiftKey
-      ? withFormat(resizeItem(layout, item.key, item.w + step[0], item.h + step[1]))
+      ? resizeFormat(layout, item.key, item.w + step[0], item.h + step[1])
       : moveItem(layout, item.key, item.x + step[0], item.y + step[1])));
     setDirty(true);
   };
