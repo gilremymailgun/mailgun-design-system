@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import { Page } from '@ds/patterns/Page/Page';
 import { Button } from '@ds/components/Button/Button';
@@ -65,7 +65,7 @@ const STACK_BELOW = 760;
 const dimsFor = (id: WidgetId, size: Size): { w: number; h: number } => {
   if (SIZED.includes(id)) {
     if (size === 's') return { w: 2, h: 3 };
-    return { w: 4, h: id === 'fixfirst' ? 7 : id === 'movers' ? 8 : 6 };
+    return { w: 4, h: id === 'movers' || id === 'fixfirst' ? 8 : 6 };
   }
   if (DEFS[id].type === 'm') return { w: 2, h: 3 };
   return { w: 4, h: id === 'overview' ? 6 : 4 };
@@ -226,6 +226,80 @@ const HealthWidget = ({ size }: { size: Size }) => {
   );
 };
 
+/* Show only the rows that fit completely in the widget, so large list widgets never scroll:
+   resizing a widget taller reveals more rows, shorter hides them. Rows are measured in the DOM, so it
+   keeps working if row heights change. */
+const useFitRows = (rowSelector: string) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    const fit = () => {
+      const rows = Array.from(el.querySelectorAll<HTMLElement>(rowSelector));
+      rows.forEach((r) => { r.style.display = ''; r.style.borderBottomWidth = ''; });
+      const top = el.getBoundingClientRect().top;
+      const limit = el.clientHeight - parseFloat(getComputedStyle(el).paddingBottom) + 0.5;
+      let n = rows.findIndex((r) => r.getBoundingClientRect().bottom - top > limit);
+      if (n < 0) n = rows.length;
+      n = Math.max(1, n);
+      rows.forEach((r, i) => { if (i >= n) r.style.display = 'none'; });
+      rows[n - 1].style.borderBottomWidth = '0';
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [rowSelector]);
+  return ref;
+};
+
+const FixFirstLarge = () => {
+  const ref = useFitRows('.cd-fix');
+  return (
+      <div className="cd-w__body cd-w__body--list" ref={ref}>
+        <div className="cd-w__sub">Ranked by score and email volume</div>
+        {FIX_FIRST.map((f, i) => (
+          <div key={f.name} className="cd-fix">
+            <div className="cd-fix__main">
+              <span className="cd-fix__name">
+                <span className="cd-mover__name">{f.name}</span>
+                <span className="cd-dots-p" role="img" aria-label={`Priority ${i + 1} of ${FIX_FIRST.length}`}>
+                  {[0, 1, 2, 3, 4].map((k) => <span key={k} className={k < 5 - i ? 'is-on' : undefined} />)}
+                </span>
+              </span>
+              <span className="cd-fix__sub">
+                <span>Score: <b style={{ color: f.color }}>{f.score}</b></span>
+                <span>Email delivered: <b>{f.sent}</b></span>
+              </span>
+            </div>
+            <div className="cd-fix__driver"><span>{f.count}</span><b>{`\u2212${f.pts} pts`}</b></div>
+          </div>
+        ))}
+      </div>
+  );
+};
+
+const MoversLarge = () => {
+  const ref = useFitRows('.cd-mover');
+  return (
+      <div className="cd-w__body cd-w__body--list" ref={ref}>
+        <div className="cd-w__sub">Score change vs previous 30 days</div>
+        {MOVERS.map((m) => (
+          <div key={m.name} className="cd-mover">
+            <span className="cd-mover__name">{m.name}</span>
+            <span className="cd-mover__delta" style={{ color: m.delta < 0 ? '#b3302f' : '#23613c' }}>
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                <path d={m.delta < 0 ? 'M6 10 1.5 3.5h9z' : 'M6 2 10.5 8.5h-9z'} fill="currentColor" />
+              </svg>
+              {Math.abs(m.delta)}
+            </span>
+            <strong className="cd-mover__score" style={{ color: m.color }}>{m.score}</strong>
+          </div>
+        ))}
+      </div>
+  );
+};
+
 const WidgetBody = ({ id, size = 'l' }: { id: WidgetId; size?: Size }) => {
   const d = DEFS[id];
   if (id === 'health') return <HealthWidget size={size} />;
@@ -298,49 +372,8 @@ const WidgetBody = ({ id, size = 'l' }: { id: WidgetId; size?: Size }) => {
       </div>
     );
   }
-  if (id === 'fixfirst') {
-    return (
-      <div className="cd-w__body cd-w__body--list">
-        <div className="cd-w__sub">Ranked by score and email volume</div>
-        {FIX_FIRST.map((f, i) => (
-          <div key={f.name} className="cd-fix">
-            <div className="cd-fix__main">
-              <span className="cd-fix__name">
-                <span className="cd-mover__name">{f.name}</span>
-                <span className="cd-dots-p" role="img" aria-label={`Priority ${i + 1} of ${FIX_FIRST.length}`}>
-                  {[0, 1, 2, 3, 4].map((k) => <span key={k} className={k < 5 - i ? 'is-on' : undefined} />)}
-                </span>
-              </span>
-              <span className="cd-fix__sub">
-                <span>Score: <b style={{ color: f.color }}>{f.score}</b></span>
-                <span>Email delivered: <b>{f.sent}</b></span>
-              </span>
-            </div>
-            <div className="cd-fix__driver"><span>{f.count}</span><b>{`\u2212${f.pts} pts`}</b></div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-  if (id === 'movers') {
-    return (
-      <div className="cd-w__body cd-w__body--list">
-        <div className="cd-w__sub">Score change vs previous 30 days</div>
-        {MOVERS.map((m) => (
-          <div key={m.name} className="cd-mover">
-            <span className="cd-mover__name">{m.name}</span>
-            <span className="cd-mover__delta" style={{ color: m.delta < 0 ? '#b3302f' : '#23613c' }}>
-              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-                <path d={m.delta < 0 ? 'M6 10 1.5 3.5h9z' : 'M6 2 10.5 8.5h-9z'} fill="currentColor" />
-              </svg>
-              {Math.abs(m.delta)}
-            </span>
-            <strong className="cd-mover__score" style={{ color: m.color }}>{m.score}</strong>
-          </div>
-        ))}
-      </div>
-    );
-  }
+  if (id === 'fixfirst') return <FixFirstLarge />;
+  if (id === 'movers') return <MoversLarge />;
   if (id === 'account') {
     const rows: [string, string][] = [
       ['Current billing period', '10/01 – 11/01'], ['Mailgun plan', 'Free'], ['Emails sent', '3 / 100'],
