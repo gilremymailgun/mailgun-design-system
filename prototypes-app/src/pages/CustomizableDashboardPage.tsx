@@ -4,7 +4,7 @@ import { Page } from '@ds/patterns/Page/Page';
 import { Button } from '@ds/components/Button/Button';
 import { Banner } from '@ds/components/Banner/Banner';
 import { Toast } from '@ds/components/Toast/Toast';
-import { COLS, bottomOf, compact, firstFit, moveItem } from './dashboard-grid';
+import { COLS, MAX_H, MIN_H, MIN_W, bottomOf, compact, firstFit, moveItem, resizeItem } from './dashboard-grid';
 import './customizable-dashboard.css';
 
 /* Customizable dashboard prototype: add, remove and arrange widgets from the widget library.
@@ -413,7 +413,7 @@ export const CustomizableDashboardPage = () => {
   const [toast, setToast] = useState('');
   const boardRef = useRef<HTMLDivElement>(null);
   const [boardW, setBoardW] = useState(1000);
-  const [drag, setDrag] = useState<{ key: string; left: number; top: number } | null>(null);
+  const [drag, setDrag] = useState<{ key: string; left: number; top: number; width: number; height: number } | null>(null);
   const [preview, setPreview] = useState<Item[] | null>(null);
   const cancelDrag = useRef<(() => void) | null>(null);
 
@@ -475,33 +475,52 @@ export const CustomizableDashboardPage = () => {
     setToast('Dashboard saved.');
   };
 
-  const startDrag = (e: ReactPointerEvent, item: Item) => {
+  /* A SIZED widget switches between its small and large layouts as it is resized. */
+  const withFormat = (list: Item[]) => list.map((i) => (SIZED.includes(i.id) ? { ...i, size: (i.w >= 3 ? 'l' : 's') as Size } : i));
+
+  /* One pointer gesture for both moving (grip) and resizing (corner). The widget follows the pointer
+     smoothly; the layout snaps to whole cells and is only recomputed when the target cell changes. */
+  const beginGesture = (e: ReactPointerEvent, item: Item, mode: 'move' | 'size') => {
     if (!editing || stack || e.button !== 0 || !boardRef.current) return;
     e.preventDefault();
     const start = layout;
     const px = rectPx(item);
-    const board = boardRef.current.getBoundingClientRect();
-    const ox = e.clientX - board.left - px.left;
-    const oy = e.clientY - board.top - px.top;
+    const b0 = boardRef.current.getBoundingClientRect();
+    /* Remember where inside the widget (or its corner) the pointer grabbed. */
+    const ox = e.clientX - b0.left - (mode === 'move' ? px.left : px.left + px.width);
+    const oy = e.clientY - b0.top - (mode === 'move' ? px.top : px.top + px.height);
     let pointer = { x: e.clientX, y: e.clientY };
-    let lastCell = `${item.x},${item.y}`;
+    let lastCell = '';
     let latest: Item[] = start;
     let raf = 0;
 
     const update = () => {
       const b = boardRef.current?.getBoundingClientRect();
       if (!b) return;
-      const left = Math.min(Math.max(0, pointer.x - b.left - ox), boardW - px.width);
-      const top = Math.max(0, pointer.y - b.top - oy);
-      setDrag({ key: item.key, left, top });
-      const cx = Math.round(left / stepX);
-      const cy = Math.round(top / stepY);
-      const cell = `${cx},${cy}`;
-      if (cell !== lastCell) {
-        lastCell = cell;
-        latest = moveItem(start, item.key, cx, cy);
-        setPreview(latest);
+      const mx = pointer.x - b.left - ox;
+      const my = pointer.y - b.top - oy;
+      let box: { left: number; top: number; width: number; height: number };
+      let cell: string;
+      let compute: () => Item[];
+      if (mode === 'move') {
+        const left = Math.min(Math.max(0, mx), boardW - px.width);
+        const top = Math.max(0, my);
+        const cx = Math.round(left / stepX);
+        const cy = Math.round(top / stepY);
+        box = { left, top, width: px.width, height: px.height };
+        cell = `${cx},${cy}`;
+        compute = () => moveItem(start, item.key, cx, cy);
+      } else {
+        const width = Math.min(Math.max(MIN_W * stepX - GAP, mx - px.left), boardW - px.left);
+        const height = Math.min(Math.max(MIN_H * stepY - GAP, my - px.top), MAX_H * stepY - GAP);
+        const cw = Math.round((width + GAP) / stepX);
+        const ch = Math.round((height + GAP) / stepY);
+        box = { left: px.left, top: px.top, width, height };
+        cell = `${cw},${ch}`;
+        compute = () => withFormat(resizeItem(start, item.key, cw, ch));
       }
+      setDrag({ key: item.key, ...box });
+      if (cell !== lastCell) { lastCell = cell; latest = compute(); setPreview(latest); }
     };
     /* Scroll the page while the pointer is near the top or bottom edge. */
     const tick = () => {
@@ -520,7 +539,7 @@ export const CustomizableDashboardPage = () => {
       cancelDrag.current = null;
       if (commit) {
         const next = compact(latest);
-        if (next.some((n, i) => n.x !== start[i].x || n.y !== start[i].y)) { setLayout(next); setDirty(true); }
+        if (next.some((n, i) => n.x !== start[i].x || n.y !== start[i].y || n.w !== start[i].w || n.h !== start[i].h)) { setLayout(next); setDirty(true); }
       }
       setDrag(null);
       setPreview(null);
@@ -534,13 +553,15 @@ export const CustomizableDashboardPage = () => {
     raf = window.requestAnimationFrame(tick);
   };
 
-  /* Keyboard alternative: focus a grip and use the arrow keys to move the widget one step. */
+  /* Keyboard alternative: focus a grip, arrow keys move one step, Shift + arrow keys resize one step. */
   const keyMove = (e: ReactKeyboardEvent, item: Item) => {
     const d: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
     const step = d[e.key];
     if (!step || stack) return;
     e.preventDefault();
-    setLayout(compact(moveItem(layout, item.key, item.x + step[0], item.y + step[1])));
+    setLayout(compact(e.shiftKey
+      ? withFormat(resizeItem(layout, item.key, item.w + step[0], item.h + step[1]))
+      : moveItem(layout, item.key, item.x + step[0], item.y + step[1])));
     setDirty(true);
   };
 
@@ -551,7 +572,7 @@ export const CustomizableDashboardPage = () => {
     const style = stack
       ? undefined
       : dragging && drag
-        ? { left: drag.left, top: drag.top, width: px.width, height: px.height }
+        ? { left: drag.left, top: drag.top, width: drag.width, height: drag.height }
         : px;
     return (
       <div key={key} className={`cd-item${dragging ? ' is-dragging' : ''}`} style={style}>
@@ -561,8 +582,8 @@ export const CustomizableDashboardPage = () => {
               <button
                 type="button"
                 className="cd-grip"
-                aria-label={`Move ${DEFS[id].title}. Drag, or use the arrow keys.`}
-                onPointerDown={(e) => startDrag(e, item)}
+                aria-label={`Move ${DEFS[id].title}. Drag, or use the arrow keys. Hold Shift to resize.`}
+                onPointerDown={(e) => beginGesture(e, item, 'move')}
                 onKeyDown={(e) => keyMove(e, item)}
               >
                 ⋮⋮
@@ -574,7 +595,9 @@ export const CustomizableDashboardPage = () => {
               : <span className="cd-dots" aria-hidden="true">•••</span>}
           </div>
           <WidgetBody id={id} size={size} />
-          {editing && <span className="cd-corner" aria-hidden="true" />}
+          {editing && !stack && (
+            <button type="button" className="cd-corner" tabIndex={-1} aria-label={`Resize ${DEFS[id].title}`} onPointerDown={(e) => beginGesture(e, item, 'size')} />
+          )}
         </section>
       </div>
     );

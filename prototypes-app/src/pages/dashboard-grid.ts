@@ -44,23 +44,40 @@ export const firstFit = (items: Rect[], w: number, h: number): { x: number; y: n
   return { x: 0, y: limit };
 };
 
+/* Put `moved` in place and settle everyone else around it. Returns the list in the original order. */
+const settle = <T extends Placed>(items: T[], moved: T, others: T[], swapped?: T): T[] => {
+  const rest = new Map(compact(swapped ? others.map((i) => (i.key === swapped.key ? swapped : i)) : others, [moved]).map((i) => [i.key, i]));
+  return items.map((i) => (i.key === moved.key ? moved : (rest.get(i.key) as T)));
+};
+
 /** Move one item to (x, y) and settle the rest around it. */
 export const moveItem = <T extends Placed>(items: T[], key: string, x: number, y: number): T[] => {
   const m = items.find((i) => i.key === key);
   if (!m) return items;
   const others = items.filter((i) => i.key !== key);
-  const tx = Math.max(0, Math.min(x, COLS - m.w));
-  const ty = Math.max(0, Math.min(y, bottomOf(others)));
-  const target = { ...m, x: tx, y: ty };
-
-  const overlapped = others.filter((o) => hits(target, o));
-  if (overlapped.length === 1 && overlapped[0].w === m.w && overlapped[0].h === m.h) {
-    const o = overlapped[0];
-    const moved = { ...m, x: o.x, y: o.y };
-    const rest = compact(others.map((i) => (i.key === o.key ? { ...i, x: m.x, y: m.y } : i)), [moved]);
-    return items.map((i) => (i.key === key ? moved : (rest.find((r) => r.key === i.key) as T)));
+  const target = { ...m, x: Math.max(0, Math.min(x, COLS - m.w)), y: Math.max(0, Math.min(y, bottomOf(others))) };
+  const hit = others.filter((o) => hits(target, o));
+  if (hit.length === 1 && hit[0].w === m.w && hit[0].h === m.h) {
+    return settle(items, { ...m, x: hit[0].x, y: hit[0].y }, others, { ...hit[0], x: m.x, y: m.y });
   }
+  return settle(items, target, others);
+};
 
-  const rest = compact(others, [target]);
-  return items.map((i) => (i.key === key ? target : (rest.find((r) => r.key === i.key) as T)));
+export const MIN_W = 2;
+export const MIN_H = 3;
+export const MAX_H = 12;
+
+/** Clamp a requested size to the grid: at least MIN_W x MIN_H, never past the right edge. */
+export const clampSize = (x: number, w: number, h: number) => ({
+  w: Math.max(MIN_W, Math.min(w, COLS - x)),
+  h: Math.max(MIN_H, Math.min(h, MAX_H)),
+});
+
+/** Resize one item (its top-left corner stays put) and settle the rest around it. */
+export const resizeItem = <T extends Placed>(items: T[], key: string, w: number, h: number): T[] => {
+  const m = items.find((i) => i.key === key);
+  if (!m) return items;
+  const { w: cw, h: ch } = clampSize(m.x, w, h);
+  if (cw === m.w && ch === m.h) return items;
+  return settle(items, { ...m, w: cw, h: ch }, items.filter((i) => i.key !== key));
 };
