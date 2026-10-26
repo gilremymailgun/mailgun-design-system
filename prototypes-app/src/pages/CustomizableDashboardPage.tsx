@@ -11,6 +11,8 @@ import './customizable-dashboard.css';
    The free-plan "Upgrade to save" flow (preview banner, plans page, upgrade copy) is kept below
    but hidden behind UPGRADE_FLOW for a future iteration. */
 const UPGRADE_FLOW = false;
+/* The blue intro banners (home and customizing) are hidden for now. Set to true to bring them back. */
+const SHOW_BANNERS = false;
 
 type WidgetId =
   | 'delivery' | 'opened' | 'bounce' | 'failed' | 'clicked' | 'unsub' | 'complained'
@@ -703,14 +705,14 @@ export const CustomizableDashboardPage = () => {
           </>
         ) : (
           <>
-            {editing && editBanner && (
+            {SHOW_BANNERS && editing && editBanner && (
               <Banner type="info" onClose={() => setEditBanner(false)}>
                 {UPGRADE_FLOW
                   ? <><strong>Preview mode.</strong> Add widgets from the library, rearrange, and resize to see how your dashboard could look. Saving your layout requires a paid plan.</>
                   : <><strong>Customizing your dashboard.</strong> Add widgets from the library, rearrange, and resize them, then save your changes.</>}
               </Banner>
             )}
-            {!editing && !saved && homeBanner && (
+            {SHOW_BANNERS && !editing && !saved && homeBanner && (
               <Banner type="info" onClose={() => setHomeBanner(false)}>
                 <strong>Customize your dashboard.</strong> {`Select from ${ALL_IDS.length} different widgets covering delivery, engagement, domains and more, then rearrange and resize them.${UPGRADE_FLOW ? ' Try it in preview mode.' : ''}`}
               </Banner>
