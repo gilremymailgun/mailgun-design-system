@@ -484,7 +484,7 @@ export const EmailHealthScorePage = () => {
             subtitle="Ranked by distance below Healthy and email volume"
             action={
               <button type="button" className="ehs-link ehs-link--action" onClick={() => { applyView({ filter: 'fix', sort: 'priority', query: '' }); goTable(); }}>
-                View in table
+                See all
               </button>
             }
           >
@@ -707,9 +707,6 @@ export const EmailHealthScorePage = () => {
                 {[0, 25, 50, 75].map((t) => (
                   <div key={t} className="ehs-chart__grid" style={{ top: `${t}%` }} />
                 ))}
-                <span className="ehs-chart__note" style={{ top: 2, color: '#23613c' }}>Healthy over 85</span>
-                <span className="ehs-chart__note" style={{ top: 'calc(30% - 16px)', color: '#8f5509' }}>At risk 70 to 85</span>
-                <span className="ehs-chart__note" style={{ top: 'calc(30% + 2px)', color: ATTENTION_RED }}>Requires attention under 70</span>
                 <svg className="ehs-chart__line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                   <polyline points={DAYS.map((d, i) => `${dayX(i).toFixed(2)},${100 - d.score}`).join(' ')} fill="none" stroke="#1976c9" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
                 </svg>
@@ -732,8 +729,8 @@ export const EmailHealthScorePage = () => {
                   >
                     <div className="ehs-chart__tip-date">{hoverDay.date}</div>
                     <div>Daily health score: <strong style={{ color: BAND[bandOf(hoverDay.score)].fg }}>{hoverDay.score}</strong></div>
-                    {['Bounce impact', 'Complaint impact', 'Trap impact', 'Full mailbox impact', 'Critical failure impact'].map((label, i) => (
-                      <div key={label}>{`${label}: ${hoverDay.impacts[i]}`}</div>
+                    {['Bounce', 'Complaint', 'Spam trap', 'Full mailbox', 'Critical failure'].map((label, i) => (
+                      <div key={label}>{`${label}: \u2212${hoverDay.impacts[i]} pts`}</div>
                     ))}
                   </div>
                 )}
