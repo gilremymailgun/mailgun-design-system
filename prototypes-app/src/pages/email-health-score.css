@@ -167,6 +167,7 @@
 /* Fix these first row: domain + priority dots + delivered on the left, top driver on the right */
 .ehs-list__row--fix { justify-content: space-between; gap: 16px; }
 .ehs-fix__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.ehs-fix__sub { font-size: 14px; line-height: 20px; color: #4b575e; }
+.ehs-fix__sub { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; line-height: 20px; color: #4b575e; }
 .ehs-fix__sub b { color: #272f36; font-weight: 700; }
-.ehs-fix__driver { flex: none; text-align: right; font-size: 14px; line-height: 20px; font-weight: 700; color: #272f36; }
+.ehs-fix__driver { flex: none; align-self: stretch; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 20px; color: #272f36; }
+.ehs-fix__driver b { font-weight: 700; }

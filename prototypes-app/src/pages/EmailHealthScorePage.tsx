@@ -10,7 +10,7 @@ import './email-health-score.css';
 /* ------------------------------------------------------------------ */
 
 type Band = 'healthy' | 'risk' | 'attention' | 'collecting';
-type FilterKey = 'all' | Band;
+type FilterKey = 'all' | 'fix' | Band;
 type SortKey = 'priority' | 'name' | 'score' | 'change' | 'sent' | 'imp0' | 'imp1' | 'imp2' | 'imp3' | 'imp4';
 type SortDir = 'asc' | 'desc';
 
@@ -199,6 +199,9 @@ const PRIORITY_ORDER = [...DOMAINS].sort((a, b) => nullsLast(a, b) || b.priority
 const FIX_FIRST = DOMAINS.filter((d) => d.priority > 0)
   .sort((a, b) => b.priority - a.priority || (a.score ?? 0) - (b.score ?? 0))
   .slice(0, 5);
+const IMPACT_SCALE = [1000, 100000, 20000, 1000, 5000];
+/* Estimated instances behind the points lost, from delivered volume and the spec's scale. */
+const instancesFor = (d: Domain) => Math.max(1, Math.round(((d.counts[d.topIndex] + 1) * d.sent) / IMPACT_SCALE[d.topIndex]));
 
 /* Biggest movers: best improvement first, biggest drop last. */
 const ELIGIBLE = SCORED.filter((d) => d.sent >= SCORE_MIN_EMAILS);
@@ -314,7 +317,7 @@ export const EmailHealthScorePage = () => {
 
   /* Table rows: filter, search, sort, paginate. */
   const q = query.trim().toLowerCase();
-  const list = DOMAINS.filter((d) => (filter === 'all' || d.band === filter) && (!q || d.name.toLowerCase().includes(q)));
+  const list = DOMAINS.filter((d) => (filter === 'all' || (filter === 'fix' ? FIX_FIRST.includes(d) : d.band === filter)) && (!q || d.name.toLowerCase().includes(q)));
   const sg = dir === 'asc' ? 1 : -1;
   if (sort === 'priority') list.sort((a, b) => nullsLast(a, b) || b.priority - a.priority || (a.score ?? 0) - (b.score ?? 0));
   if (sort === 'name') list.sort((a, b) => sg * a.name.localeCompare(b.name));
@@ -480,8 +483,8 @@ export const EmailHealthScorePage = () => {
             title="Fix these first"
             subtitle="Ranked by distance below Healthy and email volume"
             action={
-              <button type="button" className="ehs-link ehs-link--action" onClick={() => { applyView({ filter: 'all', sort: 'priority', query: '' }); goTable(); }}>
-                See all
+              <button type="button" className="ehs-link ehs-link--action" onClick={() => { applyView({ filter: 'fix', sort: 'priority', query: '' }); goTable(); }}>
+                View in table
               </button>
             }
           >
@@ -497,9 +500,15 @@ export const EmailHealthScorePage = () => {
                         ))}
                       </span>
                     </span>
-                    <span className="ehs-fix__sub">Email delivered: <b>{fmt(d.sent)}</b></span>
+                    <span className="ehs-fix__sub">
+                      <span>Score: <b style={{ color: BAND[d.band].fg }}>{d.score}</b></span>
+                      <span>Email delivered: <b>{fmt(d.sent)}</b></span>
+                    </span>
                   </div>
-                  <span className="ehs-fix__driver">{`\u2212${d.counts[d.topIndex]} pts from ${METRIC_LABELS[d.topIndex].toLowerCase()}`}</span>
+                  <div className="ehs-fix__driver">
+                    <span>{`${fmt(instancesFor(d))} ${METRIC_LABELS[d.topIndex].toLowerCase()}`}</span>
+                    <b>{`\u2212${d.counts[d.topIndex]} pts`}</b>
+                  </div>
                 </div>
               ))}
             </div>
@@ -540,11 +549,12 @@ export const EmailHealthScorePage = () => {
                 value={filter}
                 onChange={(e) => applyView({ filter: e.target.value as FilterKey })}
               >
-                <option value="all">Filter: All domains</option>
-                <option value="attention">Filter: Requires attention</option>
-                <option value="risk">Filter: At risk</option>
-                <option value="healthy">Filter: Healthy</option>
-                <option value="collecting">Filter: Collecting data</option>
+                <option value="all">All domains</option>
+                <option value="fix">Fix first</option>
+                <option value="attention">Requires attention</option>
+                <option value="risk">At risk</option>
+                <option value="healthy">Healthy</option>
+                <option value="collecting">Collecting data</option>
               </select>
               <label className="ehs-search">
                 <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
@@ -560,8 +570,8 @@ export const EmailHealthScorePage = () => {
             <div className="ehs-filterbar">
               <span className="ehs-card__subtitle">Filtered by</span>
               <span className="ehs-pill">
-                <span className="ehs-dot" style={{ background: BAND[filter].bar }} />
-                {BAND[filter].label}
+                <span className="ehs-dot" style={{ background: filter === 'fix' ? '#b3302f' : BAND[filter].bar }} />
+                {filter === 'fix' ? 'Fix first' : BAND[filter].label}
                 <button type="button" aria-label="Remove filter" onClick={() => applyView({ filter: 'all' })}>
                   <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="m2.5 2.5 7 7m0-7-7 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
                 </button>
