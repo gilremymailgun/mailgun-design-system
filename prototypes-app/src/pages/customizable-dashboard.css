@@ -4,24 +4,32 @@
 .cd-bar__actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
 .cd-tag { display: inline-block; background: #e8f1fb; color: #1976c9; border: 1px solid #b9d4f0; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 16px; font-weight: 600; }
 
-.cd-grid { display: grid; gap: 16px; margin-bottom: 16px; }
-.cd-grid--metric { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-.cd-grid--big { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-@media (max-width: 1280px) { .cd-grid--metric { grid-template-columns: repeat(3, minmax(0, 1fr)); } .cd-grid--big { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 820px) { .cd-grid--metric { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cd-grid--big { grid-template-columns: 1fr; } }
+.cd-board { position: relative; margin-bottom: 16px; }
+.cd-board--stack { display: flex; flex-direction: column; gap: 16px; }
+.cd-item { position: absolute; transition: left .2s cubic-bezier(.33, 1, .68, 1), top .2s cubic-bezier(.33, 1, .68, 1), width .2s, height .2s; }
+.cd-board--stack .cd-item { position: static; }
+.cd-board--stack .cd-w { min-height: 150px; }
+.cd-board--stack .cd-w--big { min-height: 300px; }
+.cd-item.is-dragging { transition: none; z-index: 5; cursor: grabbing; }
+.cd-item.is-dragging .cd-w { box-shadow: 0 12px 32px rgba(16, 24, 40, .22); border-style: solid; border-color: #1976c9; }
+.cd-ph { position: absolute; border-radius: 8px; background: #eef2f4; border: 1px dashed #b9c3c9; transition: left .2s cubic-bezier(.33, 1, .68, 1), top .2s cubic-bezier(.33, 1, .68, 1); }
+@media (prefers-reduced-motion: reduce) { .cd-item, .cd-ph { transition: none; } }
 
-.cd-w { background: #fff; border: 1px solid #dfe3e6; border-radius: 8px; min-height: 150px; display: flex; flex-direction: column; position: relative; }
-.cd-w--big { min-height: 300px; }
+.cd-w { background: #fff; border: 1px solid #dfe3e6; border-radius: 8px; height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
 .cd-edit .cd-w { border-style: dashed; border-color: #b9d4f0; }
 .cd-w.is-new { box-shadow: 0 0 0 2px #1976c9; }
 .cd-w__head { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #dfe3e6; font-weight: 600; }
 .cd-w__title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cd-dots { color: #1976c9; letter-spacing: 2px; font-weight: 700; }
-.cd-grip { color: #626c73; cursor: grab; letter-spacing: -2px; }
+.cd-grip { color: #626c73; cursor: grab; letter-spacing: -2px; background: none; border: 0; padding: 2px 4px; margin: -2px 0 -2px -4px; touch-action: none; border-radius: 4px; line-height: 1; }
+.cd-grip:hover { color: #272f36; background: #eef2f4; }
+.cd-grip:focus-visible { outline: 2px solid #1976c9; outline-offset: 1px; }
 .cd-rm { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #626c73; background: none; color: #626c73; padding: 0; line-height: 1; cursor: pointer; display: grid; place-items: center; }
 .cd-rm:hover { border-color: #b3302f; color: #b3302f; }
-.cd-corner { position: absolute; right: 2px; bottom: 2px; width: 0; height: 0; border-style: solid; border-width: 0 0 12px 12px; border-color: transparent transparent #626c73 transparent; opacity: .7; }
-.cd-w__body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.cd-corner { position: absolute; right: 0; bottom: 0; width: 22px; height: 22px; padding: 0; border: 0; background: none; cursor: nwse-resize; touch-action: none; }
+.cd-corner::after { content: ''; position: absolute; right: 3px; bottom: 3px; border-style: solid; border-width: 0 0 12px 12px; border-color: transparent transparent #626c73 transparent; opacity: .7; }
+.cd-corner:hover::after { opacity: 1; border-bottom-color: #1976c9; }
+.cd-w__body { padding: 16px; flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 2px; }
 .cd-w__num { font-size: 30px; line-height: 36px; font-weight: 600; }
 .cd-w__sub { color: #4b575e; }
 .cd-w__range { color: #1976c9; font-weight: 600; margin-top: 8px; }
