@@ -35,8 +35,8 @@ const prototypes: PrototypeLink[] = [
   },
   {
     href: '/customizable-dashboard',
-    title: 'Dashboard: customize preview (free plan)',
-    description: 'Free-plan preview of the paid customizable dashboard: try the widget library, then upgrade to save.',
+    title: 'Dashboard: customize',
+    description: 'Customizable dashboard: add, remove and arrange widgets from the widget library, then save your changes.',
   },
 ];
 
