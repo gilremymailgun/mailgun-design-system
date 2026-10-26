@@ -281,7 +281,7 @@ const WidgetBody = ({ id, size = 'l' }: { id: WidgetId; size?: Size }) => {
   if (id === 'fixfirst') {
     return (
       <div className="cd-w__body cd-w__body--list">
-        <div className="cd-w__sub">Ranked by how far a domain is below Healthy (over 85) and how much email it delivers</div>
+        <div className="cd-w__sub">Ranked by score and email volume</div>
         {FIX_FIRST.map((f, i) => (
           <div key={f.name} className="cd-fix">
             <div className="cd-fix__main">
