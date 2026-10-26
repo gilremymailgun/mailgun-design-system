@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import { Page } from '@ds/patterns/Page/Page';
 import { Button } from '@ds/components/Button/Button';
 import { Banner } from '@ds/components/Banner/Banner';
 import { Toast } from '@ds/components/Toast/Toast';
+import { COLS, bottomOf, compact, firstFit, moveItem } from './dashboard-grid';
 import './customizable-dashboard.css';
 
 /* Customizable dashboard prototype: add, remove and arrange widgets from the widget library.
@@ -54,10 +55,27 @@ const LIBRARY: { cat: string; ids: WidgetId[] }[] = [
 ];
 const ALL_IDS = LIBRARY.flatMap((g) => g.ids);
 /* A widget on the dashboard. The same widget can be added more than once, so each has its own key. */
-interface Item { key: string; id: WidgetId; size: Size }
+interface Item { key: string; id: WidgetId; size: Size; x: number; y: number; w: number; h: number }
 const MULTI: WidgetId[] = ['health'];
+
+/* Grid geometry: 12 columns. A metric tile is 2 columns wide, a full widget 4. */
+const ROW_H = 52;
+const GAP = 16;
+const STACK_BELOW = 760;
+const dimsFor = (id: WidgetId, size: Size): { w: number; h: number } => {
+  if (SIZED.includes(id)) {
+    if (size === 's') return { w: 2, h: 4 };
+    return { w: 4, h: id === 'fixfirst' ? 7 : id === 'movers' ? 8 : 6 };
+  }
+  if (DEFS[id].type === 'm') return { w: 2, h: 3 };
+  return { w: 4, h: id === 'overview' ? 6 : 4 };
+};
+const place = (items: Item[], id: WidgetId, size: Size, key: string): Item[] => {
+  const d = dimsFor(id, size);
+  return [...items, { key, id, size, ...d, ...firstFit(items, d.w, d.h) }];
+};
 const DEFAULT_LAYOUT: Item[] = (['delivery', 'opened', 'bounce', 'failed', 'clicked', 'unsub', 'tickets', 'overview', 'account'] as WidgetId[])
-  .map((id) => ({ key: id, id, size: 'l' as Size }));
+  .reduce<Item[]>((acc, id) => place(acc, id, 'l', id), []);
 
 const formatsOf = (id: WidgetId): Format[] => {
   if (id === 'overview') return ['Bar', 'Line'];
@@ -393,6 +411,30 @@ export const CustomizableDashboardPage = () => {
   const [homeBanner, setHomeBanner] = useState(true);
   const [editBanner, setEditBanner] = useState(true);
   const [toast, setToast] = useState('');
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [boardW, setBoardW] = useState(1000);
+  const [drag, setDrag] = useState<{ key: string; left: number; top: number } | null>(null);
+  const [preview, setPreview] = useState<Item[] | null>(null);
+  const cancelDrag = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el) return undefined;
+    const measure = () => setBoardW(el.clientWidth);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [screen]);
+
+  useEffect(() => () => cancelDrag.current?.(), []);
+
+  const stack = boardW < STACK_BELOW;
+  const colW = (boardW - GAP * (COLS - 1)) / COLS;
+  const stepX = colW + GAP;
+  const stepY = ROW_H + GAP;
+  const shown = preview ?? layout;
+  const rectPx = (it: Item) => ({ left: it.x * stepX, top: it.y * stepY, width: it.w * stepX - GAP, height: it.h * stepY - GAP });
 
   const countOf = (id: WidgetId) => layout.filter((i) => i.id === id).length;
   const canAdd = (id: WidgetId) => MULTI.includes(id) || countOf(id) === 0;
@@ -401,7 +443,7 @@ export const CustomizableDashboardPage = () => {
   const customize = () => { setEditing(true); setEditBanner(true); setSaved(false); };
   const typeOf = (item: Item) => (SIZED.includes(item.id) ? (item.size === 's' ? 'm' : 'b') : DEFS[item.id].type);
   const openLibrary = () => { setTab('Send'); setPickSize({}); setModal('add'); };
-  const remove = (key: string) => { setLayout(layout.filter((i) => i.key !== key)); setDirty(true); };
+  const remove = (key: string) => { setLayout(compact(layout.filter((i) => i.key !== key))); setDirty(true); };
   const cancel = () => {
     if (dirty) { setModal('leave'); return; }
     setEditing(false);
@@ -415,7 +457,7 @@ export const CustomizableDashboardPage = () => {
   const addWidget = (id: WidgetId) => {
     const size: Size = SIZED.includes(id) ? (pickSize[id] ?? 's') : 'l';
     const key = `${id}-new-${nextKey.current++}`;
-    setLayout([...layout, { key, id, size }]);
+    setLayout(compact(place(layout, id, size, key)));
     setFlash([key]);
     window.setTimeout(() => setFlash([]), 1400);
     setDirty(true);
@@ -433,22 +475,114 @@ export const CustomizableDashboardPage = () => {
     setToast('Dashboard saved.');
   };
 
-  const metrics = layout.filter((i) => typeOf(i) === 'm');
-  const bigs = layout.filter((i) => typeOf(i) === 'b');
+  const startDrag = (e: ReactPointerEvent, item: Item) => {
+    if (!editing || stack || e.button !== 0 || !boardRef.current) return;
+    e.preventDefault();
+    const start = layout;
+    const px = rectPx(item);
+    const board = boardRef.current.getBoundingClientRect();
+    const ox = e.clientX - board.left - px.left;
+    const oy = e.clientY - board.top - px.top;
+    let pointer = { x: e.clientX, y: e.clientY };
+    let lastCell = `${item.x},${item.y}`;
+    let latest: Item[] = start;
+    let raf = 0;
 
-  const renderWidget = ({ key, id, size }: Item) => (
-    <section key={key} className={`cd-w${typeOf({ key, id, size }) === 'b' ? ' cd-w--big' : ''}${flash.includes(key) ? ' is-new' : ''}`} aria-label={DEFS[id].title}>
-      <div className="cd-w__head">
-        {editing && <span className="cd-grip" aria-hidden="true">⋮⋮</span>}
-        <span className="cd-w__title">{DEFS[id].title}</span>
-        {editing
-          ? <button type="button" className="cd-rm" onClick={() => remove(key)} aria-label={`Remove ${DEFS[id].title}`}>×</button>
-          : <span className="cd-dots" aria-hidden="true">•••</span>}
+    const update = () => {
+      const b = boardRef.current?.getBoundingClientRect();
+      if (!b) return;
+      const left = Math.min(Math.max(0, pointer.x - b.left - ox), boardW - px.width);
+      const top = Math.max(0, pointer.y - b.top - oy);
+      setDrag({ key: item.key, left, top });
+      const cx = Math.round(left / stepX);
+      const cy = Math.round(top / stepY);
+      const cell = `${cx},${cy}`;
+      if (cell !== lastCell) {
+        lastCell = cell;
+        latest = moveItem(start, item.key, cx, cy);
+        setPreview(latest);
+      }
+    };
+    /* Scroll the page while the pointer is near the top or bottom edge. */
+    const tick = () => {
+      const edge = 90;
+      if (pointer.y < edge) window.scrollBy(0, -Math.ceil((edge - pointer.y) / 6));
+      else if (pointer.y > window.innerHeight - edge) window.scrollBy(0, Math.ceil((pointer.y - (window.innerHeight - edge)) / 6));
+      update();
+      raf = window.requestAnimationFrame(tick);
+    };
+    const onMove = (ev: PointerEvent) => { pointer = { x: ev.clientX, y: ev.clientY }; };
+    const finish = (commit: boolean) => {
+      window.cancelAnimationFrame(raf);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('keydown', onKey);
+      cancelDrag.current = null;
+      if (commit) {
+        const next = compact(latest);
+        if (next.some((n, i) => n.x !== start[i].x || n.y !== start[i].y)) { setLayout(next); setDirty(true); }
+      }
+      setDrag(null);
+      setPreview(null);
+    };
+    const onUp = () => finish(true);
+    const onKey = (ev: KeyboardEvent) => { if (ev.key === 'Escape') finish(false); };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('keydown', onKey);
+    cancelDrag.current = () => finish(false);
+    raf = window.requestAnimationFrame(tick);
+  };
+
+  /* Keyboard alternative: focus a grip and use the arrow keys to move the widget one step. */
+  const keyMove = (e: ReactKeyboardEvent, item: Item) => {
+    const d: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    const step = d[e.key];
+    if (!step || stack) return;
+    e.preventDefault();
+    setLayout(compact(moveItem(layout, item.key, item.x + step[0], item.y + step[1])));
+    setDirty(true);
+  };
+
+  const renderWidget = (item: Item) => {
+    const { key, id, size } = item;
+    const dragging = drag?.key === key;
+    const px = rectPx(item);
+    const style = stack
+      ? undefined
+      : dragging && drag
+        ? { left: drag.left, top: drag.top, width: px.width, height: px.height }
+        : px;
+    return (
+      <div key={key} className={`cd-item${dragging ? ' is-dragging' : ''}`} style={style}>
+        <section className={`cd-w${typeOf(item) === 'b' ? ' cd-w--big' : ''}${flash.includes(key) ? ' is-new' : ''}`} aria-label={DEFS[id].title}>
+          <div className="cd-w__head">
+            {editing && !stack && (
+              <button
+                type="button"
+                className="cd-grip"
+                aria-label={`Move ${DEFS[id].title}. Drag, or use the arrow keys.`}
+                onPointerDown={(e) => startDrag(e, item)}
+                onKeyDown={(e) => keyMove(e, item)}
+              >
+                ⋮⋮
+              </button>
+            )}
+            <span className="cd-w__title">{DEFS[id].title}</span>
+            {editing
+              ? <button type="button" className="cd-rm" onClick={() => remove(key)} aria-label={`Remove ${DEFS[id].title}`}>×</button>
+              : <span className="cd-dots" aria-hidden="true">•••</span>}
+          </div>
+          <WidgetBody id={id} size={size} />
+          {editing && <span className="cd-corner" aria-hidden="true" />}
+        </section>
       </div>
-      <WidgetBody id={id} size={size} />
-      {editing && <span className="cd-corner" aria-hidden="true" />}
-    </section>
-  );
+    );
+  };
+
+  const ordered = [...shown].sort((a, b) => a.y - b.y || a.x - b.x);
+  const dragged = drag ? shown.find((i) => i.key === drag.key) : undefined;
+  const boardH = stack ? undefined : Math.max(0, bottomOf(shown)) * stepY - GAP + (drag ? 2 * stepY : 0);
 
   const plan = (name: string, price: string, list: string[], rec?: boolean) => (
     <div className={`cd-plan${rec ? ' is-rec' : ''}`}>
@@ -510,12 +644,14 @@ export const CustomizableDashboardPage = () => {
               </Banner>
             )}
 
-            <div className={editing ? 'cd-edit' : undefined}>
-              <div className="cd-grid cd-grid--metric">{metrics.map(renderWidget)}</div>
-              <div className="cd-grid cd-grid--big">
-                {bigs.map(renderWidget)}
-                {!layout.length && <div className="cd-empty">No widgets. Add some from the widget library.</div>}
-              </div>
+            <div
+              ref={boardRef}
+              className={`cd-board${editing ? ' cd-edit' : ''}${stack ? ' cd-board--stack' : ''}`}
+              style={boardH == null ? undefined : { height: boardH }}
+            >
+              {dragged && !stack && <div className="cd-ph" style={rectPx(dragged)} aria-hidden="true" />}
+              {ordered.map(renderWidget)}
+              {!layout.length && <div className="cd-empty">No widgets. Add some from the widget library.</div>}
             </div>
           </>
         )}
