@@ -6,8 +6,10 @@ import { Banner } from '@ds/components/Banner/Banner';
 import { Toast } from '@ds/components/Toast/Toast';
 import './customizable-dashboard.css';
 
-/* Free-plan preview of the paid, customizable dashboard.
-   Customize enters a sandbox; saving requires an upgrade, which is disclosed up front. */
+/* Customizable dashboard prototype: add, remove and arrange widgets from the widget library.
+   The free-plan "Upgrade to save" flow (preview banner, plans page, upgrade copy) is kept below
+   but hidden behind UPGRADE_FLOW for a future iteration. */
+const UPGRADE_FLOW = false;
 
 type WidgetId =
   | 'delivery' | 'opened' | 'bounce' | 'failed' | 'clicked' | 'unsub' | 'complained'
@@ -380,6 +382,7 @@ export const CustomizableDashboardPage = () => {
   const [screen, setScreen] = useState<'dash' | 'plans'>('dash');
   const [editing, setEditing] = useState(false);
   const [layout, setLayout] = useState<Item[]>(DEFAULT_LAYOUT);
+  const [baseline, setBaseline] = useState<Item[]>(DEFAULT_LAYOUT);
   const nextKey = useRef(0);
   const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -402,11 +405,11 @@ export const CustomizableDashboardPage = () => {
   const cancel = () => {
     if (dirty) { setModal('leave'); return; }
     setEditing(false);
-    setLayout(DEFAULT_LAYOUT);
+    setLayout(baseline);
   };
   const discard = () => {
     setModal(null); setEditing(false); setDirty(false); setSaved(false);
-    setLayout(DEFAULT_LAYOUT);
+    setLayout(baseline);
     setToast('Changes discarded.');
   };
   const addWidget = (id: WidgetId) => {
@@ -416,9 +419,15 @@ export const CustomizableDashboardPage = () => {
     setFlash([key]);
     window.setTimeout(() => setFlash([]), 1400);
     setDirty(true);
-    setToast(`${DEFS[id].title} added to your preview. Upgrade to save it.`);
+    setToast(UPGRADE_FLOW ? `${DEFS[id].title} added to your preview. Upgrade to save it.` : `${DEFS[id].title} added to your dashboard.`);
   };
   const upgrade = () => { setModal(null); setScreen('plans'); };
+  const save = () => {
+    setBaseline(layout); setModal(null); setEditing(false); setDirty(false); setSaved(true);
+    setToast('Dashboard saved.');
+  };
+  const primaryAction = UPGRADE_FLOW ? upgrade : save;
+  const primaryLabel = UPGRADE_FLOW ? 'Upgrade to save' : 'Save changes';
   const choosePlan = () => {
     setScreen('dash'); setEditing(false); setModal(null); setDirty(false); setSaved(true);
     setToast('Dashboard saved.');
@@ -474,13 +483,13 @@ export const CustomizableDashboardPage = () => {
         ) : (
           <>
             <div className="cd-bar">
-              {editing && <span className="cd-tag">Preview</span>}
+              {editing && UPGRADE_FLOW && <span className="cd-tag">Preview</span>}
               <div className="cd-bar__actions">
                 {editing ? (
                   <>
                     <Button hierarchy="secondary-neutral" onClick={cancel}>Cancel</Button>
                     <Button hierarchy="secondary" onClick={openLibrary}>{`Widget library (${available})`}</Button>
-                    <Button hierarchy="primary" onClick={upgrade}>Upgrade to save</Button>
+                    <Button hierarchy="primary" onClick={primaryAction}>{primaryLabel}</Button>
                   </>
                 ) : (
                   <Button hierarchy="primary" onClick={customize}>Customize</Button>
@@ -490,12 +499,14 @@ export const CustomizableDashboardPage = () => {
 
             {editing && editBanner && (
               <Banner type="info" onClose={() => setEditBanner(false)}>
-                <strong>Preview mode.</strong> Add widgets from the library, rearrange, and resize to see how your dashboard could look. Saving your layout requires a paid plan.
+                {UPGRADE_FLOW
+                  ? <><strong>Preview mode.</strong> Add widgets from the library, rearrange, and resize to see how your dashboard could look. Saving your layout requires a paid plan.</>
+                  : <><strong>Customizing your dashboard.</strong> Add widgets from the library, rearrange, and resize them, then save your changes.</>}
               </Banner>
             )}
             {!editing && !saved && homeBanner && (
               <Banner type="info" onClose={() => setHomeBanner(false)}>
-                <strong>Customize your dashboard.</strong> {`Select from ${ALL_IDS.length} different widgets covering delivery, engagement, domains and more, then rearrange and resize them. Try it in preview mode.`}
+                <strong>Customize your dashboard.</strong> {`Select from ${ALL_IDS.length} different widgets covering delivery, engagement, domains and more, then rearrange and resize them.${UPGRADE_FLOW ? ' Try it in preview mode.' : ''}`}
               </Banner>
             )}
 
@@ -572,12 +583,14 @@ export const CustomizableDashboardPage = () => {
             <>
               <Button hierarchy="tertiary" onClick={discard}>Discard changes</Button>
               <Button hierarchy="secondary" onClick={() => setModal(null)}>Keep editing</Button>
-              <Button hierarchy="primary" onClick={upgrade}>Upgrade to save</Button>
+              <Button hierarchy="primary" onClick={primaryAction}>{primaryLabel}</Button>
             </>
           }
         >
           <h2 className="cd-leave__t">Leave without saving?</h2>
-          <p className="cd-leave__p">Your preview layout can’t be saved on the Free plan, so your changes will be discarded. You can upgrade to keep it.</p>
+          <p className="cd-leave__p">{UPGRADE_FLOW
+            ? 'Your preview layout can’t be saved on the Free plan, so your changes will be discarded. You can upgrade to keep it.'
+            : 'Your changes will be discarded if you leave without saving.'}</p>
         </Modal>
       )}
 
