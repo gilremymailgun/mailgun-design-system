@@ -183,7 +183,11 @@
       whatScoresMeanHref: '#',
       /* Button when the score is ready */
       cta: { label: 'See full report', action: 'view-health-score' },
-      ctaNew: { label: 'Review email health score report', action: 'view-health-score' }, /* new look */
+      /* New look: the CTA depends on the score band (Healthy / At risk / Requires attention). */
+      ctaNew: {
+        action: 'view-health-score',
+        labels: { healthy: 'Keep your score healthy', risk: 'Improve your score', attention: 'Fix your score' }
+      },
       /* Button when the score is not ready yet */
       ctaNone: { label: 'Go to Email health score', action: 'go-to-health-score' }
     }
@@ -603,7 +607,7 @@
       '<div class="gs-panel gs-panel--health" id="gs-panel" role="region" aria-label="' + esc(title) + '">' +
         panelHeader(title, hs.description, hs.duration) +
         (ready
-          ? scoreCard(hs.actual, hs, false) + primaryButton(previousStyle ? hs.cta : hs.ctaNew, 'cta-health')
+          ? scoreCard(hs.actual, hs, false) + primaryButton(previousStyle ? hs.cta : { label: hs.ctaNew.labels[bandFor(hs.actual.score)], action: hs.ctaNew.action }, 'cta-health')
           : tracker(hs) + reveal(hs) + (previousStyle ? primaryButton(hs.ctaNone, 'cta-health-none') : '')) +
       '</div>'
     );
