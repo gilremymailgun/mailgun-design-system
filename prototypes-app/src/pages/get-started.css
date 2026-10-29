@@ -1485,3 +1485,10 @@
 .gs:not(.gs--previous) .gs-example--health .gs-legend-row {
   margin-top: 8px;
 }
+
+/* Real-time score timestamp: a .gs-tag badge on the right side of the legend row (ready state, new styling) */
+.gs:not(.gs--previous) .gs-score__time {
+  position: static;
+  margin-left: auto;
+  white-space: nowrap;
+}
