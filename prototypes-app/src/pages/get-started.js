@@ -183,7 +183,7 @@
       whatScoresMeanHref: '#',
       /* Button when the score is ready */
       cta: { label: 'See full report', action: 'view-health-score' },
-      ctaNew: { label: 'Review full email health score report', action: 'view-health-score' }, /* new look */
+      ctaNew: { label: 'Review email health score report', action: 'view-health-score' }, /* new look */
       /* Button when the score is not ready yet */
       ctaNone: { label: 'Go to Email health score', action: 'go-to-health-score' }
     }
