@@ -845,6 +845,13 @@
   max-width: none;
   align-items: center;
   padding-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+/* Rows of tiles are 8px apart, the same as the gaps between the tiles in a row. The 8px under
+   the divider above keeps the divider-to-tiles space at 16px. */
+.gs-example--dashed {
+  gap: 8px;
 }
 
 .gs-example--dashed .gs-example__text {
