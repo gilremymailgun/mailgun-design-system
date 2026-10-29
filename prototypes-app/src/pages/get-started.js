@@ -65,6 +65,7 @@
 
     /* Step 1: inbox placement test --------------------------------------- */
     placement: {
+      doneLabel: 'Run a placement test', /* step label after the test is run (new look) */
       title: 'Check where your emails will land before you send',
       description: 'Inbox placement tests show whether your email reaches the inbox, promotions, or spam.',
       exampleTitle: 'Example results',
@@ -619,6 +620,8 @@
       var copy = {};
       Object.keys(st).forEach(function (k) { copy[k] = st[k]; });
       copy.done = !!st.done || (state.autoComplete && i < activeIndex);
+      /* New look: once the placement test is done, the step reads "Run a placement test". */
+      if (!previousStyle && st.id === 'placement' && copy.done) copy.label = state.placement.doneLabel;
       return copy;
     });
 
