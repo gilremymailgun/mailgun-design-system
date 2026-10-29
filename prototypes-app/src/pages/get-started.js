@@ -683,7 +683,7 @@
             (s.id === state.activeStep ? ' aria-current="true"' : '') + '>' +
             '<span class="gs-step__icon">' + (s.done ? DONE_ICON : icon(s.icon, 20)) + '</span>' +
             '<span class="gs-step__label">' + esc(s.label) + (s.done ? '<span class="gs-sr"> (completed)</span>' : '') + '</span>' +
-            (s.duration ? '<span class="gs-badge gs-step__duration">' + esc(s.duration) + '</span>' : '') +
+            (s.duration && (previousStyle || !s.done) ? '<span class="gs-badge gs-step__duration">' + esc(s.duration) + '</span>' : '') +
           '</button></li>'
         );
       }).join('') +
