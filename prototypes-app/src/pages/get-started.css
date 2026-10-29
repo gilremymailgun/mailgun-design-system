@@ -844,12 +844,13 @@
 .gs-example--dashed .gs-example__top {
   max-width: none;
   align-items: center;
-  padding-bottom: 16px;
+  /* No divider above the tiles: 16px from the score block to the first row (8px here + 8px gap). */
+  border-bottom: 0;
+  padding-bottom: 0;
   margin-bottom: 8px;
 }
 
-/* Rows of tiles are 8px apart, the same as the gaps between the tiles in a row. The 8px under
-   the divider above keeps the divider-to-tiles space at 16px. */
+/* Rows of tiles are 8px apart, the same as the gaps between the tiles in a row. */
 .gs-example--dashed {
   gap: 8px;
 }
