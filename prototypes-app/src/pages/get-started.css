@@ -801,7 +801,8 @@
 }
 
 .gs-example--dashed {
-  border: 1px dashed var(--gs-border-subtle);
+  border: 1px dashed var(--sys-color-border-default);
+  background: none;
 }
 
 .gs-example__intro {
