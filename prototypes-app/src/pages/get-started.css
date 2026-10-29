@@ -892,7 +892,7 @@
   padding: 8px 16px;
   border: 1px solid var(--gs-border-subtle);
   border-radius: var(--gs-radius-s);
-  background: #ffffff;
+  background: var(--sys-color-surface-canvas-default);
   text-align: left;
   font: inherit;
   line-height: inherit;
