@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Page } from '@ds/patterns/Page/Page';
 import { Tabs } from '@ds/components/Tabs/Tabs';
 import { Icon } from '@ds/icons/Icon';
+import '@ds/components/Badge/Badge.css';
 
 const tabs = [
   { id: 'send', label: 'Send' },

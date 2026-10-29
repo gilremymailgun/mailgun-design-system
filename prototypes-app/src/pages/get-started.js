@@ -502,7 +502,9 @@
     var d = at ? new Date(at) : new Date();
     if (isNaN(d.getTime())) d = new Date();
     var text = d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-    return '<time class="gs-tag gs-score__time" datetime="' + d.toISOString() + '">Updated ' + esc(text) + '</time>';
+    /* Same markup as the design system Badge (outline configuration) */
+    return '<div class="mg-badge mg-badge--outline gs-score__time"><span class="mg-badge__text">' +
+      '<time datetime="' + d.toISOString() + '">Updated ' + esc(text) + '</time></span></div>';
   }
 
   function scoreCard(data, hs, isExample) {
