@@ -1459,7 +1459,8 @@
   background: none;
 }
 
-/* Health score step, not-ready state: the "isn't ready yet" container has no grey fill. */
+/* Health score step, not-ready state: the "isn't ready yet" container has no grey fill and no padding. */
 .gs:not(.gs--previous) .gs-pbox {
   background: none;
+  padding: 0;
 }
