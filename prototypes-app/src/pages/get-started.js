@@ -496,6 +496,15 @@
     );
   }
 
+  /* The ready-state score is calculated in real time, so it carries a timestamp in the legend row (new look only; the "What scores mean" link is previous-look only).
+     options.healthScore.updatedAt (Date or ISO string) overrides "now". */
+  function timestamp(at) {
+    var d = at ? new Date(at) : new Date();
+    if (isNaN(d.getTime())) d = new Date();
+    var text = d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    return '<time class="gs-tag gs-score__time" datetime="' + d.toISOString() + '">Updated ' + esc(text) + '</time>';
+  }
+
   function scoreCard(data, hs, isExample) {
     var band = bandFor(data.score);
     var total = data.metrics.reduce(function (a, m) { return a + m.value; }, 0) || 1;
@@ -548,7 +557,9 @@
         (isExample ? '<hr class="gs-hr">' : '') +
         '<div class="gs-legend-row">' +
           legend(band, hs.highlightBand) +
-          '<a class="gs-link" href="' + esc(hs.whatScoresMeanHref) + '">What scores mean</a>' +
+          (previousStyle
+            ? '<a class="gs-link" href="' + esc(hs.whatScoresMeanHref) + '">What scores mean</a>'
+            : (isExample ? '' : timestamp(hs.updatedAt))) +
         '</div>' +
       '</div>'
     );
