@@ -1464,3 +1464,22 @@
   background: none;
   padding: 0;
 }
+
+/* The two sample-data containers (placement example, "What a score looks like") share the same
+   spacing: 16px container padding, 8px gaps, the sample badge and ring inset 16px from the top,
+   text centred against the ring, and 16px either side of a divider. */
+.gs:not(.gs--previous) .gs-example--health .gs-score {
+  padding: 16px 16px 0;
+}
+
+.gs:not(.gs--previous) .gs-example--health .gs-example__top {
+  align-items: center;
+}
+
+.gs:not(.gs--previous) .gs-example--health .gs-example__text {
+  align-self: center;
+}
+
+.gs:not(.gs--previous) .gs-example--health .gs-legend-row {
+  margin-top: 8px;
+}
