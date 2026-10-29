@@ -65,7 +65,7 @@
 
     /* Step 1: inbox placement test --------------------------------------- */
     placement: {
-      doneLabel: 'Run a placement test', /* step label after the test is run (new look) */
+      ctaDone: 'Run a placement test', /* new look: button label once the test has been run */
       title: 'Check where your emails will land before you send',
       description: 'Inbox placement tests show whether your email reaches the inbox, promotions, or spam.',
       exampleTitle: 'Example results',
@@ -403,7 +403,7 @@
     );
   }
 
-  function renderPlacement(p, open) {
+  function renderPlacement(p, open, done) {
     open = open || {};
     var inbox = p.segments.filter(function (s) { return s.key === 'inbox'; })[0] || p.segments[0];
 
@@ -457,7 +457,7 @@
         '</div>' +
         '<div class="gs-actions">' +
           '<button type="button" class="gs-btn gs-btn--primary" data-action="' + esc(p.cta.action) +
-            '" data-focus-key="cta-placement">' + esc(p.cta.label) + '</button>' +
+            '" data-focus-key="cta-placement">' + esc(!previousStyle && done ? p.ctaDone : p.cta.label) + '</button>' +
         '</div>' +
       '</div>'
     );
@@ -621,8 +621,6 @@
       var copy = {};
       Object.keys(st).forEach(function (k) { copy[k] = st[k]; });
       copy.done = !!st.done || (state.autoComplete && i < activeIndex);
-      /* New look: once the placement test is done, the step reads "Run a placement test". */
-      if (!previousStyle && st.id === 'placement' && copy.done) copy.label = state.placement.doneLabel;
       return copy;
     });
 
@@ -701,7 +699,7 @@
         '<div class="gs-panel"><p class="gs-empty">' + esc(tab.label) + ' steps go here.</p></div></div></div>';
     }
 
-    var panel = state.activeStep === 'health' ? renderHealth(state.healthScore) : renderPlacement(state.placement, state.openTiles);
+    var panel = state.activeStep === 'health' ? renderHealth(state.healthScore) : renderPlacement(state.placement, state.openTiles, state.steps.some(function (st) { return st.id === 'placement' && st.done; }));
     return '<div class="gs-body">' + renderSteps(state, steps) + '<div class="gs-panel-col">' + panel + '</div></div>';
   }
 
