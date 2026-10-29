@@ -6,6 +6,12 @@
      GetStarted.mount('#get-started-root');
      GetStarted.mount(element, { activeStep: 'health', healthScore: { state: 'ready' } });
 
+   Styling switch (works the same way): the placement test example has a new look by default.
+     /prototypes/?style=previous#/get-started     the look that was live before (title inside the
+                                                  box, divider, section headings, white tiles)
+     /prototypes/?style=new#/get-started          the new look (same as no parameter)
+   In code: GetStarted.mount(el, { style: 'previous' }).
+
    Demo shortcut (works with hash routing because it uses the real query string):
      /prototypes/?healthScore=ready#/get-started
      /prototypes/?healthScore=none#/get-started
@@ -27,6 +33,9 @@
   /* ------------------------------------------------------------------------
      Content + data. Everything the page shows lives here.
      ------------------------------------------------------------------------ */
+
+  /* Set in mount() from ?style=previous. */
+  var previousStyle = false;
 
   var DEFAULTS = {
     guide: {
@@ -58,7 +67,10 @@
     placement: {
       title: 'Check where your emails will land before you send',
       description: 'Inbox placement tests show whether your email reaches the inbox, promotions, or spam.',
-      exampleHint: 'Example results below. Run a test to see your own scores.',
+      exampleTitle: 'Example results',
+      exampleHint: 'Run a test to see your own results.',
+      /* New look: one line above the box instead of a title inside it. */
+      exampleHintAbove: 'Example results below. Run a test to see your own scores.',
       sampleLabel: 'Sample data',
       segments: [
         { key: 'inbox', label: 'Inbox', value: 69.92, color: 'var(--gs-success)' },
@@ -405,8 +417,15 @@
     return (
       '<div class="gs-panel gs-panel--placement" id="gs-panel" role="region" aria-label="' + esc(p.title) + '">' +
         panelHeader(p.title, p.description) +
-        '<p class="gs-example__hint gs-example__hint--above">' + esc(p.exampleHint) + '</p>' +
+        (previousStyle ? '' : '<p class="gs-example__hint gs-example__hint--above">' + esc(p.exampleHintAbove) + '</p>') +
         '<div class="gs-example gs-example--dashed">' +
+          (previousStyle ? (
+            '<div class="gs-example__intro">' +
+              '<p class="gs-example__label">' + esc(p.exampleTitle) + '</p>' +
+              '<p class="gs-example__hint">' + esc(p.exampleHint) + '</p>' +
+            '</div>' +
+            '<hr class="gs-hr">'
+          ) : '') +
           '<div class="gs-example__top">' +
             '<div class="gs-score">' +
               '<div class="gs-ring">' +
@@ -743,7 +762,10 @@
 
     state.openTiles = { spam: null, auth: null };
 
+    previousStyle = ((options && options.style) || params.get('style')) === 'previous';
+
     root.classList.add('gs');
+    root.classList.toggle('gs--previous', previousStyle);
 
     function emit(action, extra) {
       var detail = { action: action };
