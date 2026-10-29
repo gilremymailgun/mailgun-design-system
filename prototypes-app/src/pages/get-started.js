@@ -17,7 +17,7 @@
      /prototypes/?healthScore=none#/get-started
      Guide completion starts at 5/7 (the five Send steps). It goes up only when an Optimize
      step is completed: "Run your first test" completes step 1 and opens step 2, and seeing the actual score
-     (healthScore.state 'ready') completes step 2. The not-ready version never completes it.
+     (healthScore.state 'ready') completes step 2 (new look: clicking "See full report" completes it). The not-ready version never completes it.
 
    Events: the root element fires a bubbling "gs:action" CustomEvent for every
    button that should do something in your app. Read event.detail.action.
@@ -787,7 +787,9 @@
     function render(focusKey, animate) {
       /* The health score step completes once the user is looking at their actual score.
          It never completes in the "not ready yet" version. */
-      if (state.activeTab === 'optimize' && state.activeStep === 'health' && state.healthScore.state === 'ready') {
+      /* New look: the step is not complete just because the score is on screen. It completes when
+         the user clicks the "See full report" button (see the click handler). */
+      if (previousStyle && state.activeTab === 'optimize' && state.activeStep === 'health' && state.healthScore.state === 'ready') {
         markDone('health');
       }
       var view = computeView(state);
@@ -869,6 +871,9 @@
           markDone('placement');
           state.activeStep = 'health';
           render('step-health', true);
+        } else if (action === 'view-health-score' && !previousStyle) {
+          markDone('health');
+          render(focusKey, false);
         }
         emit(action);
       }
