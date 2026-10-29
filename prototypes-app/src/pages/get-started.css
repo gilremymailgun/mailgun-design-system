@@ -1448,3 +1448,8 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* The example line sits 8px above the dashed box (the placement panel's own gap is 24px). */
+.gs:not(.gs--previous) .gs-example__hint--above {
+  margin-bottom: -16px;
+}
