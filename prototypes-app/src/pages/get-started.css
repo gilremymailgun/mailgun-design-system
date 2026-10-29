@@ -844,10 +844,7 @@
 .gs-example--dashed .gs-example__top {
   max-width: none;
   align-items: center;
-  /* Equal visible space above and below the divider: 16px under the content, and the next
-     heading's 24px line box adds ~3px above its text, so pull the divider that much closer. */
   padding-bottom: 16px;
-  margin-bottom: -3px;
 }
 
 .gs-example--dashed .gs-example__text {
@@ -922,8 +919,16 @@
   gap: 0;
 }
 
+/* The group headings ("Spam scoring", "Authentication") are hidden for now. They stay in the
+   DOM, visually hidden, so screen readers still get them. */
 .gs-group__head {
-  margin-bottom: 8px;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .gs-detail {

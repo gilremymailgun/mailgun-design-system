@@ -377,7 +377,7 @@
       '</div>';
 
     return (
-      '<div class="gs-group">' +
+      '<div class="gs-group" role="group" aria-label="' + esc(g.title) + '">' +
         '<div class="gs-group__head">' +
           '<p class="gs-group__title">' + esc(g.title) + '</p>' +
           (g.hint ? '<p class="gs-group__hint">' + esc(g.hint) + '</p>' : '') +
