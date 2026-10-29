@@ -58,7 +58,6 @@
     placement: {
       title: 'Check where your emails will land before you send',
       description: 'Inbox placement tests show whether your email reaches the inbox, promotions, or spam.',
-      exampleTitle: 'Example results',
       exampleHint: 'Run a test to see your own results.',
       sampleLabel: 'Sample data',
       segments: [
@@ -408,7 +407,6 @@
         panelHeader(p.title, p.description) +
         '<div class="gs-example gs-example--dashed">' +
           '<div class="gs-example__intro">' +
-            '<p class="gs-example__label">' + esc(p.exampleTitle) + '</p>' +
             '<p class="gs-example__hint">' + esc(p.exampleHint) + '</p>' +
           '</div>' +
           '<hr class="gs-hr">' +
