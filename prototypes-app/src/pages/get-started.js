@@ -183,6 +183,7 @@
       whatScoresMeanHref: '#',
       /* Button when the score is ready */
       cta: { label: 'See full report', action: 'view-health-score' },
+      ctaNew: { label: 'Review full email health score report', action: 'view-health-score' }, /* new look */
       /* Button when the score is not ready yet */
       ctaNone: { label: 'Go to Email health score', action: 'go-to-health-score' }
     }
@@ -602,7 +603,7 @@
       '<div class="gs-panel gs-panel--health" id="gs-panel" role="region" aria-label="' + esc(title) + '">' +
         panelHeader(title, hs.description, hs.duration) +
         (ready
-          ? scoreCard(hs.actual, hs, false) + primaryButton(hs.cta, 'cta-health')
+          ? scoreCard(hs.actual, hs, false) + primaryButton(previousStyle ? hs.cta : hs.ctaNew, 'cta-health')
           : tracker(hs) + reveal(hs) + (previousStyle ? primaryButton(hs.ctaNone, 'cta-health-none') : '')) +
       '</div>'
     );
