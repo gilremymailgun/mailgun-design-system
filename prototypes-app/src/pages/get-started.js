@@ -602,7 +602,7 @@
         panelHeader(title, hs.description, hs.duration) +
         (ready
           ? scoreCard(hs.actual, hs, false) + primaryButton(hs.cta, 'cta-health')
-          : tracker(hs) + reveal(hs) + primaryButton(hs.ctaNone, 'cta-health-none')) +
+          : tracker(hs) + reveal(hs) + (previousStyle ? primaryButton(hs.ctaNone, 'cta-health-none') : '')) +
       '</div>'
     );
   }
