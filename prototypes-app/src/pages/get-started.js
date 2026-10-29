@@ -11,6 +11,8 @@
                                                   box, divider, section headings, white tiles)
      /prototypes/?style=new#/get-started          the new look (same as no parameter)
    In code: GetStarted.mount(el, { style: 'previous' }).
+   New look only: the ready-state score is random on every load (all three bands). Pin it with
+     /prototypes/?score=88#/get-started   (try 88, 78 or 50).
 
    Demo shortcut (works with hash routing because it uses the real query string):
      /prototypes/?healthScore=ready#/get-started
@@ -183,7 +185,11 @@
       whatScoresMeanHref: '#',
       /* Button when the score is ready */
       cta: { label: 'See full report', action: 'view-health-score' },
-      ctaNew: { label: 'Review email health score report', action: 'view-health-score' }, /* new look */
+      /* New look: the CTA depends on the score band (Healthy / At risk / Requires attention). */
+      ctaNew: {
+        action: 'view-health-score',
+        labels: { healthy: 'Keep your score healthy', risk: 'Improve your score', attention: 'Fix your score' }
+      },
       /* Button when the score is not ready yet */
       ctaNone: { label: 'Go to Email health score', action: 'go-to-health-score' }
     }
@@ -195,6 +201,13 @@
     risk: { name: 'At risk', range: '70\u201385', color: 'var(--gs-band-risk)' },
     attention: { name: 'Requires attention', range: '<70', color: 'var(--gs-band-attention)' }
   };
+
+  /* Pick a band first so each one comes up equally often, then a score inside it. */
+  function randomScore() {
+    var ranges = [[86, 99], [70, 85], [20, 69]];
+    var r = ranges[Math.floor(Math.random() * ranges.length)];
+    return r[0] + Math.floor(Math.random() * (r[1] - r[0] + 1));
+  }
 
   function bandFor(score) {
     if (score > 85) return 'healthy';
@@ -603,7 +616,7 @@
       '<div class="gs-panel gs-panel--health" id="gs-panel" role="region" aria-label="' + esc(title) + '">' +
         panelHeader(title, hs.description, hs.duration) +
         (ready
-          ? scoreCard(hs.actual, hs, false) + primaryButton(previousStyle ? hs.cta : hs.ctaNew, 'cta-health')
+          ? scoreCard(hs.actual, hs, false) + primaryButton(previousStyle ? hs.cta : { label: hs.ctaNew.labels[bandFor(hs.actual.score)], action: hs.ctaNew.action }, 'cta-health')
           : tracker(hs) + reveal(hs) + (previousStyle ? primaryButton(hs.ctaNone, 'cta-health-none') : '')) +
       '</div>'
     );
@@ -766,6 +779,17 @@
     state.openTiles = { spam: null, auth: null };
 
     previousStyle = ((options && options.style) || params.get('style')) === 'previous';
+
+    /* New look: the ready-state score is random on every load, so reloading walks through the three
+       bands (Healthy, At risk, Requires attention). ?score=NN pins it, and options.healthScore.actual.score
+       also wins. The previous look keeps the fixed score. */
+    var pinned = options && options.healthScore && options.healthScore.actual && options.healthScore.actual.score != null;
+    if (!previousStyle && !pinned) {
+      var wanted = params.get('score');
+      state.healthScore.actual.score = wanted !== null && wanted !== '' && isFinite(Number(wanted))
+        ? Math.max(0, Math.min(100, Math.round(Number(wanted))))
+        : randomScore();
+    }
 
     root.classList.add('gs');
     root.classList.toggle('gs--previous', previousStyle);
