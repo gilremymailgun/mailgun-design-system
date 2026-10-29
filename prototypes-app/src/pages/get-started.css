@@ -1407,3 +1407,44 @@
     align-items: center;
   }
 }
+
+
+/* ==========================================================================
+   New look for the placement test example (default). ?style=previous on the URL puts the
+   root in .gs--previous, which skips everything below and shows the earlier look.
+   ========================================================================== */
+
+/* Dashed box: default border color, no fill. */
+.gs:not(.gs--previous) .gs-example--dashed {
+  border: 1px dashed var(--sys-color-border-default);
+  background: none;
+  /* Rows of tiles are 8px apart, the same as the gaps between the tiles in a row. */
+  gap: 8px;
+}
+
+/* No divider above the tiles: 16px from the score block to the first row (8px here + 8px gap). */
+.gs:not(.gs--previous) .gs-example--dashed .gs-example__top {
+  border-bottom: 0;
+  padding-bottom: 0;
+  margin-bottom: 8px;
+}
+
+.gs:not(.gs--previous) .gs-example--dashed .gs-score {
+  padding-bottom: 0;
+}
+
+/* Clickable tiles use the canvas surface. */
+.gs:not(.gs--previous) .gs-tile {
+  background: var(--sys-color-surface-canvas-default);
+}
+
+/* The group headings ("Spam scoring", "Authentication") are hidden but kept for screen readers. */
+.gs:not(.gs--previous) .gs-group__head {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
