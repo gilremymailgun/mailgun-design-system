@@ -113,7 +113,8 @@
       state: 'none', /* 'none' = not enough sends yet, 'ready' = user has a score */
       titles: {
         none: 'Your email health score',
-        ready: 'Your email health score is ready'
+        ready: 'Your email health score is ready',
+        readyNew: 'Your email health score' /* new look: same title in both states */
       },
       description:
         'A real-time 0 to 100 score of your sending activity, so you can spot and fix deliverability issues before they affect your reputation.',
@@ -504,7 +505,7 @@
 
     return (
       '<div class="gs-example' + (isExample ? ' gs-example--dashed gs-example--health' : ' gs-example--actual') + '">' +
-        (isExample ? '' : '<p class="gs-example__label">' + esc(hs.actualLabel) + '</p>') +
+        (isExample || !previousStyle ? '' : '<p class="gs-example__label">' + esc(hs.actualLabel) + '</p>') +
         '<div class="gs-example__top">' +
           '<div class="gs-score">' +
             '<div class="gs-ring">' +
@@ -594,7 +595,7 @@
 
   function renderHealth(hs) {
     var ready = hs.state === 'ready';
-    var title = ready ? hs.titles.ready : hs.titles.none;
+    var title = ready ? (previousStyle ? hs.titles.ready : hs.titles.readyNew) : hs.titles.none;
 
     return (
       '<div class="gs-panel gs-panel--health" id="gs-panel" role="region" aria-label="' + esc(title) + '">' +
