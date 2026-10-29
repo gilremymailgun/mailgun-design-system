@@ -1458,3 +1458,8 @@
 .gs:not(.gs--previous) .gs-example--actual {
   background: none;
 }
+
+/* Health score step, not-ready state: the "isn't ready yet" container has no grey fill. */
+.gs:not(.gs--previous) .gs-pbox {
+  background: none;
+}
