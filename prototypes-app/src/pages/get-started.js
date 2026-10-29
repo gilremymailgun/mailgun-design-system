@@ -17,7 +17,7 @@
      /prototypes/?healthScore=none#/get-started
      Guide completion starts at 5/7 (the five Send steps). It goes up only when an Optimize
      step is completed: "Run your first test" completes step 1 and opens step 2, and seeing the actual score
-     (healthScore.state 'ready') completes step 2. The not-ready version never completes it.
+     (healthScore.state 'ready') completes step 2 (new look: clicking "See full report" completes it). The not-ready version never completes it.
 
    Events: the root element fires a bubbling "gs:action" CustomEvent for every
    button that should do something in your app. Read event.detail.action.
@@ -65,6 +65,7 @@
 
     /* Step 1: inbox placement test --------------------------------------- */
     placement: {
+      doneLabel: 'Run a placement test', /* step label after the test is run (new look) */
       title: 'Check where your emails will land before you send',
       description: 'Inbox placement tests show whether your email reaches the inbox, promotions, or spam.',
       exampleTitle: 'Example results',
@@ -113,7 +114,8 @@
       state: 'none', /* 'none' = not enough sends yet, 'ready' = user has a score */
       titles: {
         none: 'Your email health score',
-        ready: 'Your email health score is ready'
+        ready: 'Your email health score is ready',
+        readyNew: 'Your email health score' /* new look: same title in both states */
       },
       description:
         'A real-time 0 to 100 score of your sending activity, so you can spot and fix deliverability issues before they affect your reputation.',
@@ -181,6 +183,7 @@
       whatScoresMeanHref: '#',
       /* Button when the score is ready */
       cta: { label: 'See full report', action: 'view-health-score' },
+      ctaNew: { label: 'Review email health score report', action: 'view-health-score' }, /* new look */
       /* Button when the score is not ready yet */
       ctaNone: { label: 'Go to Email health score', action: 'go-to-health-score' }
     }
@@ -503,8 +506,8 @@
     }
 
     return (
-      '<div class="gs-example' + (isExample ? ' gs-example--dashed gs-example--health' : '') + '">' +
-        (isExample ? '' : '<p class="gs-example__label">' + esc(hs.actualLabel) + '</p>') +
+      '<div class="gs-example' + (isExample ? ' gs-example--dashed gs-example--health' : ' gs-example--actual') + '">' +
+        (isExample || !previousStyle ? '' : '<p class="gs-example__label">' + esc(hs.actualLabel) + '</p>') +
         '<div class="gs-example__top">' +
           '<div class="gs-score">' +
             '<div class="gs-ring">' +
@@ -594,14 +597,14 @@
 
   function renderHealth(hs) {
     var ready = hs.state === 'ready';
-    var title = ready ? hs.titles.ready : hs.titles.none;
+    var title = ready ? (previousStyle ? hs.titles.ready : hs.titles.readyNew) : hs.titles.none;
 
     return (
       '<div class="gs-panel gs-panel--health" id="gs-panel" role="region" aria-label="' + esc(title) + '">' +
         panelHeader(title, hs.description, hs.duration) +
         (ready
-          ? scoreCard(hs.actual, hs, false) + primaryButton(hs.cta, 'cta-health')
-          : tracker(hs) + reveal(hs) + primaryButton(hs.ctaNone, 'cta-health-none')) +
+          ? scoreCard(hs.actual, hs, false) + primaryButton(previousStyle ? hs.cta : hs.ctaNew, 'cta-health')
+          : tracker(hs) + reveal(hs) + (previousStyle ? primaryButton(hs.ctaNone, 'cta-health-none') : '')) +
       '</div>'
     );
   }
@@ -618,6 +621,8 @@
       var copy = {};
       Object.keys(st).forEach(function (k) { copy[k] = st[k]; });
       copy.done = !!st.done || (state.autoComplete && i < activeIndex);
+      /* New look: once the placement test is done, the step reads "Run a placement test". */
+      if (!previousStyle && st.id === 'placement' && copy.done) copy.label = state.placement.doneLabel;
       return copy;
     });
 
@@ -783,7 +788,9 @@
     function render(focusKey, animate) {
       /* The health score step completes once the user is looking at their actual score.
          It never completes in the "not ready yet" version. */
-      if (state.activeTab === 'optimize' && state.activeStep === 'health' && state.healthScore.state === 'ready') {
+      /* New look: the step is not complete just because the score is on screen. It completes when
+         the user clicks the "See full report" button (see the click handler). */
+      if (previousStyle && state.activeTab === 'optimize' && state.activeStep === 'health' && state.healthScore.state === 'ready') {
         markDone('health');
       }
       var view = computeView(state);
@@ -865,6 +872,9 @@
           markDone('placement');
           state.activeStep = 'health';
           render('step-health', true);
+        } else if (action === 'view-health-score' && !previousStyle) {
+          markDone('health');
+          render(focusKey, false);
         }
         emit(action);
       }
