@@ -844,6 +844,10 @@
 .gs-example--dashed .gs-example__top {
   max-width: none;
   align-items: center;
+  /* Equal visible space above and below the divider: 16px under the content, and the next
+     heading's 24px line box adds ~3px above its text, so pull the divider that much closer. */
+  padding-bottom: 16px;
+  margin-bottom: -3px;
 }
 
 .gs-example--dashed .gs-example__text {
@@ -852,7 +856,7 @@
 }
 
 .gs-example--dashed .gs-score {
-  padding-bottom: 16px;
+  padding-bottom: 0;
 }
 
 .gs-group {
