@@ -58,7 +58,7 @@
     placement: {
       title: 'Check where your emails will land before you send',
       description: 'Inbox placement tests show whether your email reaches the inbox, promotions, or spam.',
-      exampleHint: 'Run a test to see your own results.',
+      exampleHint: 'This is an example. Run a test to see your own results.',
       sampleLabel: 'Sample data',
       segments: [
         { key: 'inbox', label: 'Inbox', value: 69.92, color: 'var(--gs-success)' },
