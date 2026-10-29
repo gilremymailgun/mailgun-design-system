@@ -405,11 +405,8 @@
     return (
       '<div class="gs-panel gs-panel--placement" id="gs-panel" role="region" aria-label="' + esc(p.title) + '">' +
         panelHeader(p.title, p.description) +
+        '<p class="gs-example__hint gs-example__hint--above">' + esc(p.exampleHint) + '</p>' +
         '<div class="gs-example gs-example--dashed">' +
-          '<div class="gs-example__intro">' +
-            '<p class="gs-example__hint">' + esc(p.exampleHint) + '</p>' +
-          '</div>' +
-          '<hr class="gs-hr">' +
           '<div class="gs-example__top">' +
             '<div class="gs-score">' +
               '<div class="gs-ring">' +
