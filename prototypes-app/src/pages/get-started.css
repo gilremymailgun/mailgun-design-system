@@ -1453,3 +1453,8 @@
 .gs:not(.gs--previous) .gs-example__hint--above {
   margin-bottom: -16px;
 }
+
+/* Health score step, ready state: the "Your score" container has no grey fill. */
+.gs:not(.gs--previous) .gs-example--actual {
+  background: none;
+}

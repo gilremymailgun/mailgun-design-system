@@ -503,7 +503,7 @@
     }
 
     return (
-      '<div class="gs-example' + (isExample ? ' gs-example--dashed gs-example--health' : '') + '">' +
+      '<div class="gs-example' + (isExample ? ' gs-example--dashed gs-example--health' : ' gs-example--actual') + '">' +
         (isExample ? '' : '<p class="gs-example__label">' + esc(hs.actualLabel) + '</p>') +
         '<div class="gs-example__top">' +
           '<div class="gs-score">' +
