@@ -209,6 +209,19 @@
     return r[0] + Math.floor(Math.random() * (r[1] - r[0] + 1));
   }
 
+  /* Splits `total` across the metrics in proportion to their current values (largest remainder),
+     so the parts add up exactly to `total`. */
+  function rescaleMetrics(metrics, total) {
+    var sum = metrics.reduce(function (a, m) { return a + m.value; }, 0) || 1;
+    var raw = metrics.map(function (m) { return (m.value * total) / sum; });
+    var parts = raw.map(Math.floor);
+    var rest = total - parts.reduce(function (a, b) { return a + b; }, 0);
+    raw.map(function (x, i) { return [x - parts[i], i]; })
+      .sort(function (a, b) { return b[0] - a[0] || a[1] - b[1]; })
+      .forEach(function (pair) { if (rest > 0) { parts[pair[1]] += 1; rest -= 1; } });
+    return metrics.map(function (m, i) { return { label: m.label, value: parts[i] }; });
+  }
+
   function bandFor(score) {
     if (score > 85) return 'healthy';
     if (score >= 70) return 'risk';
@@ -507,10 +520,14 @@
       '<time datetime="' + d.toISOString() + '">Updated ' + esc(text) + '</time></span></div>';
   }
 
+  var BAR_MAX_POINTS = 20;
+
   function scoreCard(data, hs, isExample) {
     var band = bandFor(data.score);
     var total = data.metrics.reduce(function (a, m) { return a + m.value; }, 0) || 1;
-    var scale = data.barMax || total; /* example: value / barMax, actual: share of total */
+    /* New look: one fixed scale for both cards, a full bar = BAR_MAX_POINTS lost by a single metric, so the same
+       number always draws the same bar. Previous look: example uses value / barMax, actual uses the share of the total. */
+    var scale = previousStyle ? (data.barMax || total) : BAR_MAX_POINTS;
 
     var rows = data.metrics.map(function (m) {
       return (
@@ -550,7 +567,7 @@
           '<div class="gs-example__text">' +
             '<div class="gs-example__head">' +
               '<p class="gs-example__title">Metrics impacting score</p>' +
-              '<p class="gs-example__meta">Count</p>' +
+              '<p class="gs-example__meta">' + (previousStyle ? 'Count' : 'Points lost') + '</p>' +
             '</div>' +
             '<div class="gs-metrics">' + rows + '</div>' +
             caption +
@@ -802,6 +819,13 @@
       state.healthScore.actual.score = wanted !== null && wanted !== '' && isFinite(Number(wanted))
         ? Math.max(0, Math.min(100, Math.round(Number(wanted))))
         : randomScore();
+    }
+
+    /* The five numbers are points lost from 100, so they must add up to 100 minus the score. When the
+       caller does not pass its own metrics, keep the sample proportions and rescale them to the score. */
+    var ownMetrics = options && options.healthScore && options.healthScore.actual && options.healthScore.actual.metrics;
+    if (!previousStyle && !ownMetrics) {
+      state.healthScore.actual.metrics = rescaleMetrics(state.healthScore.actual.metrics, 100 - state.healthScore.actual.score);
     }
 
     root.classList.add('gs');
