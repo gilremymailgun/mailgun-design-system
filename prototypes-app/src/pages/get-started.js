@@ -183,6 +183,8 @@
       ],
 
       whatScoresMeanHref: '#',
+      /* New look: link next to the band legend in the sample card (not ready state). Opens in a new tab. */
+      howCalculatedHref: 'https://help.mailgun.com/hc/en-us/articles/27460832413851-Email-Health-Score',
       /* Button when the score is ready */
       cta: { label: 'See full report', action: 'view-health-score' },
       /* New look: the CTA depends on the score band (Healthy / At risk / Requires attention). */
@@ -578,7 +580,9 @@
           legend(band, hs.highlightBand) +
           (previousStyle
             ? '<a class="gs-link" href="' + esc(hs.whatScoresMeanHref) + '">What scores mean</a>'
-            : (isExample ? '' : timestamp(hs.updatedAt))) +
+            : (isExample
+              ? '<a class="gs-link" href="' + esc(hs.howCalculatedHref) + '" target="_blank" rel="noopener noreferrer">How scores are calculated</a>'
+              : timestamp(hs.updatedAt))) +
         '</div>' +
       '</div>'
     );
